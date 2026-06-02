@@ -18,6 +18,7 @@ from app.routers import auth, events, sales, bnk, finance
 from app.routers import clients, vendors, pnr, employees, reports
 from app.routers import pipeline, petty_cash, coa, cheques, wht
 from app.routers import vendor_performance, currency, pdf
+from app.routers.dashboard_ui import router as dashboard_router
 
 app = FastAPI(
     title="IncentiveHouse ERP",
@@ -93,6 +94,7 @@ app.include_router(wht.router)
 app.include_router(vendor_performance.router)
 app.include_router(currency.router)
 app.include_router(pdf.router)
+app.include_router(dashboard_router)
 
 try:
     from app.or_module.sub_app import or_app
@@ -104,7 +106,7 @@ except ImportError:
 
 @app.get("/")
 async def root():
-    return RedirectResponse(url="/docs")
+    return RedirectResponse(url="/dashboard")
 
 
 @app.get("/health")
