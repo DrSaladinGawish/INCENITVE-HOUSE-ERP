@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+<style>
+  body { font-family: Arial, sans-serif; }
+  #sidebar { width: 200px; float: left; margin-top: 10px; background-color: #f0f0f0; padding: 20px; position: sticky; top: 15px; height: auto; overflow-y: scroll; }
+</style>
+<!-- Content not displayed to the user -->
+<body>
+
+<div id="sidebar">
+  <h2>Sidebar Menu</h2>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Analytics</a></li>
+    <li><a href="#">Reports</a></li>
+  </ul>
+</div>
+
+<div id="content">
+<h1>Dashboard Frontend - dashboard.html (empty)</h1>
+<p>This is a simple dashboard page. It currently displays no content, and you may need to add elements like graphs or tables here using JavaScript libraries such as Chart.js.</p>
+<!-- Further development can be done in this area -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Content not displayed to the user -->
+<div id="sidebar">
+  <h2>Sidebar Menu</h2>
+  <ul>
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Analytics</a></li>
+    <li><a href="#">Reports</a></li>
+  </ul>
+</div>
+
+<script>
+// Example to collapse the sidebar with a click on its header for smaller screens (not interactive as it's static HTML content)
+$(document).ready(function() {
+  $('#sidebar h2').click(function () { // Assuming 'h2' is clicked, not an actual interaction
+    $(this).next('ul').animate({left: '-200px'}); 
+    console.log('Sidebar animation complete');  
+  });
+});
+</script>
+</body>
+</html>

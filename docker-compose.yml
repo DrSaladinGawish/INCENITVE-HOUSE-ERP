@@ -1,0 +1,15 @@
+services:
+  incentivehouse:
+    build: .
+    container_name: incentivehouse-erp
+    restart: unless-stopped
+    ports:
+      - "9001:9001"
+    environment:
+      - DB_FILE=/data/protocell_staging.db
+      - HOST=0.0.0.0
+      - PORT=9001
+      - AUTH_USERS_JSON=${AUTH_USERS_JSON:-}
+    volumes:
+      - ./data:/data
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 9001 --reload

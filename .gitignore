@@ -1,0 +1,58 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyc
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Environment
+.env
+*.env.local
+
+# Database
+*.db
+*.db-*
+
+# SSL / TLS
+*.key
+*.crt
+*.pem
+*.csr
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated / temp scripts
+_check_*.py
+_test_*.py
+_temp_*.py
+generated_modules/
+
+# Docker
+.docker/
+
+# Legacy / migration scripts
+incentivehouse_server.py
+test_*.py
+server_test.*
+verify_project.py
+add_p2_endpoints.py
+migrate_to_real_schema.py
+AI_AGENT_FINALIZATION_PROMPT.md
+SSL_TLS_SETUP.md
+generate_ssl_certs.py
+path/to/
+
+# Excel source files (large binaries)
+*.xlsx
