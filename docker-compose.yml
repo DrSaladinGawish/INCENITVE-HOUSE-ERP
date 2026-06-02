@@ -9,7 +9,7 @@ services:
       - DB_FILE=/data/protocell_staging.db
       - HOST=0.0.0.0
       - PORT=9001
-      - AUTH_USERS_JSON=${AUTH_USERS_JSON:-}
+      - AUTH_USERS_JSON={"admin":{"password":"admin","role":"admin","display":"Administrator"},"accountant":{"password":"accountant","role":"accountant","display":"Accountant"},"event_manager":{"password":"events","role":"event_manager","display":"Event Manager"},"viewer":{"password":"viewer","role":"viewer","display":"Viewer"}}
     volumes:
       - ./data:/data
-    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 9001 --reload
+    command: python -m uvicorn app.main:app --host 0.0.0.0 --port 9001
