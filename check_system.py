@@ -18,10 +18,12 @@ def check(label, condition, detail=""):
         print(f"       -> {detail}")
     return condition
 
-def run_cmd(cmd, cwd=None):
+def run_cmd(cmd, cwd=None, timeout=60):
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd, timeout=10)
+        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, cwd=cwd, timeout=timeout)
         return result.returncode == 0, result.stdout, result.stderr
+    except subprocess.TimeoutExpired:
+        return False, "", "TIMEOUT"
     except Exception as e:
         return False, "", str(e)
 
@@ -76,7 +78,7 @@ has_env = env_path.exists()
 check(".env file exists", has_env, "Copy .env.template -> .env and edit")
 
 if has_env:
-    ok, out, err = run_cmd('python -c "import os, pyodbc; conn=pyodbc.connect(os.getenv(\'DATABASE_URL\',\'\'),timeout=5); print(\'CONNECTED\'); conn.close()"')
+    ok, out, err = run_cmd('python -c "from app.config import settings; import pyodbc; conn=pyodbc.connect(settings.SYNC_DATABASE_URL, timeout=5); print(\'CONNECTED\'); conn.close()"', timeout=15)
     connected = ok and "CONNECTED" in out
     check("SQL Server reachable", connected, out.strip() if ok else err)
 else:
@@ -84,7 +86,7 @@ else:
 
 # 6. Tests
 print("\n6. TEST SUITE")
-tests_ok, tests_out, _ = run_cmd("python -m pytest tests/ -v --tb=short", cwd=BASE_DIR)
+tests_ok, tests_out, _ = run_cmd("python -m pytest tests/ -v --tb=short", cwd=BASE_DIR, timeout=120)
 if tests_ok:
     passed = tests_out.count(" passed")
     skipped = tests_out.count(" skipped")
