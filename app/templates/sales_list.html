@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Sales - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Sales{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Sales Invoices</h1>
+    <p>Manage client invoices and receivables</p>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Invoices</span>
+        <a href="/sal/new" class="btn btn-success btn-sm">+ New Invoice</a>
+    </div>
+    <table>
+        <thead><tr><th>Invoice #</th><th>Client</th><th>Date</th><th>PNR</th><th>Value</th><th>Collected</th><th>Status</th></tr></thead>
+        <tbody id="salBody"><tr><td colspan="7">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="salPagination"></div>
+</div>
+<script>
+    var salPage = 1;
+    function loadSales(page) {
+        salPage = page || 1;
+        fetch('/api/sal/invoices?page=' + salPage + '&page_size=20')
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('salBody');
+                if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="7">No invoices.</td></tr>'; return; }
+                body.innerHTML = d.items.map(function(i) {
+                    return '<tr><td>' + (i.InvoiceNumber || '-') + '</td><td>' + (i.ClientCode || '-') + '</td><td>' + (i.InvoiceDate || '-') + '</td><td>' + (i.PNRNumber || '-') + '</td><td>' + Number(i.TotalValue||0).toLocaleString() + '</td><td>' + Number(i.CollectedAmount||0).toLocaleString() + '</td><td><span class="badge badge-' + (i.PaymentStatus === 'Paid' ? 'success' : 'warning') + '">' + (i.PaymentStatus || 'N/A') + '</span></td></tr>';
+                }).join('');
+                var tp = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('salPagination');
+                var h = '';
+                for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadSales(' + i + ');return false" class="' + (i === salPage ? 'active' : '') + '">' + i + '</a>';
+                pag.innerHTML = h;
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadSales(1); });
+</script>
+{% endblock %}

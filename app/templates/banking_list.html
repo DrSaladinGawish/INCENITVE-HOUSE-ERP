@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Banking - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Banking{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Bank Transactions</h1>
+    <p>Track bank accounts, deposits, withdrawals, and reconciliation</p>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Transactions</span>
+        <a href="/bnk/new" class="btn btn-success btn-sm">+ New Transaction</a>
+    </div>
+    <table>
+        <thead><tr><th>Date</th><th>Payee</th><th>Type</th><th>Deposit</th><th>Withdrawal</th><th>Balance</th><th>Bank</th></tr></thead>
+        <tbody id="bnkBody"><tr><td colspan="7">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="bnkPagination"></div>
+</div>
+<script>
+    var bnkPage = 1;
+    function loadBank(page) {
+        bnkPage = page || 1;
+        fetch('/api/bnk/transactions?page=' + bnkPage + '&page_size=20')
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('bnkBody');
+                if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="7">No transactions.</td></tr>'; return; }
+                body.innerHTML = d.items.map(function(t) {
+                    return '<tr><td>' + (t.TransactionDate || '-') + '</td><td>' + (t.Payee || '-') + '</td><td>' + (t.TransactionType || '-') + '</td><td>' + (t.Deposit ? Number(t.Deposit).toLocaleString() : '-') + '</td><td>' + (t.Withdrawal ? Number(t.Withdrawal).toLocaleString() : '-') + '</td><td>' + Number(t.RunningBalance||0).toLocaleString() + '</td><td>' + (t.BankCode || '-') + '</td></tr>';
+                }).join('');
+                var tp = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('bnkPagination');
+                var h = '';
+                for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadBank(' + i + ');return false" class="' + (i === bnkPage ? 'active' : '') + '">' + i + '</a>';
+                pag.innerHTML = h;
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadBank(1); });
+</script>
+{% endblock %}

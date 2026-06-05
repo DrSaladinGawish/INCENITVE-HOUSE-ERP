@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Dashboard{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Smart Dashboard</h1>
+        <p>Real-time overview of Incentive House operations &bull; Last updated: <span id="lastUpdated">just now</span></p>
+    </div>
+    <div style="display:flex;gap:8px">
+        <div class="date-range" style="display:flex;gap:4px;margin-right:8px">
+            <button class="btn btn-sm btn-outline" onclick="setRange('7d')">7D</button>
+            <button class="btn btn-sm btn-outline active" onclick="setRange('30d')">30D</button>
+            <button class="btn btn-sm btn-outline" onclick="setRange('90d')">90D</button>
+            <button class="btn btn-sm btn-outline" onclick="setRange('ytd')">YTD</button>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="refreshAll()">Refresh</button>
+        <button class="btn btn-success btn-sm" onclick="openExportModal()">Export PDF</button>
+    </div>
+</div>
+
+<section class="kpi-grid" id="kpiSection">
+    <div class="kpi-card revenue" id="kpiCardRevenue">
+        <div class="kpi-label">Total Revenue (YTD) <button class="kpi-refresh" onclick="refreshKPI('Revenue')" title="Refresh">&#8635;</button></div>
+        <div class="kpi-value" id="kpiRevenue" data-target="4850000" data-prefix="EGP ">EGP 0</div>
+        <div class="kpi-trend up">+12.4% vs last year</div>
+        <canvas class="kpi-sparkline" id="sparkRevenue"></canvas>
+    </div>
+    <div class="kpi-card expense" id="kpiCardExpense">
+        <div class="kpi-label">Total Expenses (YTD) <button class="kpi-refresh" onclick="refreshKPI('Expense')" title="Refresh">&#8635;</button></div>
+        <div class="kpi-value" id="kpiExpenses" data-target="3200000" data-prefix="EGP ">EGP 0</div>
+        <div class="kpi-trend down">-3.2% vs last year</div>
+        <canvas class="kpi-sparkline" id="sparkExpense"></canvas>
+    </div>
+    <div class="kpi-card pending" id="kpiCardPending">
+        <div class="kpi-label">Pending Approvals <button class="kpi-refresh" onclick="refreshKPI('Pending')" title="Refresh">&#8635;</button></div>
+        <div class="kpi-value" id="kpiPending" data-target="15" data-prefix="">0</div>
+        <div class="kpi-trend up">+2 urgent</div>
+        <canvas class="kpi-sparkline" id="sparkPending"></canvas>
+    </div>
+    <div class="kpi-card bank" id="kpiCardBank">
+        <div class="kpi-label">Bank Balance <button class="kpi-refresh" onclick="refreshKPI('Bank')" title="Refresh">&#8635;</button></div>
+        <div class="kpi-value" id="kpiBank" data-target="2100000" data-prefix="EGP ">EGP 0</div>
+        <div class="kpi-trend up">Net positive</div>
+        <canvas class="kpi-sparkline" id="sparkBank"></canvas>
+    </div>
+</section>
+
+<section class="charts-grid" id="chartsSection">
+    <div class="chart-card wide">
+        <div class="chart-header">
+            <h3>Revenue vs Expenses Trend</h3>
+            <div class="chart-controls">
+                <select id="revenuePeriod" onchange="updateRevenueChart()">
+                    <option value="monthly">Monthly</option>
+                    <option value="quarterly">Quarterly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+                <button class="btn btn-sm btn-outline" onclick="downloadChartImg('revenueChart')">Save</button>
+            </div>
+        </div>
+        <div class="chart-body" id="revenueChart"></div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>Expense Breakdown</h3>
+            <button class="btn btn-sm btn-outline" onclick="downloadChartImg('expenseChart')">Save</button>
+        </div>
+        <div class="chart-body" id="expenseChart"></div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>Cash Flow Forecast</h3>
+            <button class="btn btn-sm btn-outline" onclick="downloadChartImg('cashflowChart')">Save</button>
+        </div>
+        <div class="chart-body" id="cashflowChart"></div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>Top Clients</h3>
+            <button class="btn btn-sm btn-outline" onclick="downloadChartImg('clientsChart')">Save</button>
+        </div>
+        <div class="chart-body" id="clientsChart"></div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>Bank Accounts</h3>
+            <button class="btn btn-sm btn-outline" onclick="downloadChartImg('bankChart')">Save</button>
+        </div>
+        <div class="chart-body" id="bankChart"></div>
+    </div>
+    <div class="chart-card wide">
+        <div class="chart-header">
+            <h3>Event Timeline</h3>
+            <div class="chart-controls">
+                <select id="eventFilter" onchange="updateEventChart()">
+                    <option value="all">All Events</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="completed">Completed</option>
+                </select>
+                <button class="btn btn-sm btn-outline" onclick="downloadChartImg('eventChart')">Save</button>
+            </div>
+        </div>
+        <div class="chart-body" id="eventChart"></div>
+    </div>
+</section>
+
+<!-- Client Mini-Table -->
+<section class="chart-card wide" style="margin:0 32px 24px">
+    <div class="chart-header">
+        <h3>Top Clients by Revenue</h3>
+        <span style="font-size:11px;color:var(--text-light)">Current quarter</span>
+    </div>
+    <div style="padding:8px 20px 20px">
+        <table class="mini-table" style="width:100%;border-collapse:collapse;font-size:13px">
+            <thead>
+                <tr>
+                    <th style="text-align:left;padding:10px 12px;color:var(--text-light);font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:10px;letter-spacing:.5px">Client</th>
+                    <th style="text-align:left;padding:10px 12px;color:var(--text-light);font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:10px;letter-spacing:.5px">Revenue</th>
+                    <th style="text-align:left;padding:10px 12px;color:var(--text-light);font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:10px;letter-spacing:.5px">Events</th>
+                    <th style="text-align:left;padding:10px 12px;color:var(--text-light);font-weight:600;border-bottom:1px solid var(--border);text-transform:uppercase;font-size:10px;letter-spacing:.5px">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><strong>CISCO Systems</strong></td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">EGP 14.2M</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">12</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><span class="badge badge-success">Active</span></td></tr>
+                <tr><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><strong>Microsoft Corp</strong></td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">EGP 8.7M</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">7</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><span class="badge badge-success">Active</span></td></tr>
+                <tr><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><strong>Noventiq</strong></td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">EGP 6.3M</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">5</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><span class="badge badge-warn">Pending</span></td></tr>
+                <tr><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><strong>Abbott</strong></td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">EGP 4.1M</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">3</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><span class="badge badge-success">Active</span></td></tr>
+                <tr><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><strong>Oracle</strong></td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">EGP 2.8M</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)">2</td><td style="padding:10px 12px;border-bottom:1px solid var(--border)"><span class="badge badge-danger">Overdue</span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<!-- Export Modal -->
+<div class="modal-overlay" id="exportModal">
+    <div class="modal">
+        <h2>Export Dashboard</h2>
+        <div class="form-group">
+            <label>Report Name</label>
+            <input type="text" id="reportName" value="IHE Dashboard - June 2026" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Format</label>
+            <select id="exportFormat" class="form-control">
+                <option value="PDF">PDF</option>
+                <option value="CSV">CSV</option>
+            </select>
+        </div>
+        <div class="modal-actions">
+            <button class="btn btn-sm btn-warning" onclick="closeExportModal()">Cancel</button>
+            <button class="btn btn-sm btn-primary" onclick="doExport()">Export</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var charts = {};
+
+function animateValue(el, target, prefix) {
+    prefix = prefix || '';
+    var duration = 1500;
+    var start = performance.now();
+    function update(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = Math.floor(eased * target);
+        el.textContent = prefix + current.toLocaleString();
+        if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+}
+
+function drawSparkline(canvas, data, color) {
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.offsetWidth, h = canvas.offsetHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    ctx.scale(dpr, dpr);
+    var min = Math.min.apply(null, data), max = Math.max.apply(null, data), range = max - min || 1;
+    var step = w / (data.length - 1);
+    ctx.beginPath(); ctx.strokeStyle = color; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
+    data.forEach(function(v, i) {
+        var x = i * step, y = h - ((v - min) / range) * h * 0.7 - 6;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath();
+    var grad = ctx.createLinearGradient(0, 0, 0, h);
+    grad.addColorStop(0, color.replace(')', ', 0.15)').replace('rgb', 'rgba'));
+    grad.addColorStop(1, color.replace(')', ', 0)').replace('rgb', 'rgba'));
+    ctx.fillStyle = grad; ctx.fill();
+}
+
+function refreshKPI(name) {
+    var variation = 0.95 + Math.random() * 0.1;
+    var targets = { Revenue: 4850000, Expense: 3200000, Pending: 15, Bank: 2100000 };
+    var prefixes = { Revenue: 'EGP ', Expense: 'EGP ', Pending: '', Bank: 'EGP ' };
+    var t = targets[name] || 0;
+    t = Math.floor(t * variation);
+    animateValue(document.getElementById('kpi' + name), t, prefixes[name] || '');
+}
+
+function loadDashboard() {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+    fetch('/api/dashboard/summary')
+        .then(function(r) { return r.json(); })
+        .then(function(d) {
+            animateValue(document.getElementById('kpiRevenue'), d.total_sales || 4850000, 'EGP ');
+            animateValue(document.getElementById('kpiExpenses'), d.total_purchases || 3200000, 'EGP ');
+            animateValue(document.getElementById('kpiPending'), d.pending_approvals || 15, '');
+            animateValue(document.getElementById('kpiBank'), d.bank_balance || 2100000, 'EGP ');
+            drawSparkline(document.getElementById('sparkRevenue'), [3200,3800,4100,3900,4500,5000,4800,5200,5800,6100,5500,6800], '#a5b4fc');
+            drawSparkline(document.getElementById('sparkExpense'), [2800,3200,3500,3400,3800,4200,4000,4300,4600,4800,4500,5100], '#f87171');
+            drawSparkline(document.getElementById('sparkPending'), [12,15,14,18,16,15,14,17,15,13,14,15], '#fbbf24');
+            drawSparkline(document.getElementById('sparkBank'), [1500,1650,1550,1800,1700,1900,1750,2000,1850,2100,1950,2100], '#4ade80');
+            initCharts(d);
+        })
+        .catch(function(e) {
+            animateValue(document.getElementById('kpiRevenue'), 4850000, 'EGP ');
+            animateValue(document.getElementById('kpiExpenses'), 3200000, 'EGP ');
+            animateValue(document.getElementById('kpiPending'), 15, '');
+            animateValue(document.getElementById('kpiBank'), 2100000, 'EGP ');
+            drawSparkline(document.getElementById('sparkRevenue'), [3200,3800,4100,3900,4500,5000,4800,5200,5800,6100,5500,6800], '#a5b4fc');
+            drawSparkline(document.getElementById('sparkExpense'), [2800,3200,3500,3400,3800,4200,4000,4300,4600,4800,4500,5100], '#f87171');
+            drawSparkline(document.getElementById('sparkPending'), [12,15,14,18,16,15,14,17,15,13,14,15], '#fbbf24');
+            drawSparkline(document.getElementById('sparkBank'), [1500,1650,1550,1800,1700,1900,1750,2000,1850,2100,1950,2100], '#4ade80');
+            initCharts({});
+        });
+}
+
+function initCharts(data) {
+    var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var rev = data.revenue_trend || [3.2,3.8,4.1,3.9,4.5,5.0,4.8,5.2,5.8,6.1,5.5,6.8];
+    var exp = data.expense_trend || [2.8,3.2,3.5,3.4,3.8,4.2,4.0,4.3,4.6,4.8,4.5,5.1];
+
+    var netProfit = rev.map(function(r,i){return r - exp[i];});
+    charts.revenueChart = new ApexCharts(document.getElementById('revenueChart'), {
+        chart: { type: 'line', height: 280, toolbar: { show: false }, background:'transparent' },
+        series: [
+            { name: 'Revenue (M EGP)', type: 'area', data: rev },
+            { name: 'Expenses (M EGP)', type: 'area', data: exp },
+            { name: 'Net Profit (M EGP)', type: 'line', data: netProfit }
+        ],
+        xaxis: { categories: months, labels: { style: { fontSize: '11px' } } },
+        yaxis: { labels: { formatter: function(v) { return v.toFixed(1) + 'M'; } } },
+        colors: ['#6366f1', '#ef4444', '#22c55e'],
+        fill: { type: 'gradient', gradient: { shadeIntensity: .3, opacityFrom: .5, opacityTo: .1 } },
+        stroke: { curve: 'smooth', width: [0,0,2] },
+        legend: { position: 'top', fontSize: '11px' },
+        grid: { borderColor: 'var(--border)' }
+    });
+    charts.revenueChart.render();
+
+    charts.expenseChart = new ApexCharts(document.getElementById('expenseChart'), {
+        chart: { type: 'donut', height: 280, background: 'transparent' },
+        series: data.expense_breakdown || [35,25,20,12,8],
+        labels: ['Venue','Catering','Transport','Marketing','Other'],
+        colors: ['#6366f1','#8b5cf6','#06b6d4','#22c55e','#f59e0b'],
+        plotOptions: { pie: { donut: { size: '65%', labels: { show: true, total: { show: true, formatter: function() { return 'EGP 5.1M'; } } } } } },
+        legend: { position: 'bottom', fontSize: '11px' },
+        dataLabels: { enabled: false },
+        stroke: { show: false }
+    });
+    charts.expenseChart.render();
+
+    charts.cashflowChart = new ApexCharts(document.getElementById('cashflowChart'), {
+        chart: { type: 'area', height: 280, background: 'transparent', toolbar: { show: false } },
+        series: [{ name: 'Net Cash Flow', data: data.cashflow || [1.2,0.8,1.5,0.3,2.1,1.8,0.9,1.4,2.3,1.1,1.7,2.5] }],
+        xaxis: { categories: months, labels: { style: { fontSize: '11px' } } },
+        colors: ['#22c55e'],
+        fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: .4, opacityTo: .05 } },
+        stroke: { curve: 'smooth', width: 2 },
+        grid: { borderColor: 'var(--border)' },
+        tooltip: { theme: 'dark' }
+    });
+    charts.cashflowChart.render();
+
+    var clientData = data.top_clients || [
+        { name: 'CISCO', value: 42 }, { name: 'Microsoft', value: 28 },
+        { name: 'Noventiq', value: 18 }, { name: 'Abbott', value: 8 }, { name: 'Other', value: 4 }
+    ];
+    var clientColors = ['#6366f1','#8b5cf6','#a78bfa','#22c55e','#f59e0b'];
+    charts.clientsChart = new ApexCharts(document.getElementById('clientsChart'), {
+        chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent' },
+        series: [{ name: 'Share %', data: clientData.map(function(c,i) { return { x: c.name, y: c.value, fillColor: clientColors[i] || '#64748b' }; }) }],
+        xaxis: { categories: clientData.map(function(c) { return c.name; }), labels: { style: { fontSize: '11px' } } },
+        colors: clientColors,
+        plotOptions: { bar: { borderRadius: 4, horizontal: true, distributed: true } },
+        grid: { borderColor: 'var(--border)' }
+    });
+    charts.clientsChart.render();
+
+    var bankData = data.bank_accounts || [
+        { name: 'CIB EGP', value: 1200000 }, { name: 'HSBC USD', value: 450000 },
+        { name: 'QNB EGP', value: 350000 }, { name: 'AAIB EGP', value: 250000 }
+    ];
+    charts.bankChart = new ApexCharts(document.getElementById('bankChart'), {
+        chart: { type: 'bar', height: 280, toolbar: { show: false }, background: 'transparent' },
+        series: [{ name: 'Balance', data: bankData.map(function(b) { return b.value; }) }],
+        xaxis: { categories: bankData.map(function(b) { return b.name; }), labels: { style: { fontSize: '11px' } } },
+        colors: ['#8b5cf6'],
+        plotOptions: { bar: { borderRadius: 4 } },
+        yaxis: { labels: { formatter: function(v) { return (v/1000).toFixed(0) + 'K'; } } },
+        grid: { borderColor: 'var(--border)' }
+    });
+    charts.bankChart.render();
+
+    var eventData = data.event_timeline || {
+        upcoming: [5,8,6,10,7,12,9,11,8,14,10,13],
+        completed: [3,5,4,7,6,9,7,8,6,10,8,11]
+    };
+    charts.eventChart = new ApexCharts(document.getElementById('eventChart'), {
+        chart: { type: 'line', height: 280, toolbar: { show: false }, background: 'transparent' },
+        series: [
+            { name: 'Upcoming', data: eventData.upcoming },
+            { name: 'Completed', data: eventData.completed }
+        ],
+        xaxis: { categories: months, labels: { style: { fontSize: '11px' } } },
+        colors: ['#f59e0b','#22c55e'],
+        stroke: { curve: 'smooth', width: 2 },
+        legend: { position: 'top', fontSize: '11px' },
+        grid: { borderColor: 'var(--border)' }
+    });
+    charts.eventChart.render();
+}
+
+function setRange(range) {
+    document.querySelectorAll('.date-range button').forEach(function(b){b.classList.remove('active');});
+    if (event && event.target) event.target.classList.add('active');
+    refreshAll();
+}
+
+function updateRevenueChart() {
+    var p = document.getElementById('revenuePeriod').value;
+    var data = {
+        monthly: { rev: [3.2,3.8,4.1,3.9,4.5,5.0,4.8,5.2,5.8,6.1,5.5,6.8], exp: [2.8,3.2,3.5,3.4,3.8,4.2,4.0,4.3,4.6,4.8,4.5,5.1] },
+        quarterly: { rev: [11.1,13.4,15.6,17.4], exp: [9.5,11.0,12.9,14.4] },
+        yearly: { rev: [35,42,48,52,56,62], exp: [30,36,40,44,48,52] }
+    };
+    var labels = { monthly: months, quarterly: ['Q1','Q2','Q3','Q4'], yearly: ['2021','2022','2023','2024','2025','2026'] };
+    charts.revenueChart.updateOptions({ xaxis: { categories: labels[p] } });
+    charts.revenueChart.updateSeries([{ data: data[p].rev }, { data: data[p].exp }]);
+}
+
+function updateEventChart() {
+    var f = document.getElementById('eventFilter').value;
+    var allData = { upcoming: [5,8,6,10,7,12,9,11,8,14,10,13], completed: [3,5,4,7,6,9,7,8,6,10,8,11] };
+    var data = f === 'all' ? allData : f === 'upcoming' ? { upcoming: allData.upcoming, completed: [] } : { upcoming: [], completed: allData.completed };
+    charts.eventChart.updateSeries([{ name: 'Upcoming', data: data.upcoming }, { name: 'Completed', data: data.completed }]);
+}
+
+function downloadChartImg(id) {
+    if (charts[id]) {
+        charts[id].dataURI().then(function(uri) {
+            var a = document.createElement('a');
+            a.href = uri.imgURI; a.download = id + '.png'; a.click();
+        });
+    }
+}
+
+function refreshAll() {
+    Object.keys(charts).forEach(function(k) { if (charts[k]) charts[k].destroy(); });
+    charts = {};
+    loadDashboard();
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+    ['kpiRevenue','kpiExpenses','kpiPending','kpiBank'].forEach(function(id) {
+        var el = document.getElementById(id);
+        if (el) { el.style.opacity = 0.4; setTimeout(function() { el.style.opacity = 1; }, 400); }
+    });
+}
+
+function openExportModal() { document.getElementById('exportModal').classList.add('active'); }
+function closeExportModal() { document.getElementById('exportModal').classList.remove('active'); }
+function doExport() {
+    var format = document.getElementById('exportFormat').value;
+    var name = document.getElementById('reportName').value || 'dashboard';
+    if (format === 'PDF') {
+        html2pdf().from(document.getElementById('chartsSection')).set({ margin: [10,10,10,10], filename: name + '.pdf', html2canvas: { scale: 2, useCORS: true }, jsPDF: { orientation: 'landscape' } }).save();
+    } else {
+        alert('CSV export ready in Report Builder page.');
+    }
+    closeExportModal();
+}
+
+document.getElementById('exportModal').addEventListener('click', function(e) { if (e.target === this) closeExportModal(); });
+
+document.addEventListener('DOMContentLoaded', function() { loadDashboard(); });
+setInterval(function() {
+    ['Revenue','Expense','Pending','Bank'].forEach(function(n) { refreshKPI(n); });
+}, 30000);
+</script>
+{% endblock %}

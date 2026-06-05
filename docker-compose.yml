@@ -1,0 +1,44 @@
+services:
+  api:
+    build: .
+    container_name: incentivehouse-erp
+    ports:
+      - "9001:9001"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/app/data
+      - ./migrations:/app/migrations
+    restart: unless-stopped
+    networks:
+      - ihe-net
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: ihe-sqlserver
+    profiles:
+      - local
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=${SQL_PASSWORD:-IHE_ERP_2024!}
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "${MSSQL_SA_PASSWORD}" -C -Q "SELECT 1" || exit 1
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    restart: unless-stopped
+    networks:
+      - ihe-net
+
+volumes:
+  sqlserver-data:
+
+networks:
+  ihe-net:
+    driver: bridge

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Purchases - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Purchase{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Purchase Vouchers</h1>
+    <p>Manage vendor payments and procurement</p>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Vouchers</span>
+        <a href="/pur/new" class="btn btn-success btn-sm">+ New Voucher</a>
+    </div>
+    <table>
+        <thead><tr><th>Voucher #</th><th>Document #</th><th>PNR</th><th>Date</th><th>Value</th><th>Currency</th></tr></thead>
+        <tbody id="purBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="purPagination"></div>
+</div>
+<script>
+    var purPage = 1;
+    function loadPurchases(page) {
+        purPage = page || 1;
+        fetch('/api/pur/vouchers?page=' + purPage + '&page_size=20')
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('purBody');
+                if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="6">No vouchers.</td></tr>'; return; }
+                body.innerHTML = d.items.map(function(v) {
+                    return '<tr><td>' + (v.VoucherNumber || '-') + '</td><td>' + (v.DocumentNumber || '-') + '</td><td>' + (v.PNRNumber || '-') + '</td><td>' + (v.InvoiceDate || '-') + '</td><td>' + Number(v.TotalValue||0).toLocaleString() + '</td><td>' + (v.CurrencyCode || 'EGP') + '</td></tr>';
+                }).join('');
+                var tp = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('purPagination');
+                var h = '';
+                for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadPurchases(' + i + ');return false" class="' + (i === purPage ? 'active' : '') + '">' + i + '</a>';
+                pag.innerHTML = h;
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadPurchases(1); });
+</script>
+{% endblock %}

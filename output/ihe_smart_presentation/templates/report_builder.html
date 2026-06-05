@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHE-ERP Report Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --primary: #6366f1;
+    --secondary: #8b5cf6; --success: #22c55e; --warn: #f59e0b;
+    --glow: rgba(99,102,241,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, #1e1b4b 100%);
+    min-height: 100vh; color: var(--text);
+  }
+
+  .rb-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 24px; border-bottom: 1px solid var(--border);
+    background: rgba(15,23,42,0.8); backdrop-filter: blur(10px);
+    position: sticky; top: 0; z-index: 100;
+  }
+  .rb-header h1 {
+    font-size: 20px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .rb-actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 8px 18px; border-radius: 8px; border: none;
+    font-weight: 600; font-size: 12px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px var(--glow); }
+  .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-success { background: var(--success); color: white; }
+
+  .rb-layout { display: grid; grid-template-columns: 280px 1fr 320px; gap: 0; height: calc(100vh - 65px); }
+
+  .rb-sidebar { background: var(--surface); border-right: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+  .rb-sidebar h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .field-category { margin-bottom: 20px; }
+  .field-category-title { font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .field-category-title::before { content: ''; width: 8px; height: 8px; border-radius: 2px; background: var(--primary); }
+  .field-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 8px; cursor: grab; transition: all 0.2s; border: 1px solid transparent; margin-bottom: 4px; font-size: 13px; color: var(--muted); }
+  .field-item:hover { background: rgba(99,102,241,0.1); border-color: rgba(99,102,241,0.3); color: var(--text); }
+  .field-item.dragging { opacity: 0.5; }
+  .field-icon { font-size: 14px; width: 20px; text-align: center; }
+  .field-type { font-size: 10px; padding: 1px 6px; border-radius: 4px; background: rgba(99,102,241,0.15); color: #a5b4fc; margin-left: auto; }
+
+  .rb-canvas { padding: 24px; overflow-y: auto; background: linear-gradient(180deg, var(--bg) 0%, #0a0f1d 100%); }
+  .rb-canvas-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .rb-canvas-title { font-size: 16px; font-weight: 600; }
+  .rb-canvas-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .drop-zone { min-height: 400px; border: 2px dashed var(--border); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--muted); transition: all 0.3s; position: relative; }
+  .drop-zone.drag-over { border-color: var(--primary); background: rgba(99,102,241,0.05); color: var(--primary); }
+  .drop-zone.has-content { align-items: stretch; justify-content: flex-start; padding: 20px; border-style: solid; border-color: var(--border); }
+  .drop-zone-placeholder { text-align: center; pointer-events: none; }
+  .drop-zone-placeholder .icon { font-size: 48px; margin-bottom: 12px; }
+  .drop-zone-placeholder p { font-size: 14px; }
+  .drop-zone-placeholder span { font-size: 12px; opacity: 0.6; }
+
+  .dropped-item { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin-bottom: 12px; position: relative; animation: dropIn 0.3s ease-out; }
+  @keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+  .dropped-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .dropped-item-title { font-size: 13px; font-weight: 600; }
+  .dropped-item-actions { display: flex; gap: 6px; }
+  .dropped-item-actions button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; border-radius: 4px; transition: all 0.2s; }
+  .dropped-item-actions button:hover { color: var(--danger); background: rgba(239,68,68,0.1); }
+
+  .rb-config { background: var(--surface); border-left: 1px solid var(--border); padding: 20px; overflow-y: auto; }
+  .rb-config h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 16px; }
+  .config-group { margin-bottom: 20px; }
+  .config-group label { display: block; font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  .config-group input, .config-group select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; color: var(--text); font-size: 13px; outline: none; }
+  .config-group input:focus, .config-group select:focus { border-color: var(--primary); }
+  .config-dates { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .config-toggle { display: flex; align-items: center; gap: 10px; padding: 10px 0; cursor: pointer; }
+  .config-toggle input { width: 18px; height: 18px; accent-color: var(--primary); }
+  .config-toggle label { font-size: 13px; color: var(--text); cursor: pointer; }
+
+  .preview-panel { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 40px; }
+  .preview-panel.active { display: flex; }
+  .preview-content { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; width: 100%; max-width: 900px; max-height: 90vh; overflow-y: auto; padding: 32px; }
+  .preview-content h2 { margin-bottom: 20px; }
+  .preview-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+
+  @media (max-width: 1200px) { .rb-layout { grid-template-columns: 240px 1fr; } .rb-config { display: none; } }
+  @media (max-width: 768px) { .rb-layout { grid-template-columns: 1fr; } .rb-sidebar { display: none; } }
+</style>
+</head>
+<body>
+
+<div class="rb-header">
+  <div>
+    <h1>Report Builder</h1>
+    <p style="color:var(--muted);font-size:12px;margin-top:2px;">Drag fields to build custom reports</p>
+  </div>
+  <div class="rb-actions">
+    <button class="btn btn-outline" onclick="clearCanvas()">Clear</button>
+    <button class="btn btn-outline" onclick="loadTemplate()">Load Template</button>
+    <button class="btn btn-primary" onclick="previewReport()">Preview</button>
+    <button class="btn btn-success" onclick="exportReport()">Export PDF</button>
+  </div>
+</div>
+
+<div class="rb-layout">
+  <div class="rb-sidebar">
+    <h3>Available Fields</h3>
+    
+    <div class="field-category">
+      <div class="field-category-title">Events</div>
+      <div class="field-item" draggable="true" data-field="event_name" data-type="text"><span class="field-icon">N</span> Event Name <span class="field-type">Text</span></div>
+      <div class="field-item" draggable="true" data-field="event_date" data-type="date"><span class="field-icon">D</span> Event Date <span class="field-type">Date</span></div>
+      <div class="field-item" draggable="true" data-field="client_name" data-type="text"><span class="field-icon">C</span> Client Name <span class="field-type">Text</span></div>
+      <div class="field-item" draggable="true" data-field="budget" data-type="currency"><span class="field-icon">$</span> Budget <span class="field-type">Currency</span></div>
+      <div class="field-item" draggable="true" data-field="pnr_code" data-type="text"><span class="field-icon">P</span> PNR Code <span class="field-type">Text</span></div>
+    </div>
+
+    <div class="field-category">
+      <div class="field-category-title">Financial</div>
+      <div class="field-item" draggable="true" data-field="revenue" data-type="currency"><span class="field-icon">R</span> Revenue <span class="field-type">Currency</span></div>
+      <div class="field-item" draggable="true" data-field="expense" data-type="currency"><span class="field-icon">E</span> Expense <span class="field-type">Currency</span></div>
+      <div class="field-item" draggable="true" data-field="profit" data-type="currency"><span class="field-icon">P</span> Profit <span class="field-type">Currency</span></div>
+      <div class="field-item" draggable="true" data-field="bank_balance" data-type="currency"><span class="field-icon">B</span> Bank Balance <span class="field-type">Currency</span></div>
+    </div>
+
+    <div class="field-category">
+      <div class="field-category-title">Charts</div>
+      <div class="field-item" draggable="true" data-field="chart_revenue_trend" data-type="chart"><span class="field-icon">G</span> Revenue Trend <span class="field-type">Chart</span></div>
+      <div class="field-item" draggable="true" data-field="chart_expense_pie" data-type="chart"><span class="field-icon">P</span> Expense Breakdown <span class="field-type">Chart</span></div>
+      <div class="field-item" draggable="true" data-field="chart_client_bar" data-type="chart"><span class="field-icon">B</span> Client Revenue Bar <span class="field-type">Chart</span></div>
+    </div>
+  </div>
+
+  <div class="rb-canvas">
+    <div class="rb-canvas-header">
+      <div>
+        <div class="rb-canvas-title">Report Canvas</div>
+        <div class="rb-canvas-subtitle">Drag fields from the left to build your report</div>
+      </div>
+    </div>
+    <div class="drop-zone" id="dropZone">
+      <div class="drop-zone-placeholder">
+        <div class="icon">+</div>
+        <p>Drag fields here to build your report</p>
+        <span>Or double-click a field to add it instantly</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="rb-config">
+    <h3>Report Settings</h3>
+    
+    <div class="config-group">
+      <label>Report Name</label>
+      <input type="text" id="reportName" value="Monthly Performance Report">
+    </div>
+    
+    <div class="config-group">
+      <label>Date Range</label>
+      <div class="config-dates">
+        <input type="date" id="dateFrom" value="2026-01-01">
+        <input type="date" id="dateTo" value="2026-06-30">
+      </div>
+    </div>
+    
+    <div class="config-group">
+      <label>Group By</label>
+      <select id="groupBy">
+        <option>None</option>
+        <option>Client</option>
+        <option>Month</option>
+        <option>PNR Dimension</option>
+        <option>Event Type</option>
+      </select>
+    </div>
+    
+    <div class="config-group">
+      <label>Sort By</label>
+      <select id="sortBy">
+        <option>Event Date (Newest)</option>
+        <option>Event Date (Oldest)</option>
+        <option>Budget (High to Low)</option>
+        <option>Revenue (High to Low)</option>
+      </select>
+    </div>
+    
+    <div class="config-group">
+      <div class="config-toggle">
+        <input type="checkbox" id="includeCharts" checked>
+        <label for="includeCharts">Include charts in export</label>
+      </div>
+      <div class="config-toggle">
+        <input type="checkbox" id="includeSummary" checked>
+        <label for="includeSummary">Add executive summary</label>
+      </div>
+      <div class="config-toggle">
+        <input type="checkbox" id="includeLogo">
+        <label for="includeLogo">Include company logo</label>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="preview-panel" id="previewPanel">
+  <div class="preview-content" id="previewContent">
+    <h2>Report Preview</h2>
+    <div id="previewBody"></div>
+    <div class="preview-actions">
+      <button class="btn btn-outline" onclick="closePreview()">Close</button>
+      <button class="btn btn-primary" onclick="exportFromPreview()">Export PDF</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var dropZone = document.getElementById('dropZone');
+var fieldItems = document.querySelectorAll('.field-item');
+var droppedFields = [];
+
+fieldItems.forEach(function(item) {
+  item.addEventListener('dragstart', function(e) {
+    e.dataTransfer.setData('field', this.dataset.field);
+    e.dataTransfer.setData('type', this.dataset.type);
+    var label = this.childNodes[2] ? this.childNodes[2].textContent.trim() : this.textContent.trim();
+    e.dataTransfer.setData('label', label);
+    this.classList.add('dragging');
+  });
+  item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+  item.addEventListener('dblclick', function() {
+    var label = this.childNodes[2] ? this.childNodes[2].textContent.trim() : this.textContent.trim();
+    addFieldToCanvas(this.dataset.field, this.dataset.type, label);
+  });
+});
+
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+dropZone.addEventListener('drop', function(e) {
+  e.preventDefault();
+  this.classList.remove('drag-over');
+  addFieldToCanvas(e.dataTransfer.getData('field'), e.dataTransfer.getData('type'), e.dataTransfer.getData('label'));
+});
+
+function addFieldToCanvas(field, type, label) {
+  dropZone.classList.add('has-content');
+  var ph = dropZone.querySelector('.drop-zone-placeholder');
+  if (ph) ph.style.display = 'none';
+  
+  var id = 'field_' + Date.now();
+  var item = document.createElement('div');
+  item.className = 'dropped-item';
+  item.id = id;
+  item.dataset.field = field;
+  item.dataset.type = type;
+  
+  var valueHtml = '<div style="font-size:16px;color:var(--text)">Sample ' + (label || 'data') + '</div>';
+  if (type === 'currency') {
+    var val = Math.floor(Math.random() * 2000000);
+    valueHtml = '<div style="font-size:24px;font-weight:700;color:var(--primary)">EGP ' + val.toLocaleString() + '</div>';
+  } else if (type === 'chart') {
+    valueHtml = '<canvas id="chart_' + id + '" height="200"></canvas>';
+    setTimeout(function() { renderChart('chart_' + id, field); }, 100);
+  }
+  
+  item.innerHTML = '<div class="dropped-item-header"><span class="dropped-item-title">' + (label || 'Untitled') + '</span><div class="dropped-item-actions"><button onclick="moveUp(\'' + id + '\')">U</button><button onclick="moveDown(\'' + id + '\')">D</button><button onclick="removeField(\'' + id + '\')">X</button></div></div>' + valueHtml;
+  dropZone.appendChild(item);
+  droppedFields.push({ id: id, field: field, type: type, label: label });
+}
+
+function removeField(id) {
+  var el = document.getElementById(id);
+  if (el) { el.remove(); }
+  droppedFields = droppedFields.filter(function(f) { return f.id !== id; });
+  if (droppedFields.length === 0) {
+    dropZone.classList.remove('has-content');
+    var ph = dropZone.querySelector('.drop-zone-placeholder');
+    if (ph) ph.style.display = 'block';
+  }
+}
+
+function moveUp(id) {
+  var el = document.getElementById(id);
+  var prev = el.previousElementSibling;
+  if (prev && prev.classList.contains('dropped-item')) dropZone.insertBefore(el, prev);
+}
+
+function moveDown(id) {
+  var el = document.getElementById(id);
+  var next = el.nextElementSibling;
+  if (next && next.classList.contains('dropped-item')) dropZone.insertBefore(next, el);
+}
+
+function clearCanvas() {
+  droppedFields = [];
+  dropZone.querySelectorAll('.dropped-item').forEach(function(item) { item.remove(); });
+  dropZone.classList.remove('has-content');
+  var ph = dropZone.querySelector('.drop-zone-placeholder');
+  if (ph) ph.style.display = 'block';
+}
+
+function renderChart(canvasId, fieldType) {
+  var ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  if (fieldType === 'chart_revenue_trend') {
+    new Chart(ctx, { type: 'line', data: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label: 'Revenue (M EGP)', data: [3.2,3.8,4.1,3.9,4.5,5.0], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.3)' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.3)' } } } } });
+  } else if (fieldType === 'chart_expense_pie') {
+    new Chart(ctx, { type: 'doughnut', data: { labels: ['Venue','Catering','Transport','Marketing','Other'], datasets: [{ data: [35,25,20,12,8], backgroundColor: ['#6366f1','#8b5cf6','#06b6d4','#22c55e','#f59e0b'] }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 11 } } } } } });
+  } else if (fieldType === 'chart_client_bar') {
+    new Chart(ctx, { type: 'bar', data: { labels: ['CISCO','Microsoft','Noventiq','Abbott','Other'], datasets: [{ data: [42,28,18,8,4], backgroundColor: '#6366f1', borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { display: false } }, y: { display: false } } } });
+  }
+}
+
+function previewReport() {
+  var panel = document.getElementById('previewPanel');
+  var body = document.getElementById('previewBody');
+  var name = document.getElementById('reportName').value;
+  var from = document.getElementById('dateFrom').value;
+  var to = document.getElementById('dateTo').value;
+  
+  var html = '<div style="text-align:center;margin-bottom:30px;"><h1 style="font-size:22px;margin-bottom:8px;">' + name + '</h1><p style="color:var(--muted);font-size:13px;">Period: ' + from + ' to ' + to + '</p><p style="color:var(--muted);font-size:12px;">Generated: ' + new Date().toLocaleString() + '</p></div>';
+  
+  if (document.getElementById('includeSummary').checked) {
+    html += '<div style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.3);border-radius:12px;padding:16px;margin-bottom:20px;"><h3 style="font-size:14px;margin-bottom:8px;">Executive Summary</h3><p style="font-size:13px;color:var(--muted);line-height:1.6;">Total revenue for the period: <strong>EGP 24.5M</strong> (+12.4% YoY). Expenses: <strong>EGP 22.1M</strong> (-3.2% YoY). Net profit margin: <strong>9.8%</strong>. Top client: <strong>CISCO Systems (42%)</strong>.</p></div>';
+  }
+  
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">';
+  droppedFields.forEach(function(f) {
+    html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:10px;padding:14px;"><div style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">' + (f.label || 'Field') + '</div><div style="font-size:18px;font-weight:700;">' + (f.type === 'currency' ? 'EGP 0' : 'Sample') + '</div></div>';
+  });
+  html += '</div>';
+  
+  body.innerHTML = html;
+  panel.classList.add('active');
+}
+
+function closePreview() { document.getElementById('previewPanel').classList.remove('active'); }
+
+function exportReport() { previewReport(); setTimeout(exportFromPreview, 500); }
+
+function exportFromPreview() {
+  var name = document.getElementById('reportName').value;
+  html2pdf().set({ margin: 15, filename: name.replace(/\s+/g, '_') + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, backgroundColor: '#0f172a' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } }).from(document.getElementById('previewContent')).save();
+  closePreview();
+}
+
+function loadTemplate() {
+  clearCanvas();
+  setTimeout(function() {
+    addFieldToCanvas('event_name', 'text', 'Event Name');
+    addFieldToCanvas('client_name', 'text', 'Client Name');
+    addFieldToCanvas('budget', 'currency', 'Budget');
+    addFieldToCanvas('chart_revenue_trend', 'chart', 'Revenue Trend');
+  }, 100);
+}
+</script>
+
+</body>
+</html>

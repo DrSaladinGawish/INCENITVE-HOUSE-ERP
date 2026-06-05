@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHE Dashboard Charts</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8;
+    --primary: #6366f1; --secondary: #8b5cf6;
+    --success: #22c55e; --warn: #f59e0b; --error: #ef4444;
+    --info: #0ea5e9;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, #1e1b4b 100%);
+    min-height: 100vh; padding: 40px 20px; color: var(--text);
+  }
+  .dash-header {
+    max-width: 1200px; margin: 0 auto 32px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .dash-header h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .date-range {
+    display: flex; gap: 8px; align-items: center;
+  }
+  .date-range button {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 8px 16px; border-radius: 8px;
+    cursor: pointer; font-size: 13px; transition: all 0.2s;
+  }
+  .date-range button:hover, .date-range button.active {
+    background: var(--primary); border-color: var(--primary);
+  }
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .chart-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+  }
+  .chart-card.full-width { grid-column: 1 / -1; }
+  .chart-card h3 {
+    font-size: 14px; font-weight: 600;
+    color: var(--muted); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 16px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .chart-card h3 .dot {
+    width: 8px; height: 8px; border-radius: 50%;
+  }
+  .chart-wrapper { position: relative; height: 280px; }
+  .chart-wrapper.small { height: 200px; }
+  .legend-custom {
+    display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 12px; color: var(--muted);
+  }
+  .legend-color {
+    width: 10px; height: 10px; border-radius: 3px;
+  }
+  .export-bar {
+    position: absolute; top: 20px; right: 20px;
+    display: flex; gap: 6px;
+  }
+  .export-btn {
+    background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3);
+    color: #a5b4fc; padding: 5px 12px; border-radius: 6px;
+    font-size: 11px; cursor: pointer; transition: all 0.2s;
+  }
+  .export-btn:hover {
+    background: rgba(99,102,241,0.2); border-color: var(--primary);
+  }
+  @media (max-width: 900px) {
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-card.full-width { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="dash-header">
+  <h1>Financial Dashboard</h1>
+  <div class="date-range">
+    <button onclick="setRange('7d')">7D</button>
+    <button onclick="setRange('30d')">30D</button>
+    <button onclick="setRange('90d')" class="active">90D</button>
+    <button onclick="setRange('ytd')">YTD</button>
+    <button onclick="setRange('custom')">Custom</button>
+  </div>
+</div>
+<div class="charts-grid">
+  <div class="chart-card full-width">
+    <div class="export-bar">
+      <button class="export-btn" onclick="exportChart('revenueChart', 'png')">PNG</button>
+      <button class="export-btn" onclick="exportChart('revenueChart', 'pdf')">PDF</button>
+      <button class="export-btn" onclick="exportChart('revenueChart', 'csv')">CSV</button>
+    </div>
+    <h3><span class="dot" style="background:var(--primary)"></span> Revenue vs Expenses Trend</h3>
+    <div class="chart-wrapper"><canvas id="revenueChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3><span class="dot" style="background:var(--warn)"></span> Expense Breakdown</h3>
+    <div class="chart-wrapper small"><canvas id="expenseChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3><span class="dot" style="background:var(--success)"></span> Cash Flow</h3>
+    <div class="chart-wrapper small"><canvas id="cashflowChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3><span class="dot" style="background:var(--info)"></span> Top Clients by Revenue</h3>
+    <div class="chart-wrapper small"><canvas id="clientsChart"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <h3><span class="dot" style="background:var(--secondary)"></span> Bank Balances</h3>
+    <div class="chart-wrapper small"><canvas id="bankChart"></canvas></div>
+  </div>
+</div>
+<script>
+Chart.defaults.color = '#94a3b8';
+Chart.defaults.borderColor = '#334155';
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const REVENUE_DATA = [850,920,880,1050,1100,1250,1180,1320,1400,1380,1500,1600];
+const EXPENSE_DATA = [620,680,650,780,820,900,850,950,1020,980,1100,1150];
+const PROFIT_DATA = REVENUE_DATA.map((r,i) => r - EXPENSE_DATA[i]);
+
+new Chart(document.getElementById('revenueChart'), {
+  type: 'bar',
+  data: {
+    labels: MONTHS,
+    datasets: [
+      { label: 'Revenue', data: REVENUE_DATA, backgroundColor: 'rgba(99,102,241,0.7)', borderColor: '#6366f1', borderWidth: 1, borderRadius: 4, order: 2 },
+      { label: 'Expenses', data: EXPENSE_DATA, backgroundColor: 'rgba(239,68,68,0.7)', borderColor: '#ef4444', borderWidth: 1, borderRadius: 4, order: 3 },
+      { type: 'line', label: 'Net Profit', data: PROFIT_DATA, borderColor: '#22c55e', backgroundColor: 'rgba(34,197,94,0.1)', borderWidth: 2, tension: 0.4, fill: true, pointRadius: 4, pointBackgroundColor: '#22c55e', order: 1 }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { backgroundColor: '#1e293b', borderColor: '#334155', borderWidth: 1, padding: 12, cornerRadius: 8 } }, scales: { x: { grid: { display: false } }, y: { grid: { color: 'rgba(51,65,85,0.5)' }, ticks: { callback: v => v + 'K' } } } }
+});
+
+new Chart(document.getElementById('expenseChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Venue','Catering','Transport','AV/tech','Staff','Marketing','Misc'],
+    datasets: [{ data: [35,25,12,10,8,6,4], backgroundColor: ['#6366f1','#8b5cf6','#a78bfa','#c4b5fd','#22c55e','#f59e0b','#ef4444'], borderWidth: 0, hoverOffset: 8 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 11 } } } } }
+});
+
+new Chart(document.getElementById('cashflowChart'), {
+  type: 'line',
+  data: {
+    labels: MONTHS,
+    datasets: [{ label: 'Cash Flow', data: [230,240,230,270,280,350,330,370,380,400,400,450], borderColor: '#22c55e', backgroundColor: (ctx) => { const g = ctx.chart.ctx.createLinearGradient(0,0,0,200); g.addColorStop(0,'rgba(34,197,94,0.3)'); g.addColorStop(1,'rgba(34,197,94,0)'); return g; }, fill: true, tension: 0.4, pointRadius: 0 }]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false } }, y: { display: false } } }
+});
+
+new Chart(document.getElementById('clientsChart'), {
+  type: 'bar',
+  data: {
+    labels: ['CISCO','Microsoft','Noventiq','Abbott','Oracle','Others'],
+    datasets: [{ label: 'Revenue (M EGP)', data: [48,32,28,18,12,8.5], backgroundColor: ['#6366f1','#8b5cf6','#a78bfa','#22c55e','#f59e0b','#64748b'], borderRadius: 4 }]
+  },
+  options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(51,65,85,0.3)' } }, y: { grid: { display: false } } } }
+});
+
+new Chart(document.getElementById('bankChart'), {
+  type: 'bar',
+  data: {
+    labels: MONTHS,
+    datasets: [
+      { label: 'Bnk_Cur', data: [800,850,820,900,950,1000,980,1050,1100,1080,1150,1200], backgroundColor: '#6366f1' },
+      { label: 'Bnk_Sav', data: [500,520,510,550,580,600,590,620,650,640,680,700], backgroundColor: '#8b5cf6' },
+      { label: 'Bnk_Usd', data: [300,310,305,330,340,360,355,380,400,390,420,440], backgroundColor: '#22c55e' },
+      { label: 'Bnk_Eur', data: [200,210,205,220,230,240,235,250,260,255,270,280], backgroundColor: '#f59e0b' }
+    ]
+  },
+  options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, padding: 8, font: { size: 10 } } } }, scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, grid: { color: 'rgba(51,65,85,0.3)' } } } }
+});
+
+function exportChart(chartId, format) {
+  const canvas = document.getElementById(chartId);
+  if (format === 'png') { const a = document.createElement('a'); a.download = chartId+'.png'; a.href = canvas.toDataURL('image/png'); a.click(); }
+  else { alert(format + ' export ready when server endpoint is connected'); }
+}
+
+function setRange(range) {
+  document.querySelectorAll('.date-range button').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+</script>
+</body>
+</html>

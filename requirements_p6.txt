@@ -1,0 +1,6 @@
+# P6 Real ML Models — install with: pip install -r requirements_p6.txt
+scikit-learn==1.5.2
+numpy==1.26.4
+pandas==2.2.3
+statsmodels==0.14.4
+pmdarima==2.0.4

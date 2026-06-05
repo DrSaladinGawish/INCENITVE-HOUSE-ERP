@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}PNR {{ pnr.PNRNumber }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Event Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>PNR: {{ pnr.PNRNumber }}</h1>
+    <p>{{ pnr.EventName or 'No event name' }}</p>
+</div>
+
+<div class="card">
+    <div class="card-header">PNR Details</div>
+    <table>
+        <tr><th>PNR Number</th><td>{{ pnr.PNRNumber }}</td><th>Client</th><td>{{ pnr.ClientCode or '-' }}</td></tr>
+        <tr><th>Event Name</th><td>{{ pnr.EventName or '-' }}</td><th>Year</th><td>{{ pnr.Year or '-' }}</td></tr>
+        <tr><th>Start Date</th><td>{{ pnr.EventStartDate or '-' }}</td><th>End Date</th><td>{{ pnr.EventEndDate or '-' }}</td></tr>
+        <tr><th>Status</th><td><span class="badge badge-{{ 'success' if pnr.Status == 'Active' else 'info' if pnr.Status == 'Completed' else 'secondary' }}">{{ pnr.Status or 'N/A' }}</span></td><th>Currency</th><td>{{ pnr.CurrencyCode or '-' }}</td></tr>
+        <tr><th>Job Folder</th><td colspan="3">{{ pnr.JobFolder or '-' }}</td></tr>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-header">Sales Invoices</div>
+    <table>
+        <thead><tr><th>Invoice #</th><th>Date</th><th>Value</th><th>Collected</th><th>Status</th></tr></thead>
+        <tbody id="pnrSalesBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+    </table>
+</div>
+
+<div class="card">
+    <div class="card-header">Purchase Vouchers</div>
+    <table>
+        <thead><tr><th>Voucher #</th><th>Date</th><th>Value</th><th>Currency</th></tr></thead>
+        <tbody id="pnrPurBody"><tr><td colspan="4">Loading...</td></tr></tbody>
+    </table>
+</div>
+
+<script>
+    var pnrNum = '{{ pnr.PNRNumber }}';
+    fetch('/api/sal/invoices?pnr_number=' + encodeURIComponent(pnrNum))
+        .then(r => r.json())
+        .then(d => {
+            var body = document.getElementById('pnrSalesBody');
+            if (!d.items || d.items.length === 0) { body.innerHTML = '<tr><td colspan="5" style="text-align:center">No invoices.</td></tr>'; return; }
+            body.innerHTML = d.items.map(function(i) {
+                return '<tr><td>' + (i.InvoiceNumber || '-') + '</td><td>' + (i.InvoiceDate || '-') + '</td><td>' + Number(i.TotalValue || 0).toLocaleString() + '</td><td>' + Number(i.CollectedAmount || 0).toLocaleString() + '</td><td><span class="badge badge-' + (i.PaymentStatus === 'Paid' ? 'success' : 'warning') + '">' + (i.PaymentStatus || 'N/A') + '</span></td></tr>';
+            }).join('');
+        });
+    fetch('/api/pur/vouchers?pnr_number=' + encodeURIComponent(pnrNum))
+        .then(r => r.json())
+        .then(d => {
+            var body = document.getElementById('pnrPurBody');
+            if (!d.items || d.items.length === 0) { body.innerHTML = '<tr><td colspan="4" style="text-align:center">No vouchers.</td></tr>'; return; }
+            body.innerHTML = d.items.map(function(v) {
+                return '<tr><td>' + (v.VoucherNumber || '-') + '</td><td>' + (v.InvoiceDate || '-') + '</td><td>' + Number(v.TotalValue || 0).toLocaleString() + '</td><td>' + (v.CurrencyCode || 'EGP') + '</td></tr>';
+            }).join('');
+        });
+</script>
+{% endblock %}

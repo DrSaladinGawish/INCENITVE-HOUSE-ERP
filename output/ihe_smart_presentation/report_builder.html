@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHE-ERP Smart Report Builder</title>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0f19; --surface: #111827; --surface2: #1f2937; --surface3: #374151;
+    --border: #4b5563; --text: #f3f4f6; --muted: #9ca3af;
+    --primary: #6366f1; --secondary: #8b5cf6; --success: #22c55e;
+    --warn: #f59e0b; --info: #3b82f6; --glow: rgba(99,102,241,0.25);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px;
+  }
+  .header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .header h1 {
+    font-size: 24px; font-weight: 700;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .btn {
+    padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text); font-size: 13px;
+    cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn:hover { border-color: var(--primary); box-shadow: 0 0 12px var(--glow); }
+  .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; }
+  .btn-success { background: var(--success); border: none; color: #064e3b; }
+  .btn-warn { background: var(--warn); border: none; color: #451a03; }
+  .builder-layout { display: grid; grid-template-columns: 260px 1fr; gap: 20px; }
+  .sidebar {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px; height: fit-content;
+  }
+  .sidebar-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 12px; }
+  .field-list { display: flex; flex-direction: column; gap: 6px; }
+  .field-item {
+    padding: 10px 12px; background: var(--surface2); border: 1px solid transparent;
+    border-radius: 8px; cursor: grab; font-size: 13px; display: flex; align-items: center; gap: 8px;
+    transition: all 0.15s; user-select: none;
+  }
+  .field-item:hover { border-color: var(--primary); background: rgba(99,102,241,0.1); }
+  .field-item.dragging { opacity: 0.5; }
+  .drop-zone {
+    background: var(--surface); border: 2px dashed var(--border); border-radius: 12px;
+    padding: 24px; min-height: 120px; margin-bottom: 16px;
+    transition: all 0.2s; text-align: center; color: var(--muted); font-size: 13px;
+  }
+  .drop-zone.drag-over { border-color: var(--primary); background: rgba(99,102,241,0.05); }
+  .drop-zone.has-items { text-align: left; border-style: solid; }
+  .dropped-item {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--surface2); border: 1px solid var(--primary); border-radius: 20px;
+    padding: 4px 12px; font-size: 12px; margin: 4px;
+  }
+  .dropped-item .remove { cursor: pointer; color: var(--danger); font-weight: 700; }
+  .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .filter-group { display: flex; flex-direction: column; gap: 6px; }
+  .filter-group label { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: 0.5px; }
+  .filter-group input, .filter-group select {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 8px 12px; color: var(--text); font-size: 13px; outline: none;
+  }
+  .filter-group input:focus, .filter-group select:focus { border-color: var(--primary); }
+  .preview-area {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px; min-height: 400px;
+  }
+  .preview-title { font-size: 16px; font-weight: 600; }
+  .preview-meta { font-size: 12px; color: var(--muted); }
+  .report-table { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 12px; }
+  .report-table th {
+    background: var(--surface2); text-align: left; padding: 10px 12px;
+    font-weight: 600; border-bottom: 2px solid var(--primary); color: var(--text);
+  }
+  .report-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  .report-table tr:hover td { background: rgba(99,102,241,0.05); }
+  .report-table .num { text-align: right; font-family: 'SF Mono', monospace; }
+  .report-table .total-row { font-weight: 700; background: var(--surface2); }
+  .report-table .total-row td { border-top: 2px solid var(--primary); }
+  .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px; }
+  .summary-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 14px; text-align: center;
+  }
+  .summary-card .label { font-size: 11px; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+  .summary-card .value { font-size: 22px; font-weight: 700; }
+  .summary-card .value.positive { color: var(--success); }
+  .summary-card .value.negative { color: var(--danger); }
+  @media (max-width: 900px) {
+    .builder-layout { grid-template-columns: 1fr; }
+    .summary-row { grid-template-columns: 1fr; }
+  }
+  @media print {
+    body { background: white; color: black; }
+    .sidebar, .header-actions { display: none; }
+    .preview-area { border: 1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Smart Report Builder</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px;">Drag fields, set filters, preview, export</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn" onclick="resetBuilder()">Reset</button>
+    <button class="btn btn-success" onclick="exportPDF()">PDF</button>
+    <button class="btn btn-warn" onclick="exportCSV()">CSV</button>
+  </div>
+</div>
+<div class="builder-layout">
+  <div class="sidebar">
+    <div class="sidebar-title">Available Fields</div>
+    <div class="field-list" id="fieldList">
+      <div class="field-item" draggable="true" data-field="event_id" data-type="text"><span class="field-icon">#</span> Event ID</div>
+      <div class="field-item" draggable="true" data-field="event_name" data-type="text"><span class="field-icon">N</span> Event Name</div>
+      <div class="field-item" draggable="true" data-field="client_name" data-type="text"><span class="field-icon">C</span> Client Name</div>
+      <div class="field-item" draggable="true" data-field="event_date" data-type="date"><span class="field-icon">D</span> Event Date</div>
+      <div class="field-item" draggable="true" data-field="budget" data-type="number"><span class="field-icon">$</span> Budget (EGP)</div>
+      <div class="field-item" draggable="true" data-field="actual_cost" data-type="number"><span class="field-icon">$</span> Actual Cost (EGP)</div>
+      <div class="field-item" draggable="true" data-field="variance" data-type="number"><span class="field-icon">V</span> Variance (EGP)</div>
+      <div class="field-item" draggable="true" data-field="status" data-type="text"><span class="field-icon">S</span> Status</div>
+    </div>
+  </div>
+  <div>
+    <div class="sidebar" style="margin-bottom:16px">
+      <div class="sidebar-title">Filters</div>
+      <div class="filter-grid">
+        <div class="filter-group"><label>Date From</label><input type="date" id="dateFrom" value="2026-01-01"></div>
+        <div class="filter-group"><label>Date To</label><input type="date" id="dateTo" value="2026-12-31"></div>
+        <div class="filter-group"><label>Client</label><select id="filterClient"><option value="all">All Clients</option><option>CISCO</option><option>Microsoft</option><option>Noventiq</option><option>Abbott</option></select></div>
+        <div class="filter-group"><label>Status</label><select id="filterStatus"><option value="all">All Statuses</option><option>Active</option><option>Pending</option><option>Completed</option></select></div>
+      </div>
+      <button class="btn btn-primary" onclick="generatePreview()" style="width:100%;justify-content:center">Generate Preview</button>
+    </div>
+    <div class="drop-zone" id="dropZone">
+      <span id="dropText">Drag fields here to build your report</span>
+      <div id="droppedFields" style="display:none;margin-top:8px"></div>
+    </div>
+    <div class="preview-area" id="previewArea">
+      <div><div class="preview-title">Report Preview</div><div class="preview-meta">Select fields and click Generate Preview</div></div>
+      <div id="previewContent"><p style="color:var(--muted);text-align:center;padding:40px 0">Your report will appear here after you select fields and generate.</p></div>
+    </div>
+  </div>
+</div>
+<script>
+var selectedFields = [];
+var dropZone = document.getElementById('dropZone');
+var dropText = document.getElementById('dropText');
+var droppedFields = document.getElementById('droppedFields');
+document.querySelectorAll('.field-item').forEach(function(item){
+  item.addEventListener('dragstart',function(e){e.dataTransfer.setData('field',this.dataset.field);e.dataTransfer.setData('type',this.dataset.type);e.dataTransfer.setData('label',this.textContent.trim());this.classList.add('dragging');});
+  item.addEventListener('dragend',function(){this.classList.remove('dragging');});
+});
+dropZone.addEventListener('dragover',function(e){e.preventDefault();this.classList.add('drag-over');});
+dropZone.addEventListener('dragleave',function(){this.classList.remove('drag-over');});
+dropZone.addEventListener('drop',function(e){
+  e.preventDefault(); this.classList.remove('drag-over');
+  var f=e.dataTransfer.getData('field'), t=e.dataTransfer.getData('type'), l=e.dataTransfer.getData('label');
+  if(!selectedFields.some(function(sf){return sf.field===f;})){selectedFields.push({field:f,type:t,label:l});renderFields();}
+});
+function renderFields(){
+  if(selectedFields.length===0){dropText.style.display='';droppedFields.style.display='none';dropZone.classList.remove('has-items');return;}
+  dropText.style.display='none';droppedFields.style.display='flex';droppedFields.style.flexWrap='wrap';dropZone.classList.add('has-items');
+  droppedFields.innerHTML=selectedFields.map(function(f,i){return '<span class="dropped-item">'+f.label+' <span class="remove" onclick="removeField('+i+')">x</span></span>';}).join('');
+}
+function removeField(i){selectedFields.splice(i,1);renderFields();}
+function resetBuilder(){selectedFields=[];renderFields();document.getElementById('previewContent').innerHTML='<p style="color:var(--muted);text-align:center;padding:40px 0">Your report will appear here after you select fields and generate.</p>';}
+var mockEvents=[
+  {event_id:'EVT-001',event_name:'CISCO Partner Summit',client_name:'CISCO Systems',event_date:'2026-03-15',budget:1200000,actual_cost:1150000,variance:50000,status:'Completed'},
+  {event_id:'EVT-002',event_name:'Microsoft Ignite Roadshow',client_name:'Microsoft Corp',event_date:'2026-04-20',budget:850000,actual_cost:920000,variance:-70000,status:'Completed'},
+  {event_id:'EVT-003',event_name:'Noventiq Partner Day',client_name:'Noventiq',event_date:'2026-05-10',budget:450000,actual_cost:380000,variance:70000,status:'Active'},
+  {event_id:'EVT-004',event_name:'Abbott Healthcare Forum',client_name:'Abbott',event_date:'2026-06-05',budget:600000,actual_cost:0,variance:600000,status:'Pending'},
+  {event_id:'EVT-005',event_name:'CISCO Security Summit',client_name:'CISCO Systems',event_date:'2026-07-18',budget:1500000,actual_cost:0,variance:1500000,status:'Active'},
+  {event_id:'EVT-006',event_name:'Azure Workshop',client_name:'Microsoft Corp',event_date:'2026-02-28',budget:320000,actual_cost:310000,variance:10000,status:'Completed'},
+  {event_id:'EVT-007',event_name:'Noventiq Cloud Launch',client_name:'Noventiq',event_date:'2026-08-12',budget:750000,actual_cost:0,variance:750000,status:'Pending'}
+];
+function generatePreview(){
+  if(selectedFields.length===0){alert('Drag fields first.');return;}
+  var from=document.getElementById('dateFrom').value,to=document.getElementById('dateTo').value,cf=document.getElementById('filterClient').value,sf=document.getElementById('filterStatus').value;
+  var filtered=mockEvents.filter(function(e){
+    if(e.event_date<from||e.event_date>to)return false;
+    if(cf!=='all'&&e.client_name.indexOf(cf)===-1)return false;
+    if(sf!=='all'&&e.status!==sf)return false;
+    return true;
+  });
+  var tb=filtered.reduce(function(s,e){return s+e.budget;},0);
+  var ta=filtered.reduce(function(s,e){return s+e.actual_cost;},0);
+  var tv=filtered.reduce(function(s,e){return s+e.variance;},0);
+  var html='<div class="summary-row">'+
+    '<div class="summary-card"><div class="label">Total Budget</div><div class="value">EGP '+tb.toLocaleString()+'</div></div>'+
+    '<div class="summary-card"><div class="label">Total Actual</div><div class="value">EGP '+ta.toLocaleString()+'</div></div>'+
+    '<div class="summary-card"><div class="label">Net Variance</div><div class="value '+(tv>=0?'positive':'negative')+'">'+(tv>=0?'+':'')+'EGP '+tv.toLocaleString()+'</div></div></div>'+
+    '<div style="font-size:12px;color:var(--muted);margin-bottom:8px">Showing '+filtered.length+' records</div>'+
+    '<table class="report-table"><thead><tr>'+selectedFields.map(function(f){return'<th>'+f.label+'</th>';}).join('')+'</tr></thead><tbody>'+
+    filtered.map(function(e){return'<tr>'+selectedFields.map(function(f){
+      var v=e[f.field]; if(f.type==='number'&&typeof v==='number')v='EGP '+v.toLocaleString();
+      return'<td'+(f.type==='number'?' class="num"':'')+'>'+(v||'-')+'</td>';
+    }).join('')+'</tr>';}).join('')+
+    '<tr class="total-row">'+selectedFields.map(function(f){
+      if(f.type==='number'){var s=filtered.reduce(function(a,e){return a+(e[f.field]||0);},0);return'<td class="num">EGP '+s.toLocaleString()+'</td>';}
+      return'<td></td>';
+    }).join('')+'</tr></tbody></table>';
+  document.getElementById('previewContent').innerHTML=html;
+}
+function exportPDF(){
+  html2pdf().set({margin:0.5,filename:'report_'+new Date().toISOString().slice(0,10)+'.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,backgroundColor:'#111827'},jsPDF:{unit:'in',format:'letter',orientation:'landscape'}}).from(document.getElementById('previewArea')).save();
+}
+function exportCSV(){
+  var filtered=mockEvents;
+  var rows=[selectedFields.map(function(f){return f.label;})];
+  filtered.forEach(function(e){rows.push(selectedFields.map(function(f){return e[f.field]||'';}));});
+  var csv=rows.map(function(r){return r.join(',');}).join('\n');
+  var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download='report_'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHE-ERP Smart Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts@3.45.0/dist/apexcharts.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8; --primary: #6366f1;
+    --secondary: #8b5cf6; --success: #22c55e; --warn: #f59e0b;
+    --danger: #ef4444; --glow: rgba(99,102,241,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, #1e1b4b 100%);
+    min-height: 100vh; color: var(--text); padding: 20px;
+  }
+  .dashboard-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+  }
+  .dashboard-header h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .header-actions { display: flex; gap: 10px; }
+  .btn {
+    padding: 10px 20px; border-radius: 10px; border: none;
+    font-weight: 600; font-size: 13px; cursor: pointer;
+    transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    color: white;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 24px var(--glow); }
+  .btn-outline {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+  .kpi-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+    position: relative; overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 20px var(--glow);
+  }
+  .kpi-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+  }
+  .kpi-card.revenue::before { background: linear-gradient(90deg, var(--success), #10b981); }
+  .kpi-card.expense::before { background: linear-gradient(90deg, var(--danger), #f97316); }
+  .kpi-card.pending::before { background: linear-gradient(90deg, var(--warn), #eab308); }
+  .kpi-card.bank::before { background: linear-gradient(90deg, #06b6d4, #3b82f6); }
+  .kpi-label {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.8px; color: var(--muted); margin-bottom: 8px;
+  }
+  .kpi-value {
+    font-size: 32px; font-weight: 700; margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-trend {
+    display: flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 600;
+  }
+  .kpi-trend.up { color: var(--success); }
+  .kpi-trend.down { color: var(--danger); }
+  .kpi-icon {
+    position: absolute; top: 16px; right: 16px;
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; opacity: 0.15;
+  }
+
+  .chart-grid {
+    display: grid; grid-template-columns: 2fr 1fr; gap: 16px;
+    margin-bottom: 24px;
+  }
+  .chart-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px;
+  }
+  .chart-card h3 {
+    font-size: 14px; font-weight: 600; margin-bottom: 16px;
+    color: var(--text); display: flex; align-items: center; gap: 8px;
+  }
+  .chart-card h3::before {
+    content: ''; width: 4px; height: 16px;
+    background: linear-gradient(180deg, var(--primary), var(--secondary));
+    border-radius: 2px;
+  }
+  .chart-container { position: relative; height: 300px; }
+  .chart-container.small { height: 200px; }
+
+  .bottom-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;
+  }
+
+  .mini-table { width: 100%; border-collapse: collapse; }
+  .mini-table th {
+    text-align: left; padding: 10px 12px;
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.5px; color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .mini-table td {
+    padding: 10px 12px; font-size: 13px;
+    border-bottom: 1px solid rgba(51,65,85,0.3);
+  }
+  .mini-table tr:hover td { background: rgba(99,102,241,0.05); }
+  .badge {
+    display: inline-block; padding: 2px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-success { background: rgba(34,197,94,0.15); color: var(--success); }
+  .badge-warn { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .badge-danger { background: rgba(239,68,68,0.15); color: var(--danger); }
+
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: none; align-items: center; justify-content: center;
+    z-index: 10000;
+  }
+  .modal-overlay.active { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; width: 500px; max-width: 90vw;
+  }
+  .modal h2 { font-size: 18px; margin-bottom: 16px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label {
+    display: block; font-size: 12px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--muted); margin-bottom: 6px;
+  }
+  .form-group input, .form-group select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px; color: var(--text);
+    font-size: 14px; outline: none;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+  .modal-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px; }
+
+  @media (max-width: 1024px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .chart-grid { grid-template-columns: 1fr; }
+    .bottom-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="dashboard-header">
+  <div>
+    <h1>Smart Dashboard</h1>
+    <p style="color:var(--muted);font-size:13px;margin-top:4px;">Real-time insights &middot; Incentive House ERP</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-outline" onclick="refreshData()">Refresh</button>
+    <button class="btn btn-outline" onclick="openReportBuilder()">Report Builder</button>
+    <button class="btn btn-primary" onclick="exportDashboard()">Export PDF</button>
+  </div>
+</div>
+
+<div class="kpi-grid" id="kpiGrid">
+  <div class="kpi-card revenue">
+    <div class="kpi-label">Total Revenue (YTD)</div>
+    <div class="kpi-value" data-target="50234000" data-prefix="EGP ">EGP 0</div>
+    <div class="kpi-trend up">+12.4% vs last year</div>
+    <div class="kpi-icon">$</div>
+  </div>
+  <div class="kpi-card expense">
+    <div class="kpi-label">Total Expenses (YTD)</div>
+    <div class="kpi-value" data-target="47891000" data-prefix="EGP ">EGP 0</div>
+    <div class="kpi-trend down">-3.2% vs last year</div>
+    <div class="kpi-icon">%</div>
+  </div>
+  <div class="kpi-card pending">
+    <div class="kpi-label">Pending Approvals</div>
+    <div class="kpi-value" data-target="47" data-prefix="">0</div>
+    <div class="kpi-trend up">+8 new today</div>
+    <div class="kpi-icon">!</div>
+  </div>
+  <div class="kpi-card bank">
+    <div class="kpi-label">Bank Balance</div>
+    <div class="kpi-value" data-target="2170000" data-prefix="EGP ">EGP 0</div>
+    <div class="kpi-trend up">Net positive</div>
+    <div class="kpi-icon">+</div>
+  </div>
+</div>
+
+<div class="chart-grid">
+  <div class="chart-card">
+    <h3>Revenue vs Expenses Trend</h3>
+    <div class="chart-container">
+      <canvas id="revenueChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3>Expense Breakdown</h3>
+    <div class="chart-container" id="expenseChart"></div>
+  </div>
+</div>
+
+<div class="bottom-grid">
+  <div class="chart-card">
+    <h3>Cash Flow Forecast</h3>
+    <div class="chart-container small" id="cashflowChart"></div>
+  </div>
+  <div class="chart-card">
+    <h3>Top Clients by Revenue</h3>
+    <div class="chart-container small">
+      <canvas id="clientChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3>Recent Transactions</h3>
+    <table class="mini-table">
+      <thead><tr><th>Client</th><th>Amount</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>CISCO</td><td>EGP 1,250,000</td><td><span class="badge badge-success">Paid</span></td></tr>
+        <tr><td>Microsoft</td><td>EGP 890,000</td><td><span class="badge badge-warn">Pending</span></td></tr>
+        <tr><td>Noventiq</td><td>EGP 650,000</td><td><span class="badge badge-success">Paid</span></td></tr>
+        <tr><td>Abbott</td><td>EGP 420,000</td><td><span class="badge badge-danger">Overdue</span></td></tr>
+        <tr><td>CISCO</td><td>EGP 1,800,000</td><td><span class="badge badge-warn">Pending</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="modal-overlay" id="exportModal">
+  <div class="modal">
+    <h2>Export Dashboard</h2>
+    <div class="form-group">
+      <label>Report Name</label>
+      <input type="text" id="reportName" value="IHE Dashboard - June 2026">
+    </div>
+    <div class="form-group">
+      <label>Date Range</label>
+      <select id="dateRange">
+        <option>This Month</option>
+        <option>Last Month</option>
+        <option>Last 3 Months</option>
+        <option>YTD</option>
+        <option>Custom</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Format</label>
+      <select id="exportFormat">
+        <option>PDF</option>
+        <option>Excel</option>
+        <option>CSV</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="doExport()">Export</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const MOCK_DATA = {
+  revenue: [3.2, 3.8, 4.1, 3.9, 4.5, 5.0, 4.8, 5.2, 5.8, 6.1, 5.5, 6.8],
+  expenses: [2.8, 3.2, 3.5, 3.4, 3.8, 4.2, 4.0, 4.3, 4.6, 4.8, 4.5, 5.1],
+  months: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  expenseBreakdown: [35, 25, 20, 12, 8],
+  expenseLabels: ['Venue','Catering','Transport','Marketing','Other'],
+  cashflow: [1.2, 0.8, 1.5, 0.3, 2.1, 1.8, 0.9, 1.4, 2.3, 1.1, 1.7, 2.5],
+  clients: { labels: ['CISCO','Microsoft','Noventiq','Abbott','Other'], data: [42, 28, 18, 8, 4] }
+};
+
+function animateCounters() {
+  document.querySelectorAll('.kpi-value').forEach(function(el) {
+    var target = parseInt(el.dataset.target);
+    var prefix = el.dataset.prefix || '';
+    var duration = 2000;
+    var start = performance.now();
+    function update(now) {
+      var elapsed = now - start;
+      var progress = Math.min(elapsed / duration, 1);
+      var eased = 1 - Math.pow(1 - progress, 3);
+      var current = Math.floor(eased * target);
+      el.textContent = prefix + current.toLocaleString();
+      if (progress < 1) requestAnimationFrame(update);
+    }
+    requestAnimationFrame(update);
+  });
+}
+
+var revCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revCtx, {
+  type: 'line',
+  data: {
+    labels: MOCK_DATA.months,
+    datasets: [
+      {
+        label: 'Revenue (M EGP)',
+        data: MOCK_DATA.revenue,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.1)',
+        fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#6366f1'
+      },
+      {
+        label: 'Expenses (M EGP)',
+        data: MOCK_DATA.expenses,
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.05)',
+        fill: true, tension: 0.4, pointRadius: 4, pointBackgroundColor: '#ef4444'
+      }
+    ]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { labels: { color: '#94a3b8', font: { size: 12 } } } },
+    scales: {
+      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.3)' } },
+      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(51,65,85,0.3)' } }
+    }
+  }
+});
+
+new ApexCharts(document.getElementById('expenseChart'), {
+  series: MOCK_DATA.expenseBreakdown,
+  chart: { type: 'donut', height: 300, background: 'transparent' },
+  labels: MOCK_DATA.expenseLabels,
+  colors: ['#6366f1', '#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b'],
+  plotOptions: {
+    pie: {
+      donut: {
+        size: '65%',
+        labels: {
+          show: true,
+          name: { color: '#94a3b8', fontSize: '12px' },
+          value: { color: '#e2e8f0', fontSize: '18px', fontWeight: 600 },
+          total: { show: true, color: '#e2e8f0', fontSize: '14px', label: 'Total', formatter: function() { return 'EGP 5.1M'; } }
+        }
+      }
+    }
+  },
+  legend: { position: 'bottom', labels: { colors: '#94a3b8' } },
+  dataLabels: { enabled: false },
+  stroke: { show: false }
+}).render();
+
+new ApexCharts(document.getElementById('cashflowChart'), {
+  series: [{ name: 'Net Cash Flow', data: MOCK_DATA.cashflow }],
+  chart: { type: 'area', height: 200, background: 'transparent', toolbar: { show: false } },
+  colors: ['#22c55e'],
+  fill: { type: 'gradient', gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 } },
+  stroke: { curve: 'smooth', width: 2 },
+  xaxis: { categories: MOCK_DATA.months, labels: { style: { colors: '#94a3b8', fontSize: '10px' } }, axisBorder: { show: false }, axisTicks: { show: false } },
+  yaxis: { labels: { style: { colors: '#94a3b8', fontSize: '10px' } } },
+  grid: { borderColor: 'rgba(51,65,85,0.3)', strokeDashArray: 3 },
+  dataLabels: { enabled: false },
+  tooltip: { theme: 'dark' }
+}).render();
+
+var clientCtx = document.getElementById('clientChart').getContext('2d');
+new Chart(clientCtx, {
+  type: 'bar',
+  data: {
+    labels: MOCK_DATA.clients.labels,
+    datasets: [{
+      label: 'Revenue Share %',
+      data: MOCK_DATA.clients.data,
+      backgroundColor: ['#6366f1', '#8b5cf6', '#06b6d4', '#22c55e', '#f59e0b'],
+      borderRadius: 6
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#94a3b8', font: { size: 10 } }, grid: { display: false } },
+      y: { display: false }
+    }
+  }
+});
+
+function exportDashboard() { document.getElementById('exportModal').classList.add('active'); }
+function closeModal() { document.getElementById('exportModal').classList.remove('active'); }
+
+function doExport() {
+  var format = document.getElementById('exportFormat').value;
+  var name = document.getElementById('reportName').value;
+  if (format === 'PDF') {
+    html2pdf().set({ margin: 10, filename: name + '.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, backgroundColor: '#0f172a' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' } }).from(document.body).save();
+  } else {
+    alert(format + ' export coming soon - PDF is ready now!');
+  }
+  closeModal();
+}
+
+function refreshData() {
+  gsap.to('.kpi-value', { opacity: 0.3, duration: 0.2, yoyo: true, repeat: 1 });
+  setTimeout(function() { animateCounters(); }, 300);
+}
+
+function openReportBuilder() { window.open('/reports', '_blank'); }
+
+animateCounters();
+</script>
+
+</body>
+</html>

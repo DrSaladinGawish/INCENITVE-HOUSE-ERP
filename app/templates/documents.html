@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}Documents - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Documents{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Document Browser</h1>
+    <p>Browse, search, ingest, and manage supporting documents across all modules</p>
+</div>
+
+<div class="card">
+    <div class="card-header">Document Modules</div>
+    <div id="moduleTabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:15px">
+        <span class="badge badge-info" style="cursor:pointer;padding:6px 12px" onclick="loadDocs('','All')">All</span>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+        <span>Documents</span>
+        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="text" id="searchInput" placeholder="Search files..." class="form-control" style="width:200px" onkeydown="if(event.key==='Enter')loadDocs()">
+            <select id="statusFilter" class="form-control" style="width:120px" onchange="loadDocs()">
+                <option value="">All Status</option>
+                <option value="active">Active</option>
+                <option value="archived">Archived</option>
+            </select>
+            <select id="verifiedFilter" class="form-control" style="width:120px" onchange="loadDocs()">
+                <option value="">All Verification</option>
+                <option value="true">Verified</option>
+                <option value="false">Unverified</option>
+            </select>
+            <button class="btn btn-primary btn-sm" onclick="loadDocs()">Search</button>
+            <button class="btn btn-success btn-sm" onclick="autoLink()">Auto-Link</button>
+            <button class="btn btn-warning btn-sm" onclick="verifyAll()">Verify All</button>
+        </div>
+    </div>
+    <div style="display:flex;gap:15px;margin-bottom:15px;font-size:13px;color:var(--text-light)">
+        <span id="statTotal">Total: -</span>
+        <span id="statVerified">Verified: -</span>
+        <span id="statOrphans">Orphans: -</span>
+        <span id="statSize">Size: -</span>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>File Name</th>
+                <th>Module</th>
+                <th>PNR</th>
+                <th>Year</th>
+                <th>Linked To</th>
+                <th>Size</th>
+                <th>Verified</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="docTableBody">
+            <tr><td colspan="10" style="text-align:center">Loading...</td></tr>
+        </tbody>
+    </table>
+    <div class="pagination" id="docPagination"></div>
+</div>
+
+<div class="card">
+    <div class="card-header">Ingest New Documents</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <div class="form-group" style="margin:0;flex:1">
+            <label>File Path</label>
+            <input type="text" id="ingestPath" class="form-control" placeholder="D:\path\to\file.pdf">
+        </div>
+        <div class="form-group" style="margin:0">
+            <label>Module</label>
+            <select id="ingestModule" class="form-control" style="width:160px">
+                <option value="">Auto-detect</option>
+            </select>
+        </div>
+        <button class="btn btn-primary" onclick="ingestFile()">Ingest File</button>
+        <button class="btn btn-success" onclick="ingestPnr2022()">Ingest PNR-2022</button>
+    </div>
+</div>
+
+<script>
+    var docPage = 1;
+    var currentModule = '';
+
+    function loadDocs(module, moduleName) {
+        if (module !== undefined) { currentModule = module; docPage = 1; }
+        var params = 'page=' + docPage + '&page_size=25';
+        var q = document.getElementById('searchInput').value;
+        if (q) params += '&query=' + encodeURIComponent(q);
+        if (currentModule) params += '&module=' + encodeURIComponent(currentModule);
+        var s = document.getElementById('statusFilter').value;
+        if (s) params += '&status=' + s;
+        var v = document.getElementById('verifiedFilter').value;
+        if (v) params += '&verified=' + v;
+
+        fetch('/api/v1/documents?' + params)
+            .then(r => r.json())
+            .then(d => {
+                var tbody = document.getElementById('docTableBody');
+                if (!d.items || d.items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center">No documents found.</td></tr>';
+                    document.getElementById('docPagination').innerHTML = '';
+                    return;
+                }
+                tbody.innerHTML = d.items.map(function(doc) {
+                    var vBadge = doc.IsVerified ? '<span class="badge badge-success">Yes</span>' : '<span class="badge badge-warning">No</span>';
+                    var sBadge = doc.Status === 'active' ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-secondary">' + (doc.Status || 'N/A') + '</span>';
+                    var sizeStr = doc.FileSize ? (doc.FileSize > 1048576 ? (doc.FileSize/1048576).toFixed(1)+' MB' : (doc.FileSize/1024).toFixed(1)+' KB') : '-';
+                    return '<tr>' +
+                        '<td>' + doc.DocumentID + '</td>' +
+                        '<td><a href="#" onclick="viewDoc(' + doc.DocumentID + ');return false">' + doc.FileName + '</a></td>' +
+                        '<td><span class="badge badge-info">' + (doc.ModuleCode || '-') + '</span></td>' +
+                        '<td>' + (doc.PNRNumber || '-') + '</td>' +
+                        '<td>' + (doc.Year || '-') + '</td>' +
+                        '<td>' + (doc.LinkedEntityType ? doc.LinkedEntityType + ':' + doc.LinkedEntityID : '-') + '</td>' +
+                        '<td>' + sizeStr + '</td>' +
+                        '<td>' + vBadge + '</td>' +
+                        '<td>' + sBadge + '</td>' +
+                        '<td>' +
+                            '<button class="btn btn-sm btn-primary" onclick="verifyDoc(' + doc.DocumentID + ')">Verify</button> ' +
+                            '<button class="btn btn-sm btn-warning" onclick="linkDoc(' + doc.DocumentID + ')">Link</button>' +
+                        '</td></tr>';
+                }).join('');
+                var tp = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('docPagination');
+                var h = '';
+                for (var i = 1; i <= tp && i <= 20; i++) {
+                    h += '<a href="#" onclick="docPage=' + i + ';loadDocs();return false" class="' + (i === docPage ? 'active' : '') + '">' + i + '</a>';
+                }
+                pag.innerHTML = h;
+            });
+    }
+
+    function loadStats() {
+        fetch('/api/v1/documents/stats')
+            .then(r => r.json())
+            .then(d => {
+                document.getElementById('statTotal').textContent = 'Total: ' + d.total_documents;
+                document.getElementById('statVerified').textContent = 'Verified: ' + d.verified;
+                document.getElementById('statSize').textContent = 'Size: ' + (d.total_size_mb || 0) + ' MB';
+            });
+        fetch('/api/v1/documents/orphans')
+            .then(r => r.json())
+            .then(d => { document.getElementById('statOrphans').textContent = 'Orphans: ' + d.total; });
+    }
+
+    function loadModules() {
+        fetch('/api/v1/documents/modules')
+            .then(r => r.json())
+            .then(d => {
+                var tabs = document.getElementById('moduleTabs');
+                tabs.innerHTML = '<span class="badge badge-info" style="cursor:pointer;padding:6px 12px" onclick="loadDocs(\'\',\'All\')">All</span>';
+                var sel = document.getElementById('ingestModule');
+                sel.innerHTML = '<option value="">Auto-detect</option>';
+                d.forEach(function(m) {
+                    tabs.innerHTML += '<span class="badge badge-secondary" style="cursor:pointer;padding:6px 12px" onclick="loadDocs(\'' + m.ModuleCode + '\',\'' + m.ModuleName + '\')">' + m.ModuleCode + '</span>';
+                    sel.innerHTML += '<option value="' + m.ModuleCode + '">' + m.ModuleCode + ' - ' + m.ModuleName + '</option>';
+                });
+            });
+    }
+
+    function viewDoc(id) {
+        fetch('/api/v1/documents/' + id)
+            .then(r => r.json())
+            .then(d => {
+                var info = 'File: ' + d.FileName + '\nPath: ' + (d.FilePath || 'N/A') + '\nModule: ' + (d.ModuleCode || 'N/A') + '\nPNR: ' + (d.PNRNumber || 'N/A') + '\nSHA256: ' + (d.SHA256 || 'N/A') + '\nVerified: ' + d.IsVerified + '\nStatus: ' + d.Status;
+                alert(info);
+            });
+    }
+
+    function verifyDoc(id) {
+        fetch('/api/v1/documents/' + id + '/verify', {method:'POST'})
+            .then(r => r.json())
+            .then(d => { alert('Verify: ' + (d.verified ? 'OK' : 'FAIL') + (d.error ? ' - ' + d.error : '')); loadDocs(); loadStats(); });
+    }
+
+    function verifyAll() {
+        if (!confirm('Verify all documents? This may take a while.')) return;
+        fetch('/api/v1/documents/verify-all', {method:'POST'})
+            .then(r => r.json())
+            .then(d => { alert('Verified: ' + d.verified + ', Missing: ' + d.missing + ', Failed: ' + d.failed); loadDocs(); loadStats(); });
+    }
+
+    function linkDoc(id) {
+        var entityType = prompt('Entity type (e.g. SalesInvoice, PurchaseVoucher):');
+        if (!entityType) return;
+        var entityId = prompt('Entity ID:');
+        if (!entityId) return;
+        var pnr = prompt('PNR number (optional):');
+        fetch('/api/v1/documents/' + id + '/link', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({entity_type: entityType, entity_id: entityId, pnr_number: pnr || null})
+        }).then(r => r.json()).then(d => { alert('Linked: ' + d.linked); loadDocs(); });
+    }
+
+    function autoLink() {
+        fetch('/api/v1/documents/auto-link', {method:'POST'})
+            .then(r => r.json())
+            .then(d => { alert('Auto-linked: ' + d.linked + ', Skipped: ' + d.skipped); loadDocs(); });
+    }
+
+    function ingestFile() {
+        var path = document.getElementById('ingestPath').value;
+        if (!path) { alert('Enter a file path'); return; }
+        var module = document.getElementById('ingestModule').value;
+        var url = '/api/v1/documents/ingest?path=' + encodeURIComponent(path);
+        if (module) url += '&module_code=' + module;
+        fetch(url, {method:'POST'})
+            .then(r => r.json())
+            .then(d => { alert(d.ingested ? 'Ingested: ' + d.file_name + ' (ID: ' + d.document_id + ')' : 'Error: ' + d.error); loadDocs(); loadStats(); });
+    }
+
+    function ingestPnr2022() {
+        var path = prompt('PNR-2022 archive path (or leave blank for default):');
+        var url = '/api/v1/documents/ingest-pnr2022';
+        if (path) url += '?archive_path=' + encodeURIComponent(path);
+        fetch(url, {method:'POST'})
+            .then(r => r.json())
+            .then(d => { alert('Ingested: ' + (d.ingested || 0) + ', Errors: ' + (d.errors || 0) + (d.error ? ' - ' + d.error : '')); loadDocs(); loadStats(); });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() { loadModules(); loadStats(); loadDocs(); });
+</script>
+{% endblock %}

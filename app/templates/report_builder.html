@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}Report Builder - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Reports{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Report Builder</h1>
+        <p>Drag fields, apply filters, preview and export as PDF</p>
+    </div>
+    <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-outline" onclick="clearCanvas()">Clear</button>
+        <button class="btn btn-sm btn-outline" onclick="loadTemplate()">Load Template</button>
+        <button class="btn btn-sm btn-primary" onclick="previewReport()">Preview</button>
+        <button class="btn btn-sm btn-success" onclick="exportReport()">PDF</button>
+        <button class="btn btn-sm btn-warning" onclick="exportCSV()">CSV</button>
+    </div>
+</div>
+
+<div style="display:grid;grid-template-columns:240px 1fr 280px;gap:0;min-height:calc(100vh - 140px);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden">
+    <!-- Left: Fields -->
+    <div style="background:var(--card-bg);border-right:1px solid var(--border);padding:16px;overflow-y:auto">
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:14px">Available Fields</h4>
+
+        <div style="margin-bottom:16px">
+            <div style="font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                <span style="width:6px;height:6px;border-radius:2px;background:var(--primary);display:inline-block"></span>Events
+            </div>
+            <div class="field-item" draggable="true" data-field="event_name">Event Name <span class="field-type">Text</span></div>
+            <div class="field-item" draggable="true" data-field="event_date">Event Date <span class="field-type">Date</span></div>
+            <div class="field-item" draggable="true" data-field="client_name">Client Name <span class="field-type">Text</span></div>
+            <div class="field-item" draggable="true" data-field="budget">Budget <span class="field-type">Currency</span></div>
+            <div class="field-item" draggable="true" data-field="pnr_code">PNR Code <span class="field-type">Text</span></div>
+        </div>
+
+        <div style="margin-bottom:16px">
+            <div style="font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                <span style="width:6px;height:6px;border-radius:2px;background:var(--primary);display:inline-block"></span>Financial
+            </div>
+            <div class="field-item" draggable="true" data-field="revenue">Revenue <span class="field-type">Currency</span></div>
+            <div class="field-item" draggable="true" data-field="expense">Expense <span class="field-type">Currency</span></div>
+            <div class="field-item" draggable="true" data-field="profit">Profit <span class="field-type">Currency</span></div>
+            <div class="field-item" draggable="true" data-field="bank_balance">Bank Balance <span class="field-type">Currency</span></div>
+        </div>
+
+        <div>
+            <div style="font-size:12px;font-weight:600;margin-bottom:8px;display:flex;align-items:center;gap:6px">
+                <span style="width:6px;height:6px;border-radius:2px;background:var(--primary);display:inline-block"></span>Charts
+            </div>
+            <div class="field-item" draggable="true" data-field="chart_revenue_trend">Revenue Trend <span class="field-type">Chart</span></div>
+            <div class="field-item" draggable="true" data-field="chart_expense_pie">Expense Breakdown <span class="field-type">Chart</span></div>
+            <div class="field-item" draggable="true" data-field="chart_client_bar">Client Revenue Bar <span class="field-type">Chart</span></div>
+        </div>
+    </div>
+
+    <!-- Center: Canvas -->
+    <div style="padding:20px;overflow-y:auto;background:var(--bg)">
+        <div style="font-size:14px;font-weight:600;margin-bottom:4px">Report Canvas</div>
+        <div style="font-size:11px;color:var(--text-light);margin-bottom:16px">Drag fields or double-click to add</div>
+        <div class="drop-zone" id="dropZone">
+            <div class="drop-zone-placeholder">
+                <div style="font-size:36px;margin-bottom:8px">+</div>
+                <p>Drop fields here</p>
+                <span style="font-size:11px;opacity:.6">Double-click a field to add instantly</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right: Config -->
+    <div style="background:var(--card-bg);border-left:1px solid var(--border);padding:16px;overflow-y:auto">
+        <h4 style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);margin-bottom:14px">Report Settings</h4>
+
+        <div class="form-group">
+            <label>Report Name</label>
+            <input type="text" class="form-control" id="reportName" value="Monthly Performance Report">
+        </div>
+        <div class="form-group">
+            <label>Date Range</label>
+            <div style="display:flex;gap:6px">
+                <input type="date" class="form-control" id="dateFrom" value="2026-01-01">
+                <input type="date" class="form-control" id="dateTo" value="2026-06-30">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Group By</label>
+            <select class="form-control" id="groupBy">
+                <option>None</option>
+                <option>Client</option>
+                <option>Month</option>
+                <option>PNR Dimension</option>
+                <option>Event Type</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Sort By</label>
+            <select class="form-control" id="sortBy">
+                <option>Event Date (Newest)</option>
+                <option>Event Date (Oldest)</option>
+                <option>Budget (High to Low)</option>
+                <option>Revenue (High to Low)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;text-transform:none;letter-spacing:0;font-weight:400">
+                <input type="checkbox" checked id="includeCharts" style="width:16px;height:16px;accent-color:var(--primary)"> Include charts
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 0;text-transform:none;letter-spacing:0;font-weight:400">
+                <input type="checkbox" checked id="includeSummary" style="width:16px;height:16px;accent-color:var(--primary)"> Executive summary
+            </label>
+        </div>
+    </div>
+</div>
+
+<!-- Preview Modal -->
+<div class="modal-overlay" id="previewPanel">
+    <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:800px;max-height:85vh;overflow-y:auto;padding:24px;margin:20px">
+        <h2 style="margin-bottom:16px">Report Preview</h2>
+        <div id="previewBody"></div>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+            <button class="btn btn-sm btn-warning" onclick="closePreview()">Close</button>
+            <button class="btn btn-sm btn-success" onclick="exportFromPreview()">Export PDF</button>
+        </div>
+    </div>
+</div>
+
+<script>
+var dropZone = document.getElementById('dropZone');
+var droppedFields = [];
+
+document.querySelectorAll('.field-item').forEach(function(item) {
+    item.addEventListener('dragstart', function(e) {
+        e.dataTransfer.setData('field', this.dataset.field);
+        this.classList.add('dragging');
+    });
+    item.addEventListener('dragend', function() { this.classList.remove('dragging'); });
+    item.addEventListener('dblclick', function() {
+        addFieldToCanvas(this.dataset.field, this.textContent.replace('Text','').replace('Date','').replace('Currency','').replace('Chart','').replace(/\s+/g,' ').trim());
+    });
+});
+
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', function() { this.classList.remove('drag-over'); });
+dropZone.addEventListener('drop', function(e) {
+    e.preventDefault();
+    this.classList.remove('drag-over');
+    var field = e.dataTransfer.getData('field');
+    addFieldToCanvas(field, field.replace(/_/g,' ').replace(/\b\w/g,function(l){return l.toUpperCase();}));
+});
+
+function addFieldToCanvas(field, label) {
+    dropZone.classList.add('has-content');
+    var ph = dropZone.querySelector('.drop-zone-placeholder');
+    if (ph) ph.style.display = 'none';
+    var id = 'fld_' + Date.now();
+    var item = document.createElement('div');
+    item.className = 'dropped-item';
+    item.id = id;
+    item.dataset.field = field;
+    var val = field.indexOf('chart_') === 0 ? '<canvas id="chart_' + id + '" style="width:100%;height:180px"></canvas>' : '<div style="font-size:15px;color:var(--text)">Sample: ' + field.replace(/_/g,' ') + '</div>';
+    if (field === 'budget' || field === 'revenue' || field === 'expense' || field === 'profit' || field === 'bank_balance') {
+        var n = Math.floor(Math.random()*2000000); val = '<div style="font-size:22px;font-weight:700;color:var(--primary)">EGP ' + n.toLocaleString() + '</div>';
+    }
+    item.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:12px;font-weight:600">' + (label||field) + '</span><div style="display:flex;gap:4px"><button onclick="removeField(\''+id+'\')" style="background:none;border:none;color:var(--text-light);cursor:pointer;font-size:12px">X</button></div></div>' + val;
+    dropZone.appendChild(item);
+    droppedFields.push(id);
+    if (field.indexOf('chart_') === 0) { setTimeout(function(){renderChart('chart_'+id,field);},100); }
+}
+
+function removeField(id) {
+    var el = document.getElementById(id);
+    if (el) { el.remove(); }
+    droppedFields = droppedFields.filter(function(f){return f!==id;});
+    if (droppedFields.length === 0) { dropZone.classList.remove('has-content'); var ph=dropZone.querySelector('.drop-zone-placeholder'); if(ph)ph.style.display='block'; }
+}
+
+function clearCanvas() {
+    droppedFields.forEach(function(id){var el=document.getElementById(id);if(el)el.remove();});
+    droppedFields=[]; dropZone.classList.remove('has-content');
+    var ph=dropZone.querySelector('.drop-zone-placeholder'); if(ph)ph.style.display='block';
+}
+
+function renderChart(canvasId, fieldType) {
+    var ctx = document.getElementById(canvasId);
+    if (!ctx) return;
+    if (fieldType === 'chart_revenue_trend') { new Chart(ctx,{type:'line',data:{labels:['Jan','Feb','Mar','Apr','May','Jun'],datasets:[{label:'Revenue',data:[3.2,3.8,4.1,3.9,4.5,5.0],borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,0.1)',fill:true,tension:0.4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}); }
+    else if (fieldType === 'chart_expense_pie') { new Chart(ctx,{type:'doughnut',data:{labels:['Venue','Catering','Transport','Marketing','Other'],datasets:[{data:[35,25,20,12,8],backgroundColor:['#6366f1','#8b5cf6','#06b6d4','#22c55e','#f59e0b']}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#94a3b8',font:{size:11}}}}}}); }
+    else if (fieldType === 'chart_client_bar') { new Chart(ctx,{type:'bar',data:{labels:['CISCO','Microsoft','Noventiq','Abbott','Other'],datasets:[{data:[42,28,18,8,4],backgroundColor:'#6366f1',borderRadius:6}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}}); }
+}
+
+var mockEvents = [
+    {event_name:'CISCO Partner Summit',client_name:'CISCO Systems',event_date:'2026-03-15',budget:1200000,actual_cost:1150000,variance:50000,status:'Completed',pnr_code:'V0563',revenue:1200000,expense:1150000,profit:50000},
+    {event_name:'Microsoft Ignite Roadshow',client_name:'Microsoft Corp',event_date:'2026-04-20',budget:850000,actual_cost:920000,variance:-70000,status:'Completed',pnr_code:'V0563',revenue:850000,expense:920000,profit:-70000},
+    {event_name:'Noventiq Partner Day',client_name:'Noventiq',event_date:'2026-05-10',budget:450000,actual_cost:380000,variance:70000,status:'Active',pnr_code:'V0564',revenue:450000,expense:380000,profit:70000},
+    {event_name:'Abbott Healthcare Forum',client_name:'Abbott',event_date:'2026-06-05',budget:600000,actual_cost:0,variance:600000,status:'Pending',pnr_code:'V0563',revenue:600000,expense:0,profit:600000},
+    {event_name:'CISCO Security Summit',client_name:'CISCO Systems',event_date:'2026-07-18',budget:1500000,actual_cost:0,variance:1500000,status:'Active',pnr_code:'V0563',revenue:1500000,expense:0,profit:1500000},
+    {event_name:'Azure Workshop',client_name:'Microsoft Corp',event_date:'2026-02-28',budget:320000,actual_cost:310000,variance:10000,status:'Completed',pnr_code:'V0564',revenue:320000,expense:310000,profit:10000}
+];
+
+function previewReport() {
+    var panel = document.getElementById('previewPanel');
+    var body = document.getElementById('previewBody');
+    var name = document.getElementById('reportName').value;
+    var from = document.getElementById('dateFrom').value;
+    var to = document.getElementById('dateTo').value;
+    var hasChartFields = droppedFields.some(function(id){
+        var el=document.getElementById(id); return el && el.dataset && el.dataset.field && el.dataset.field.indexOf('chart_')===0;
+    });
+    var html = '<div style="text-align:center;margin-bottom:24px"><h1 style="font-size:20px;margin-bottom:6px">' + name + '</h1><p style="color:var(--text-light);font-size:12px">Period: ' + from + ' to ' + to + '</p><p style="color:var(--text-light);font-size:11px">Generated: ' + new Date().toLocaleString() + '</p></div>';
+    if (document.getElementById('includeSummary').checked) {
+        var tb = mockEvents.reduce(function(s,e){return s+e.budget;},0);
+        var ta = mockEvents.reduce(function(s,e){return s+e.actual_cost;},0);
+        var tv = mockEvents.reduce(function(s,e){return s+e.variance;},0);
+        html += '<div class="summary-row" style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px">'+
+            '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:var(--text-light);text-transform:uppercase;margin-bottom:6px">Total Budget</div><div style="font-size:22px;font-weight:700;color:var(--primary)">EGP '+tb.toLocaleString()+'</div></div>'+
+            '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:var(--text-light);text-transform:uppercase;margin-bottom:6px">Total Actual</div><div style="font-size:22px;font-weight:700;color:var(--text)">EGP '+ta.toLocaleString()+'</div></div>'+
+            '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center"><div style="font-size:11px;color:var(--text-light);text-transform:uppercase;margin-bottom:6px">Net Variance</div><div style="font-size:22px;font-weight:700;color:'+(tv>=0?'var(--success)':'var(--danger)')+'">'+(tv>=0?'+':'')+'EGP '+tv.toLocaleString()+'</div></div></div>';
+    }
+    if (!hasChartFields) {
+        var fields = [];
+        droppedFields.forEach(function(id){
+            var el=document.getElementById(id);
+            if(el && el.dataset && el.dataset.field && el.dataset.field.indexOf('chart_')!==0){
+                fields.push({key:el.dataset.field, label:el.querySelector('span').textContent});
+            }
+        });
+        if (fields.length > 0) {
+            html += '<div style="font-size:12px;color:var(--text-light);margin-bottom:8px">Showing '+mockEvents.length+' records &bull; '+fields.length+' columns</div>';
+            html += '<table style="width:100%;border-collapse:collapse;font-size:13px">';
+            html += '<thead><tr>'+fields.map(function(f){return '<th style="background:var(--surface);text-align:left;padding:10px 12px;font-weight:600;border-bottom:2px solid var(--primary)">'+f.label+'</th>';}).join('')+'</tr></thead><tbody>';
+            html += mockEvents.map(function(e){
+                return '<tr>'+fields.map(function(f){
+                    var v = e[f.key]; if(typeof v==='number') v = 'EGP '+v.toLocaleString();
+                    return '<td style="padding:10px 12px;border-bottom:1px solid var(--border)">'+(v||'-')+'</td>';
+                }).join('')+'</tr>';
+            }).join('');
+            html += '<tr style="font-weight:700;background:var(--surface)">'+fields.map(function(f){
+                if(typeof mockEvents[0][f.key]==='number'){
+                    var s=mockEvents.reduce(function(a,e){return a+(e[f.key]||0);},0);
+                    return '<td style="padding:10px 12px;border-top:2px solid var(--primary)">EGP '+s.toLocaleString()+'</td>';
+                }
+                return '<td style="padding:10px 12px;border-top:2px solid var(--primary)"></td>';
+            }).join('')+'</tr>';
+            html += '</tbody></table>';
+        }
+    }
+    if (hasChartFields) {
+        html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">';
+        droppedFields.forEach(function(id){var el=document.getElementById(id);if(el){var title=el.querySelector('span');var val=el.querySelector('div:last-child');html+='<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px"><div style="font-size:10px;color:var(--text-light);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px">'+(title?title.textContent:'Field')+'</div>'+(val?val.outerHTML:'<div>-</div>')+'</div>';}});
+        html += '</div>';
+    }
+    body.innerHTML = html;
+    panel.classList.add('active');
+}
+
+function closePreview() { document.getElementById('previewPanel').classList.remove('active'); }
+function exportReport() { previewReport(); setTimeout(exportFromPreview, 500); }
+function exportFromPreview() {
+    var name = document.getElementById('reportName').value;
+    html2pdf().set({margin:15,filename:name.replace(/\s+/g,'_')+'.pdf',image:{type:'jpeg',quality:0.98},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(document.getElementById('previewBody')).save();
+    closePreview();
+}
+
+function loadTemplate() {
+    clearCanvas();
+    setTimeout(function(){addFieldToCanvas('event_name','Event Name');addFieldToCanvas('client_name','Client Name');addFieldToCanvas('budget','Budget');addFieldToCanvas('chart_revenue_trend','Revenue Trend');},100);
+}
+
+function exportCSV() {
+    var headers = ['Event Name','Client Name','Budget','Actual Cost','Variance'];
+    var rows = mockEvents.map(function(e){ return [e.event_name, e.client_name, e.budget, e.actual_cost, e.variance]; });
+    var csv = '\uFEFF' + headers.join(',') + '\n' + rows.map(function(r){ return r.join(','); }).join('\n');
+    var blob = new Blob([csv], {type:'text/csv;charset=utf-8'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'IHE_Report_' + new Date().toISOString().slice(0,10) + '.csv';
+    a.click(); URL.revokeObjectURL(a.href);
+}
+
+document.getElementById('previewPanel').addEventListener('click',function(e){if(e.target===this)closePreview();});
+</script>
+{% endblock %}

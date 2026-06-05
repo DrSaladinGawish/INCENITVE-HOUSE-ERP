@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Events (PNR) - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Event Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Events / PNR Management</h1>
+    <p>Browse, create, and manage Program Notification Records</p>
+</div>
+
+<div class="card">
+    <div class="card-header">Filter PNRs</div>
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <div class="form-group" style="margin:0">
+            <label>Year</label>
+            <select name="year" class="form-control" style="width:120px">
+                <option value="">All</option>
+                {% for y in range(2020, 2027) %}
+                <option value="{{ y }}" {% if request.query_params.get('year')|string == y|string %}selected{% endif %}>{{ y }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group" style="margin:0">
+            <label>Status</label>
+            <select name="status" class="form-control" style="width:140px">
+                <option value="">All</option>
+                <option value="Active" {% if request.query_params.get('status') == 'Active' %}selected{% endif %}>Active</option>
+                <option value="Completed" {% if request.query_params.get('status') == 'Completed' %}selected{% endif %}>Completed</option>
+                <option value="Cancelled" {% if request.query_params.get('status') == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/evn" class="btn btn-warning">Clear</a>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>PNR Records</span>
+        <a href="/evn/new" class="btn btn-success btn-sm">+ New PNR</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>PNR #</th>
+                <th>Event Name</th>
+                <th>Client</th>
+                <th>Year</th>
+                <th>Start Date</th>
+                <th>End Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="pnrTableBody">
+            <tr><td colspan="8" style="text-align:center">Loading...</td></tr>
+        </tbody>
+    </table>
+    <div class="pagination" id="pnrPagination"></div>
+</div>
+
+<script>
+    var currentPage = 1;
+    function loadPnrs(page) {
+        currentPage = page || 1;
+        var params = new URLSearchParams(window.location.search);
+        params.set('page', currentPage);
+        params.set('page_size', '20');
+        fetch('/api/evn/pnrs?' + params.toString())
+            .then(r => r.json())
+            .then(d => {
+                var tbody = document.getElementById('pnrTableBody');
+                if (!d.items || d.items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">No PNRs found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = d.items.map(function(p) {
+                    var statusClass = 'badge-' + (p.Status === 'Active' ? 'success' : p.Status === 'Completed' ? 'info' : 'secondary');
+                    return '<tr>' +
+                        '<td><a href="/evn/' + p.PNRNumber + '">' + p.PNRNumber + '</a></td>' +
+                        '<td>' + (p.EventName || '-') + '</td>' +
+                        '<td>' + (p.ClientCode || '-') + '</td>' +
+                        '<td>' + (p.Year || '-') + '</td>' +
+                        '<td>' + (p.EventStartDate || '-') + '</td>' +
+                        '<td>' + (p.EventEndDate || '-') + '</td>' +
+                        '<td><span class="badge ' + statusClass + '">' + (p.Status || 'N/A') + '</span></td>' +
+                        '<td><a href="/evn/' + p.PNRNumber + '" class="btn btn-sm btn-primary">View</a></td>' +
+                        '</tr>';
+                }).join('');
+                var totalPages = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('pnrPagination');
+                var html = '';
+                for (var i = 1; i <= totalPages && i <= 20; i++) {
+                    html += '<a href="#" onclick="loadPnrs(' + i + ');return false" class="' + (i === currentPage ? 'active' : '') + '">' + i + '</a>';
+                }
+                pag.innerHTML = html;
+            })
+            .catch(function(e) {
+                document.getElementById('pnrTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger)">Error loading PNRs: ' + e.message + '</td></tr>';
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadPnrs(1); });
+</script>
+{% endblock %}

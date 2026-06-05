@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHE KPI Cards</title>
+<style>
+  :root {
+    --bg: #0f172a; --surface: #1e293b; --border: #334155;
+    --text: #e2e8f0; --muted: #94a3b8;
+    --primary: #6366f1; --success: #22c55e; --warn: #f59e0b; --error: #ef4444;
+    --glow-primary: rgba(99,102,241,0.3); --glow-success: rgba(34,197,94,0.3);
+    --glow-warn: rgba(245,158,11,0.3); --glow-error: rgba(239,68,68,0.3);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: linear-gradient(135deg, var(--bg) 0%, #1e1b4b 100%);
+    min-height: 100vh; padding: 40px 20px; color: var(--text);
+  }
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+  .kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--primary), var(--secondary, #8b5cf6));
+  }
+  .kpi-card.success::before { background: linear-gradient(90deg, var(--success), #4ade80); }
+  .kpi-card.warn::before { background: linear-gradient(90deg, var(--warn), #fbbf24); }
+  .kpi-card.error::before { background: linear-gradient(90deg, var(--error), #f87171); }
+  
+  .kpi-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .kpi-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .kpi-icon {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .kpi-card.primary .kpi-icon { background: rgba(99,102,241,0.15); }
+  .kpi-card.success .kpi-icon { background: rgba(34,197,94,0.15); }
+  .kpi-card.warn .kpi-icon { background: rgba(245,158,11,0.15); }
+  .kpi-card.error .kpi-icon { background: rgba(239,68,68,0.15); }
+  
+  .kpi-value {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi-card.primary .kpi-value { color: #a5b4fc; }
+  .kpi-card.success .kpi-value { color: #4ade80; }
+  .kpi-card.warn .kpi-value { color: #fbbf24; }
+  .kpi-card.error .kpi-value { color: #f87171; }
+  
+  .kpi-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .kpi-change.up {
+    background: rgba(34,197,94,0.15);
+    color: #4ade80;
+  }
+  .kpi-change.down {
+    background: rgba(239,68,68,0.15);
+    color: #f87171;
+  }
+  .kpi-change.neutral {
+    background: rgba(148,163,184,0.15);
+    color: var(--muted);
+  }
+  .kpi-sparkline {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 40px;
+    opacity: 0.3;
+  }
+  .kpi-refresh {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: none; border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .kpi-card:hover .kpi-refresh { opacity: 1; }
+  .kpi-refresh:hover { color: var(--text); }
+  
+  @keyframes countUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kpi-value.animate { animation: countUp 0.5s ease-out; }
+</style>
+</head>
+<body>
+
+<div class="kpi-grid" id="kpiGrid">
+</div>
+
+<script>
+const KPI_DATA = [
+  { id: 'total-events', label: 'Total Events', value: 127, icon: '🎯', type: 'primary',
+    change: '+12%', trend: 'up', sparkline: [45,52,48,60,55,68,72,65,80,75,90,85,95,100,110,115,120,127] },
+  { id: 'revenue', label: 'Revenue (EGP)', value: 2847500, icon: '💰', type: 'success',
+    change: '+8.4%', trend: 'up', sparkline: [1800,1950,2100,2050,2200,2350,2300,2450,2600,2550,2700,2650,2800,2750,2847] },
+  { id: 'pending-approval', label: 'Pending Approvals', value: 23, icon: '⏳', type: 'warn',
+    change: '-3', trend: 'neutral', sparkline: [30,28,32,29,27,25,26,24,23,23,23] },
+  { id: 'bank-balance', label: 'Bank Balance (EGP)', value: 2170000, icon: '🏦', type: 'success',
+    change: '+2.17M', trend: 'up', sparkline: [1500,1600,1550,1700,1650,1800,1750,1900,1850,2000,1950,2100,2050,2170] },
+  { id: 'overdue-invoices', label: 'Overdue Invoices', value: 7, icon: '⚠️', type: 'error',
+    change: '+2', trend: 'down', sparkline: [3,4,3,5,4,6,5,7,6,7,7] },
+  { id: 'avg-event-cost', label: 'Avg Event Cost', value: 22421, icon: '📊', type: 'primary',
+    change: '-5.2%', trend: 'up', sparkline: [28000,27500,26000,25500,24000,23500,23000,22500,22421] }
+];
+
+function formatNumber(num) {
+  if (num >= 1000000) return (num/1000000).toFixed(2) + 'M';
+  if (num >= 1000) return (num/1000).toFixed(1) + 'K';
+  return num.toLocaleString();
+}
+
+function drawSparkline(canvas, data, color) {
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width = canvas.offsetWidth * 2;
+  const h = canvas.height = canvas.offsetHeight * 2;
+  ctx.scale(2, 2);
+  const min = Math.min(...data), max = Math.max(...data);
+  const range = max - min || 1;
+  const step = canvas.offsetWidth / (data.length - 1);
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  data.forEach((v, i) => {
+    const x = i * step;
+    const y = canvas.offsetHeight - ((v - min) / range) * canvas.offsetHeight * 0.8 - 4;
+    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  });
+  ctx.stroke();
+  ctx.lineTo(canvas.offsetWidth, canvas.offsetHeight);
+  ctx.lineTo(0, canvas.offsetHeight);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, 0, 0, canvas.offsetHeight);
+  grad.addColorStop(0, color.replace(')', ', 0.2)').replace('rgb', 'rgba'));
+  grad.addColorStop(1, color.replace(')', ', 0)').replace('rgb', 'rgba'));
+  ctx.fillStyle = grad;
+  ctx.fill();
+}
+
+function animateValue(el, target, duration = 1200) {
+  const start = 0;
+  const startTime = performance.now();
+  function update(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const current = Math.floor(start + (target - start) * eased);
+    el.textContent = formatNumber(current);
+    if (progress < 1) requestAnimationFrame(update);
+  }
+  requestAnimationFrame(update);
+}
+
+function renderKPIs() {
+  const grid = document.getElementById('kpiGrid');
+  grid.innerHTML = '';
+  KPI_DATA.forEach(kpi => {
+    const card = document.createElement('div');
+    card.className = `kpi-card ${kpi.type}`;
+    card.innerHTML = `
+      <button class="kpi-refresh" onclick="refreshKPI('${kpi.id}')" title="Refresh">↻</button>
+      <div class="kpi-header">
+        <span class="kpi-label">${kpi.label}</span>
+        <div class="kpi-icon">${kpi.icon}</div>
+      </div>
+      <div class="kpi-value animate" id="val-${kpi.id}">0</div>
+      <span class="kpi-change ${kpi.trend}">
+        ${kpi.trend === 'up' ? '▲' : kpi.trend === 'down' ? '▼' : '—'} ${kpi.change}
+      </span>
+      <canvas class="kpi-sparkline" id="spark-${kpi.id}"></canvas>
+    `;
+    grid.appendChild(card);
+    setTimeout(() => {
+      animateValue(document.getElementById(`val-${kpi.id}`), kpi.value);
+      const colors = { primary: '#a5b4fc', success: '#4ade80', warn: '#fbbf24', error: '#f87171' };
+      drawSparkline(document.getElementById(`spark-${kpi.id}`), kpi.sparkline, colors[kpi.type]);
+    }, 100);
+  });
+}
+
+function refreshKPI(id) {
+  const kpi = KPI_DATA.find(k => k.id === id);
+  if (!kpi) return;
+  const variation = 0.95 + Math.random() * 0.1;
+  kpi.value = Math.floor(kpi.value * variation);
+  animateValue(document.getElementById(`val-${id}`), kpi.value, 600);
+}
+
+setInterval(() => {
+  KPI_DATA.forEach(kpi => {
+    const variation = 0.98 + Math.random() * 0.04;
+    kpi.value = Math.floor(kpi.value * variation);
+    animateValue(document.getElementById(`val-${kpi.id}`), kpi.value, 800);
+  });
+}, 30000);
+
+renderKPIs();
+</script>
+</body>
+</html>
