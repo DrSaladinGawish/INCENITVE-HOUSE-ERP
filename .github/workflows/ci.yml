@@ -72,20 +72,6 @@ jobs:
               /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f"
             fi
           done
-          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
-          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP')
-          CREATE DATABASE IHE_ERP
-          "
-        run: |
-          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
-          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP')
-          CREATE DATABASE IHE_ERP
-          "
-          for f in 07_Neural_AI_Tables.sql 08_Document_System.sql; do
-            if [ -f "$f" ]; then
-              /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f"
-            fi
-          done
 
       - name: Run migrations
         run: |
