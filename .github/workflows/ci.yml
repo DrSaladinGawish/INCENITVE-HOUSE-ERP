@@ -53,20 +53,33 @@ jobs:
           sed -i 's/^SQL_SERVER=.*/SQL_SERVER=localhost/' .env
           sed -i 's/^SQL_PASSWORD=.*/SQL_PASSWORD=IHE_ERP_2024!/' .env
 
-      - name: Wait for SQL Server
+      - name: Verify SQL, create DB
         run: |
+          odbcinst -j
           for i in {1..30}; do
             /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "SELECT 1" && break
             sleep 2
           done
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
+          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP')
+          CREATE DATABASE IHE_ERP
+          "
 
-      - name: Run DDL
+      - name: Run DDL scripts
         run: |
-          python -c "
-          import pyodbc
-          conn = pyodbc.connect('DRIVER={ODBC Driver 18 for SQL Server};SERVER=localhost;DATABASE=master;UID=sa;PWD=IHE_ERP_2024!;TrustServerCertificate=yes', timeout=30)
-          conn.execute('IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = \"IHE_ERP\") CREATE DATABASE IHE_ERP')
-          conn.close()
+          for f in 07_Neural_AI_Tables.sql 08_Document_System.sql; do
+            if [ -f "$f" ]; then
+              /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f"
+            fi
+          done
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
+          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP')
+          CREATE DATABASE IHE_ERP
+          "
+        run: |
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
+          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP')
+          CREATE DATABASE IHE_ERP
           "
           for f in 07_Neural_AI_Tables.sql 08_Document_System.sql; do
             if [ -f "$f" ]; then
