@@ -73,6 +73,14 @@ jobs:
             fi
           done
 
+      - name: Create all ORM tables
+        run: |
+          python -c "
+          from app.database import init_db
+          init_db()
+          print('All 26 ORM tables created.')
+          "
+
       - name: Run migrations
         run: |
           for f in migrations/0*.py migrations/99_rollback.py; do
