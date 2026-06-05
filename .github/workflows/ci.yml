@@ -28,18 +28,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python 3.13
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.12"
           cache: pip
 
       - name: Install ODBC Driver 18
         run: |
-          curl -s https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
-          curl -s https://packages.microsoft.com/config/ubuntu/22.04/prod.list | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/22.04/prod jammy main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
           sudo apt-get update
-          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc-dev
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev
+          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: |
@@ -49,8 +50,8 @@ jobs:
       - name: Create .env
         run: |
           cp .env.template .env
-          echo "SQL_SERVER=localhost" >> .env
-          echo "SQL_DRIVER=ODBC Driver 18 for SQL Server" >> .env
+          sed -i 's/^SQL_SERVER=.*/SQL_SERVER=localhost/' .env
+          sed -i 's/^SQL_PASSWORD=.*/SQL_PASSWORD=IHE_ERP_2024!/' .env
 
       - name: Wait for SQL Server
         run: |
@@ -68,7 +69,9 @@ jobs:
           conn.close()
           "
           for f in 07_Neural_AI_Tables.sql 08_Document_System.sql; do
-            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f"
+            if [ -f "$f" ]; then
+              /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f"
+            fi
           done
 
       - name: Run migrations
