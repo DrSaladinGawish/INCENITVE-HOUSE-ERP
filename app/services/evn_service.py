@@ -74,7 +74,7 @@ def get_budget_line_items(
         stmt = stmt.where(PNRBudgetLineItem.JobFolder == pnr_number)
         count_stmt = count_stmt.where(PNRBudgetLineItem.JobFolder == pnr_number)
     total = db.execute(count_stmt).scalar() or 0
-    stmt = stmt.offset(skip).limit(limit)
+    stmt = stmt.order_by(PNRBudgetLineItem.LineItemID).offset(skip).limit(limit)
     items = list(db.execute(stmt).scalars().all())
     return items, total
 

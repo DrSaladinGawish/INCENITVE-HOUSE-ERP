@@ -7,7 +7,7 @@
   'use strict';
   
   const CONFIG = {
-    apiEndpoint: '/api/v1/ai/ask',
+    apiEndpoint: '/api/ai/ask',
     position: 'bottom-right',
     theme: 'dark',
     autoOpen: false,
@@ -106,7 +106,7 @@
       const res = await fetch(CONFIG.apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: msg, context: CONFIG.context })
+        body: JSON.stringify({ query: msg, context: CONFIG.context })
       });
       const data = await res.json();
       hideTyping();

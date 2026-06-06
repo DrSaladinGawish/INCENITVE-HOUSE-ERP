@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}OR Workbench - IncentiveHouse ERP{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Operations Research Workbench</h1>
+    <p>Solve LP, EOQ, PERT, Profit, Break-Even, and Forecast models</p>
+</div>
+<div class="card">
+    <div class="card-header">OR Solver</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <div class="form-group" style="margin:0"><label>Engine</label><select id="orEngine" class="form-control" style="width:200px"><option value="all">All Engines</option><option value="lp">LP (Product Mix)</option><option value="eoq">EOQ (Inventory)</option><option value="pert">PERT (Project)</option><option value="profit">Profit Analysis</option><option value="breakeven">Break-Even</option><option value="forecast">Forecast</option></select></div>
+        <button class="btn btn-primary" onclick="solveOR()">Solve</button>
+    </div>
+</div>
+<div class="card">
+    <table><thead><tr><th>Engine</th><th>Status</th><th>Result</th></tr></thead><tbody id="orResults"><tr><td colspan="3" style="text-align:center">Run a solver to see results</td></tr></tbody></table>
+</div>
+<div class="card">
+    <div class="card-header">History</div>
+    <table><thead><tr><th>ID</th><th>Engine</th><th>Timestamp</th></tr></thead><tbody id="orHistory"><tr><td colspan="3" style="text-align:center">Loading...</td></tr></tbody></table>
+</div>
+<script>
+function solveOR() {
+    var engine = document.getElementById('orEngine').value;
+    var body = document.getElementById('orResults');
+    body.innerHTML = '<tr><td colspan="3" style="text-align:center">Solving...</td></tr>';
+    fetch('/api/or/solve', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}, body:JSON.stringify({engine:engine})})
+        .then(function(r) {return r.json();})
+        .then(function(d) {
+            var html = '';
+            for (var key in d) {
+                if (key === 'version' || key === 'generated_at' || key === 'id' || key === 'created_at') continue;
+                html += '<tr><td><strong>' + key + '</strong></td><td><span class="badge badge-success">' + (d[key].status || 'ok') + '</span></td><td><pre style="font-size:11px;margin:0">' + JSON.stringify(d[key], null, 2) + '</pre></td></tr>';
+            }
+            body.innerHTML = html || '<tr><td colspan="3">No results.</td></tr>';
+            loadORHistory();
+        });
+}
+function loadORHistory() {
+    fetch('/api/or/results', {headers:{'Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}})
+        .then(function(r) {return r.json();})
+        .then(function(d) {
+            var body = document.getElementById('orHistory');
+            if (!d.length) { body.innerHTML = '<tr><td colspan="3" style="text-align:center">No history yet.</td></tr>'; return; }
+            body.innerHTML = d.slice(0,20).map(function(r) { return '<tr><td>' + r.id + '</td><td>' + (r.engine_name || '') + '</td><td>' + (r.created_at || '') + '</td></tr>'; }).join('');
+        });
+}
+document.addEventListener('DOMContentLoaded', loadORHistory);
+</script>
+{% endblock %}

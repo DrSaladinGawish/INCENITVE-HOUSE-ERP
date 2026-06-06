@@ -2,9 +2,16 @@
 {% block title %}Events (PNR) - IncentiveHouse ERP{% endblock %}
 {% block ai_context %}Event Form{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Events / PNR Management</h1>
-    <p>Browse, create, and manage Program Notification Records</p>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Events / PNR Management</h1>
+        <p>Browse, create, and manage Program Notification Records</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/pnrs?format=pdf'">PDF</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/pnrs?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/pnrs?format=csv'">CSV</button>
+    </div>
 </div>
 
 <div class="card">
@@ -41,14 +48,14 @@
     <table>
         <thead>
             <tr>
-                <th>PNR #</th>
-                <th>Event Name</th>
-                <th>Client</th>
-                <th>Year</th>
-                <th>Start Date</th>
-                <th>End Date</th>
-                <th>Status</th>
-                <th>Actions</th>
+                <th data-sort="pnr_number">PNR #</th>
+                <th data-sort="event_name">Event Name</th>
+                <th data-sort="client">Client</th>
+                <th data-sort="year">Year</th>
+                <th data-sort="start_date">Start Date</th>
+                <th data-sort="end_date">End Date</th>
+                <th data-sort="status">Status</th>
+                <th data-sort="actions">Actions</th>
             </tr>
         </thead>
         <tbody id="pnrTableBody">

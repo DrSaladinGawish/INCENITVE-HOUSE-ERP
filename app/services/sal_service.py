@@ -6,7 +6,7 @@ from app.schemas.sal import ClientCreate, ClientUpdate, SalesInvoiceCreate
 
 
 def get_clients(db: Session, skip: int = 0, limit: int = 100) -> list[Client]:
-    stmt = select(Client).offset(skip).limit(limit)
+    stmt = select(Client).order_by(Client.ClientCode).offset(skip).limit(limit)
     return list(db.execute(stmt).scalars().all())
 
 

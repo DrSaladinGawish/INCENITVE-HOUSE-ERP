@@ -15,7 +15,11 @@
             <button class="btn btn-sm btn-outline" onclick="setRange('ytd')">YTD</button>
         </div>
         <button class="btn btn-primary btn-sm" onclick="refreshAll()">Refresh</button>
-        <button class="btn btn-success btn-sm" onclick="openExportModal()">Export PDF</button>
+        <div class="btn-group" style="display:inline-flex;gap:2px">
+            <button class="btn btn-success btn-sm" onclick="location.href='/api/dashboard/export?format=pdf'">PDF</button>
+            <button class="btn btn-success btn-sm" onclick="location.href='/api/dashboard/export?format=xlsx'">Excel</button>
+            <button class="btn btn-success btn-sm" onclick="location.href='/api/dashboard/export?format=csv'">CSV</button>
+        </div>
     </div>
 </div>
 

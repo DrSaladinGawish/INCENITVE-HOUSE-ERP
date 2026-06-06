@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+import os
+from fastapi import APIRouter, Depends, HTTPException, Query, UploadFile, File, status
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from typing import Any
@@ -131,6 +133,31 @@ def auto_link(svc: DocumentService = Depends(_get_svc)):
 @router.post("/verify-all")
 def verify_all(svc: DocumentService = Depends(_get_svc)):
     return svc.verify_all()
+
+
+@router.post("/upload")
+async def upload_document(file: UploadFile = File(...), module_code: str | None = Query(None), description: str | None = Query(None), svc: DocumentService = Depends(_get_svc)):
+    content = await file.read()
+    result = svc.upload_file(file.filename, content, module_code, description)
+    return result
+
+
+@router.get("/{doc_id}/download")
+def download_document(doc_id: int, svc: DocumentService = Depends(_get_svc)):
+    doc = svc.get_document(doc_id)
+    if not doc or not doc.FilePath:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+    if not os.path.exists(doc.FilePath):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="File not found on disk")
+    return FileResponse(doc.FilePath, media_type=doc.MimeType or "application/octet-stream", filename=doc.FileName)
+
+
+@router.delete("/{doc_id}")
+def delete_document(doc_id: int, svc: DocumentService = Depends(_get_svc)):
+    result = svc.delete_document(doc_id)
+    if not result.get("deleted"):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=result.get("error", "Document not found"))
+    return result
 
 
 @router.get("/{doc_id}", response_model=DocumentOut)

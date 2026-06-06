@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - IncentiveHouse ERP</title>
+    <link rel="icon" type="image/png" href="/static/img/logosmal.jpg">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #1a5276 50%, #16213e 100%);
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+        }
+        .login-card {
+            background: #fff; border-radius: 12px; padding: 40px; width: 380px; max-width: 90vw;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .login-card .logo { text-align: center; margin-bottom: 24px; }
+        .login-card .logo img { height: 52px; border-radius: 6px; }
+        .login-card .logo h1 { font-size: 18px; color: var(--p, #1a5276); margin-top: 8px; }
+        .login-card .logo p { font-size: 12px; color: #666; }
+        .login-card .form-group { margin-bottom: 16px; }
+        .login-card label { display: block; font-size: 12px; font-weight: 500; margin-bottom: 4px; color: #555; }
+        .login-card input {
+            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;
+            font-size: 14px; transition: border-color 0.2s;
+        }
+        .login-card input:focus { outline: none; border-color: #2980b9; box-shadow: 0 0 0 3px rgba(41,128,185,0.1); }
+        .login-card .btn {
+            width: 100%; padding: 10px; background: #1a5276; color: #fff; border: none;
+            border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+        }
+        .login-card .btn:hover { background: #2980b9; }
+        .login-card .error { background: #f8d7da; color: #721c24; padding: 8px 12px; border-radius: 4px; font-size: 12px; margin-bottom: 12px; display: none; }
+        .login-card .footer { text-align: center; margin-top: 16px; font-size: 11px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">
+            <img src="/static/img/logosmal.jpg" alt="IHE">
+            <h1>INCENTIVE HOUSE</h1>
+            <p>ERP System Login</p>
+        </div>
+        <div class="error" id="loginError"></div>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username" autofocus>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="btn" onclick="doLogin()">Sign In</button>
+        <div class="footer">&copy; 2026 Incentive House ERP</div>
+    </div>
+    <script>
+    function doLogin() {
+        var username = document.getElementById('username').value.trim();
+        var password = document.getElementById('password').value;
+        var errEl = document.getElementById('loginError');
+        if (!username || !password) {
+            errEl.textContent = 'Please enter username and password';
+            errEl.style.display = '';
+            return;
+        }
+        errEl.style.display = 'none';
+        fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username, password: password })
+        })
+        .then(function(r) {
+            if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Login failed'); });
+            return r.json();
+        })
+        .then(function(d) {
+            localStorage.setItem('access_token', d.access_token);
+            localStorage.setItem('username', d.username);
+            localStorage.setItem('role', d.role);
+            location.href = '/';
+        })
+        .catch(function(e) {
+            errEl.textContent = e.message;
+            errEl.style.display = '';
+        });
+    }
+    </script>
+</body>
+</html>

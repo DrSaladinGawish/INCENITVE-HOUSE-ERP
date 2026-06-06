@@ -2,9 +2,16 @@
 {% block title %}Purchases - IncentiveHouse ERP{% endblock %}
 {% block ai_context %}Purchase{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Purchase Vouchers</h1>
-    <p>Manage vendor payments and procurement</p>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Purchase Vouchers</h1>
+        <p>Manage vendor payments and procurement</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/purchases?format=pdf'">PDF</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/purchases?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/purchases?format=csv'">CSV</button>
+    </div>
 </div>
 <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -12,7 +19,7 @@
         <a href="/pur/new" class="btn btn-success btn-sm">+ New Voucher</a>
     </div>
     <table>
-        <thead><tr><th>Voucher #</th><th>Document #</th><th>PNR</th><th>Date</th><th>Value</th><th>Currency</th></tr></thead>
+        <thead><tr><th data-sort="voucher_number">Voucher #</th><th data-sort="document_number">Document #</th><th data-sort="pnr">PNR</th><th data-sort="date">Date</th><th data-sort="value">Value</th><th data-sort="currency">Currency</th></tr></thead>
         <tbody id="purBody"><tr><td colspan="6">Loading...</td></tr></tbody>
     </table>
     <div class="pagination" id="purPagination"></div>

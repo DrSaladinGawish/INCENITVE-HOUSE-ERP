@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Neural Predictors - IncentiveHouse ERP{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>Neural Predictor Panel</h1>
+    <p>AI-powered predictions for cashflow, revenue, anomalies, client scoring, and vendor ranking</p>
+</div>
+<div class="card">
+    <div class="card-header">Run Predictions</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <button class="btn btn-primary" onclick="runAllPredictions()">Run All Predictors</button>
+        <button class="btn btn-success btn-sm" onclick="refreshFeatures()">Refresh Features</button>
+    </div>
+</div>
+<div class="stats-grid" id="predictionCards">
+    <div class="stat-card"><div class="stat-label">Cashflow Forecast</div><div class="stat-value" id="predCashflow">-</div></div>
+    <div class="stat-card"><div class="stat-label">Revenue Forecast</div><div class="stat-value" id="predRevenue">-</div></div>
+    <div class="stat-card"><div class="stat-label">Anomalies Detected</div><div class="stat-value" id="predAnomaly">-</div></div>
+    <div class="stat-card"><div class="stat-label">Client Score</div><div class="stat-value" id="predClients">-</div></div>
+    <div class="stat-card"><div class="stat-label">Vendor Rank</div><div class="stat-value" id="predVendors">-</div></div>
+</div>
+<div class="card">
+    <table><thead><tr><th>Predictor</th><th>Result Details</th></tr></thead><tbody id="predictionDetails"><tr><td colspan="2" style="text-align:center">Run predictions to see details</td></tr></tbody></table>
+</div>
+<script>
+function runAllPredictions() {
+    document.getElementById('predictionDetails').innerHTML = '<tr><td colspan="2" style="text-align:center">Running predictions...</td></tr>';
+    fetch('/api/ai/predict', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}, body:JSON.stringify({query:'run all', context:'dashboard'})})
+        .then(function(r) {return r.json();})
+        .then(function(d) {
+            var ans = d.answer || '';
+            if (d.cashflow) document.getElementById('predCashflow').textContent = 'EGP ' + (d.cashflow.total_forecast || d.cashflow || 'N/A');
+            if (d.revenue) document.getElementById('predRevenue').textContent = 'EGP ' + (d.revenue.total_forecast || d.revenue || 'N/A');
+            if (d.anomaly) document.getElementById('predAnomaly').textContent = (d.anomaly.anomalies ? d.anomaly.anomalies.length : '0') + ' found';
+            if (d.client_score) document.getElementById('predClients').textContent = d.client_score.scored + ' scored';
+            if (d.vendor_rank) document.getElementById('predVendors').textContent = d.vendor_rank.scored + ' ranked';
+            var body = document.getElementById('predictionDetails');
+            if (ans) {
+                body.innerHTML = '<tr><td>AI Answer</td><td><pre style="font-size:12px;margin:0">' + ans + '</pre></td></tr>';
+            } else {
+                body.innerHTML = '<tr><td colspan="2">Check console for details.</td></tr>';
+            }
+        }).catch(function() { document.getElementById('predictionDetails').innerHTML = '<tr><td colspan="2" style="color:red">Prediction failed</td></tr>'; });
+}
+function refreshFeatures() {
+    fetch('/api/v1/ai/refresh-features', {method:'POST', headers:{'Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}})
+        .then(function(r) {return r.json();})
+        .then(function(d) { alert('Features refreshed: ' + JSON.stringify(d)); });
+}
+</script>
+{% endblock %}

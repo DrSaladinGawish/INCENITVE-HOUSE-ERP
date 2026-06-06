@@ -2,9 +2,16 @@
 {% block title %}Sales - IncentiveHouse ERP{% endblock %}
 {% block ai_context %}Sales{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Sales Invoices</h1>
-    <p>Manage client invoices and receivables</p>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Sales Invoices</h1>
+        <p>Manage client invoices and receivables</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/sales?format=pdf'">PDF</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/sales?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/sales?format=csv'">CSV</button>
+    </div>
 </div>
 <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -12,7 +19,7 @@
         <a href="/sal/new" class="btn btn-success btn-sm">+ New Invoice</a>
     </div>
     <table>
-        <thead><tr><th>Invoice #</th><th>Client</th><th>Date</th><th>PNR</th><th>Value</th><th>Collected</th><th>Status</th></tr></thead>
+        <thead><tr><th data-sort="invoice_number">Invoice #</th><th data-sort="client">Client</th><th data-sort="date">Date</th><th data-sort="pnr">PNR</th><th data-sort="value">Value</th><th data-sort="collected">Collected</th><th data-sort="status">Status</th></tr></thead>
         <tbody id="salBody"><tr><td colspan="7">Loading...</td></tr></tbody>
     </table>
     <div class="pagination" id="salPagination"></div>

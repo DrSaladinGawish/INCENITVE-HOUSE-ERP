@@ -2,9 +2,16 @@
 {% block title %}Banking - IncentiveHouse ERP{% endblock %}
 {% block ai_context %}Banking{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>Bank Transactions</h1>
-    <p>Track bank accounts, deposits, withdrawals, and reconciliation</p>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Bank Transactions</h1>
+        <p>Track bank accounts, deposits, withdrawals, and reconciliation</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/banking?format=pdf'">PDF</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/banking?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/banking?format=csv'">CSV</button>
+    </div>
 </div>
 <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -12,7 +19,7 @@
         <a href="/bnk/new" class="btn btn-success btn-sm">+ New Transaction</a>
     </div>
     <table>
-        <thead><tr><th>Date</th><th>Payee</th><th>Type</th><th>Deposit</th><th>Withdrawal</th><th>Balance</th><th>Bank</th></tr></thead>
+        <thead><tr><th data-sort="date">Date</th><th data-sort="payee">Payee</th><th data-sort="type">Type</th><th data-sort="deposit">Deposit</th><th data-sort="withdrawal">Withdrawal</th><th data-sort="balance">Balance</th><th data-sort="bank">Bank</th></tr></thead>
         <tbody id="bnkBody"><tr><td colspan="7">Loading...</td></tr></tbody>
     </table>
     <div class="pagination" id="bnkPagination"></div>

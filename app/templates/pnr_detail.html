@@ -5,6 +5,7 @@
 <div class="page-header">
     <h1>PNR: {{ pnr.PNRNumber }}</h1>
     <p>{{ pnr.EventName or 'No event name' }}</p>
+    <a href="/evn/{{ pnr.PNRNumber }}/edit" class="btn btn-primary">Edit</a>
 </div>
 
 <div class="card">

@@ -63,10 +63,28 @@
 </div>
 
 <div class="card">
-    <div class="card-header">Ingest New Documents</div>
+    <div class="card-header">Upload / Ingest Documents</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <div id="dropZone" style="border:2px dashed #aaa;border-radius:8px;padding:20px;text-align:center;flex:2;cursor:pointer;background:#fafafa">
+            <p style="margin:0;font-size:14px;color:#666">Drag & drop files here, or click to select</p>
+            <input type="file" id="fileInput" style="display:none" multiple onchange="uploadFiles(this.files)">
+        </div>
+        <div class="form-group" style="margin:0">
+            <label>Module</label>
+            <select id="uploadModule" class="form-control" style="width:160px">
+                <option value="">Auto-detect</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin:0">
+            <label>Description</label>
+            <input type="text" id="uploadDesc" class="form-control" placeholder="Optional" style="width:200px">
+        </div>
+    </div>
+    <div id="uploadProgress" style="margin-top:10px;font-size:13px;color:#666"></div>
+    <hr style="margin:15px 0">
     <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
         <div class="form-group" style="margin:0;flex:1">
-            <label>File Path</label>
+            <label>File Path (server-side)</label>
             <input type="text" id="ingestPath" class="form-control" placeholder="D:\path\to\file.pdf">
         </div>
         <div class="form-group" style="margin:0">
@@ -120,7 +138,9 @@
                         '<td>' + sBadge + '</td>' +
                         '<td>' +
                             '<button class="btn btn-sm btn-primary" onclick="verifyDoc(' + doc.DocumentID + ')">Verify</button> ' +
-                            '<button class="btn btn-sm btn-warning" onclick="linkDoc(' + doc.DocumentID + ')">Link</button>' +
+                            '<button class="btn btn-sm btn-info" onclick="downloadDoc(' + doc.DocumentID + ')">Download</button> ' +
+                            '<button class="btn btn-sm btn-warning" onclick="linkDoc(' + doc.DocumentID + ')">Link</button> ' +
+                            '<button class="btn btn-sm btn-danger" onclick="deleteDoc(' + doc.DocumentID + ')">Delete</button>' +
                         '</td></tr>';
                 }).join('');
                 var tp = Math.ceil(d.total / d.page_size);
@@ -153,10 +173,13 @@
                 var tabs = document.getElementById('moduleTabs');
                 tabs.innerHTML = '<span class="badge badge-info" style="cursor:pointer;padding:6px 12px" onclick="loadDocs(\'\',\'All\')">All</span>';
                 var sel = document.getElementById('ingestModule');
+                var uploadSel = document.getElementById('uploadModule');
                 sel.innerHTML = '<option value="">Auto-detect</option>';
+                uploadSel.innerHTML = '<option value="">Auto-detect</option>';
                 d.forEach(function(m) {
                     tabs.innerHTML += '<span class="badge badge-secondary" style="cursor:pointer;padding:6px 12px" onclick="loadDocs(\'' + m.ModuleCode + '\',\'' + m.ModuleName + '\')">' + m.ModuleCode + '</span>';
                     sel.innerHTML += '<option value="' + m.ModuleCode + '">' + m.ModuleCode + ' - ' + m.ModuleName + '</option>';
+                    uploadSel.innerHTML += '<option value="' + m.ModuleCode + '">' + m.ModuleCode + ' - ' + m.ModuleName + '</option>';
                 });
             });
     }
@@ -213,6 +236,41 @@
             .then(d => { alert(d.ingested ? 'Ingested: ' + d.file_name + ' (ID: ' + d.document_id + ')' : 'Error: ' + d.error); loadDocs(); loadStats(); });
     }
 
+    function downloadDoc(id) {
+        window.open('/api/v1/documents/' + id + '/download', '_blank');
+    }
+
+    function deleteDoc(id) {
+        if (!confirm('Delete document ID ' + id + '? This cannot be undone.')) return;
+        fetch('/api/v1/documents/' + id, {method:'DELETE'})
+            .then(r => r.json())
+            .then(d => { loadDocs(); loadStats(); });
+    }
+
+    function uploadFiles(files) {
+        var prog = document.getElementById('uploadProgress');
+        prog.textContent = 'Uploading ' + files.length + ' file(s)...';
+        var module = document.getElementById('uploadModule').value;
+        var desc = document.getElementById('uploadDesc').value;
+        var completed = 0;
+        for (var i = 0; i < files.length; i++) {
+            (function(file) {
+                var fd = new FormData();
+                fd.append('file', file);
+                var url = '/api/v1/documents/upload';
+                if (module) url += '?module_code=' + encodeURIComponent(module);
+                if (desc) url += (module ? '&' : '?') + 'description=' + encodeURIComponent(desc);
+                fetch(url, {method:'POST', body:fd})
+                    .then(r => r.json())
+                    .then(d => {
+                        completed++;
+                        prog.textContent = 'Uploaded ' + completed + '/' + files.length + ' (' + (d.file_name || 'error') + ')';
+                        if (completed === files.length) { loadDocs(); loadStats(); }
+                    });
+            })(files[i]);
+        }
+    }
+
     function ingestPnr2022() {
         var path = prompt('PNR-2022 archive path (or leave blank for default):');
         var url = '/api/v1/documents/ingest-pnr2022';
@@ -222,6 +280,15 @@
             .then(d => { alert('Ingested: ' + (d.ingested || 0) + ', Errors: ' + (d.errors || 0) + (d.error ? ' - ' + d.error : '')); loadDocs(); loadStats(); });
     }
 
-    document.addEventListener('DOMContentLoaded', function() { loadModules(); loadStats(); loadDocs(); });
+    document.addEventListener('DOMContentLoaded', function() {
+        loadModules(); loadStats(); loadDocs();
+        var dz = document.getElementById('dropZone');
+        var fi = document.getElementById('fileInput');
+        dz.addEventListener('click', function() { fi.click(); });
+        dz.addEventListener('dragover', function(e) { e.preventDefault(); dz.style.borderColor = '#1a237e'; dz.style.background = '#e8eaf6'; });
+        dz.addEventListener('dragleave', function(e) { dz.style.borderColor = '#aaa'; dz.style.background = '#fafafa'; });
+        dz.addEventListener('drop', function(e) { e.preventDefault(); dz.style.borderColor = '#aaa'; dz.style.background = '#fafafa'; uploadFiles(e.dataTransfer.files); });
+        fi.addEventListener('change', function() { if (fi.files.length) uploadFiles(fi.files); });
+    });
 </script>
 {% endblock %}

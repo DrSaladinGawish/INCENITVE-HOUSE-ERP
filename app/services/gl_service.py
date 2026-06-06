@@ -48,7 +48,7 @@ def create_journal_voucher(db: Session, data: JournalVoucherCreate) -> JournalVo
 
 
 def get_employees(db: Session, skip: int = 0, limit: int = 100) -> list[Employee]:
-    stmt = select(Employee).offset(skip).limit(limit)
+    stmt = select(Employee).order_by(Employee.EmployeeCode).offset(skip).limit(limit)
     return list(db.execute(stmt).scalars().all())
 
 

@@ -54,3 +54,41 @@ def test_document_ingest_nonexistent(client):
     assert resp.status_code == 200
     data = resp.json()
     assert data["ingested"] == False
+
+
+def test_document_upload(client):
+    resp = client.post("/api/v1/documents/upload", files={"file": ("test.txt", b"Hello World")})
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["uploaded"] == True
+    assert data["file_name"] == "test.txt"
+
+
+def test_document_upload_and_download(client):
+    resp = client.post("/api/v1/documents/upload", files={"file": ("hello.txt", b"Download me")})
+    assert resp.status_code == 200
+    doc_id = resp.json()["document_id"]
+    resp2 = client.get(f"/api/v1/documents/{doc_id}/download")
+    assert resp2.status_code == 200
+    assert resp2.content == b"Download me"
+
+
+def test_document_upload_and_delete(client):
+    resp = client.post("/api/v1/documents/upload", files={"file": ("delete_me.txt", b"Delete me")})
+    assert resp.status_code == 200
+    doc_id = resp.json()["document_id"]
+    resp2 = client.delete(f"/api/v1/documents/{doc_id}")
+    assert resp2.status_code == 200
+    assert resp2.json()["deleted"] == True
+    resp3 = client.get(f"/api/v1/documents/{doc_id}")
+    assert resp3.status_code == 404
+
+
+def test_document_download_not_found(client):
+    resp = client.get("/api/v1/documents/99999/download")
+    assert resp.status_code == 404
+
+
+def test_document_delete_not_found(client):
+    resp = client.delete("/api/v1/documents/99999")
+    assert resp.status_code == 404

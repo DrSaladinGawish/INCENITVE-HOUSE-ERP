@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
 05_neural_seeder.py — Populate dbo.NeuralFeatureStore from loaded production data.
-CashFlow, Engagement, Overrun, Anomaly features. Idempotent (clear + re-insert).
+CashFlow, Engagement, Overrun, Anomaly features — uses ORM snake_case columns.
+Idempotent (clear + re-insert).
 """
 
 import os
@@ -19,10 +20,10 @@ DATABASE_URL = os.getenv("DATABASE_URL", (
 BATCH_SIZE = 500
 
 
-def clear_and_insert(session, feature_name: str, rows: list) -> int:
+def clear_and_insert(session, feature_group: str, feature_name: str, rows: list) -> int:
     session.execute(
-        text("DELETE FROM dbo.NeuralFeatureStore WHERE FeatureName = :fn"),
-        {"fn": feature_name}
+        text("DELETE FROM dbo.NeuralFeatureStore WHERE feature_group = :fg AND feature_name = :fn"),
+        {"fg": feature_group, "fn": feature_name}
     )
     session.commit()
     inserted = 0
@@ -63,16 +64,16 @@ def extract_cashflow(session) -> list:
     rows = []
     for r in result:
         rows.append({
-            "EntityType": "account",
-            "EntityID": hash(str(r.BankCode)) % 1000000,
-            "FeatureName": "cashflow_daily",
-            "FeatureValue": float(r.net_amount),
-            "FeatureData": str({
+            "feature_group": "account",
+            "entity_id": str(hash(str(r.BankCode)) % 1000000),
+            "feature_name": "cashflow_daily",
+            "feature_value": float(r.net_amount),
+            "feature_json": str({
                 "total_deposit": float(r.total_deposit),
                 "total_withdrawal": float(r.total_withdrawal),
                 "tx_count": int(r.tx_count),
             }),
-            "ComputedAt": datetime.now(),
+            "computed_at": datetime.now(),
         })
     return rows
 
@@ -97,15 +98,15 @@ def extract_churn(session) -> list:
     rows = []
     for r in result:
         rows.append({
-            "EntityType": "client",
-            "EntityID": hash(str(r.ClientCode)) % 1000000,
-            "FeatureName": "client_engagement",
-            "FeatureValue": float(r.total_revenue),
-            "FeatureData": str({
+            "feature_group": "client",
+            "entity_id": str(hash(str(r.ClientCode)) % 1000000),
+            "feature_name": "client_engagement",
+            "feature_value": float(r.total_revenue),
+            "feature_json": str({
                 "invoice_count": int(r.invoice_count),
                 "last_invoice_date": str(r.last_invoice_date),
             }),
-            "ComputedAt": datetime.now(),
+            "computed_at": datetime.now(),
         })
     return rows
 
@@ -133,23 +134,23 @@ def extract_overrun(session) -> list:
         actual = float(r.total_actual)
         overrun_pct = ((actual - budget) / budget * 100) if budget > 0 else 0
         rows.append({
-            "EntityType": "pnr",
-            "EntityID": hash(str(r.PNRNumber)) % 1000000,
-            "FeatureName": "pnr_budget_actual",
-            "FeatureValue": overrun_pct,
-            "FeatureData": str({
+            "feature_group": "pnr",
+            "entity_id": str(hash(str(r.PNRNumber)) % 1000000),
+            "feature_name": "pnr_budget_actual",
+            "feature_value": overrun_pct,
+            "feature_json": str({
                 "total_budget": budget,
                 "total_actual": actual,
                 "overrun_pct": overrun_pct,
             }),
-            "ComputedAt": datetime.now(),
+            "computed_at": datetime.now(),
         })
     return rows
 
 
 def main():
     print("=" * 60)
-    print("05_neural_seeder.py — Neural Feature Store Seeder")
+    print("05_neural_seeder.py — Neural Feature Store Seeder (ORM snake_case)")
     print(f"Started: {datetime.now().isoformat()}")
     print("=" * 60)
 
@@ -160,15 +161,15 @@ def main():
     total = 0
 
     rows = extract_cashflow(session)
-    total += clear_and_insert(session, "cashflow_daily", rows)
+    total += clear_and_insert(session, "account", "cashflow_daily", rows)
     print(f"  [OK] CashFlow: {len(rows)} features")
 
     rows = extract_churn(session)
-    total += clear_and_insert(session, "client_engagement", rows)
+    total += clear_and_insert(session, "client", "client_engagement", rows)
     print(f"  [OK] Engagement: {len(rows)} features")
 
     rows = extract_overrun(session)
-    total += clear_and_insert(session, "pnr_budget_actual", rows)
+    total += clear_and_insert(session, "pnr", "pnr_budget_actual", rows)
     print(f"  [OK] Overrun: {len(rows)} features")
 
     session.close()

@@ -2,9 +2,16 @@
 {% block title %}General Ledger - IncentiveHouse ERP{% endblock %}
 {% block ai_context %}Accounts{% endblock %}
 {% block content %}
-<div class="page-header">
-    <h1>General Ledger</h1>
-    <p>Journal vouchers, chart of accounts, and financial entries</p>
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>General Ledger</h1>
+        <p>Journal vouchers, chart of accounts, and financial entries</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/gl?format=pdf'">PDF</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/gl?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/gl?format=csv'">CSV</button>
+    </div>
 </div>
 <div class="card">
     <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
@@ -12,7 +19,7 @@
         <a href="/gl/new" class="btn btn-success btn-sm">+ New JV</a>
     </div>
     <table>
-        <thead><tr><th>JV Number</th><th>Date</th><th>Narration</th><th>Total Debit</th><th>Total Credit</th></tr></thead>
+        <thead><tr><th data-sort="jv_number">JV Number</th><th data-sort="date">Date</th><th data-sort="narration">Narration</th><th data-sort="total_debit">Total Debit</th><th data-sort="total_credit">Total Credit</th></tr></thead>
         <tbody id="glBody"><tr><td colspan="5">Loading...</td></tr></tbody>
     </table>
     <div class="pagination" id="glPagination"></div>

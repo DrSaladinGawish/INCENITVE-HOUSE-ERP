@@ -6,7 +6,7 @@ from app.schemas.bnk import BankCreate, BankUpdate, BankTransactionCreate
 
 
 def get_banks(db: Session, skip: int = 0, limit: int = 100) -> list[Bank]:
-    stmt = select(Bank).offset(skip).limit(limit)
+    stmt = select(Bank).order_by(Bank.BankCode).offset(skip).limit(limit)
     return list(db.execute(stmt).scalars().all())
 
 

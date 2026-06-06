@@ -108,13 +108,13 @@ def predict_cashflow(req: CashflowRequest, db: Session = Depends(get_db)):
         from app.models.ihe_models import BankTransaction
         stmt = (
             select(
-                func.date_trunc("month", BankTransaction.TransactionDate).label("month"),
+                (func.year(BankTransaction.TransactionDate) * 100 + func.month(BankTransaction.TransactionDate)).label("month"),
                 func.sum(BankTransaction.Deposit - BankTransaction.Withdrawal).label("net"),
             )
             .where(BankTransaction.BankCode == req.account_code)
             .where(BankTransaction.TransactionDate >= func.dateadd(func.month, -12, func.current_date()))
-            .group_by(func.date_trunc("month", BankTransaction.TransactionDate))
-            .order_by("month")
+            .group_by(func.year(BankTransaction.TransactionDate), func.month(BankTransaction.TransactionDate))
+            .order_by(func.year(BankTransaction.TransactionDate), func.month(BankTransaction.TransactionDate))
         )
         rows = db.execute(stmt).all()
         historical = [float(r.net) for r in rows if r.net]

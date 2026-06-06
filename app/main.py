@@ -1,12 +1,13 @@
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.database import SyncSessionLocal
+from app.database import SyncSessionLocal, get_db
 from app.logging_config import setup_logging
 from app.middleware.request_id import RequestIDMiddleware
 from app.routers import (
@@ -23,6 +24,7 @@ from app.routers import (
 from app.routers.neural import ai_api as neural_router
 from app.routers.neural_live import router as neural_live_router
 from app.routers import documents as documents_router
+from app.routers import export_router
 
 log = setup_logging()
 
@@ -94,6 +96,7 @@ app.include_router(ai_router.router)
 app.include_router(neural_router.router)
 app.include_router(neural_live_router)
 app.include_router(documents_router.router)
+app.include_router(export_router.router)
 app.include_router(pages_router.router)
 
 
@@ -102,4 +105,46 @@ app.include_router(pages_router.router)
 # ---------------------------------------------------------------------------
 @app.get("/health")
 def health():
-    return {"status": "healthy", "app": settings.APP_NAME, "version": settings.VERSION}
+    from app.database import SyncSessionLocal
+    from sqlalchemy import text, select, func
+    from app.models.ihe_models import PNRMaster
+    db_status = "unknown"
+    pnr_count = 0
+    try:
+        conn = SyncSessionLocal()
+        conn.execute(text("SELECT 1"))
+        db_status = "ok"
+        pnr_count = conn.execute(select(func.count(PNRMaster.PNRNumber))).scalar() or 0
+        conn.close()
+    except Exception:
+        db_status = "error"
+    return {"status": "healthy", "app": settings.APP_NAME, "version": settings.VERSION, "database": db_status, "total_pnrs": pnr_count}
+
+
+# ---------------------------------------------------------------------------
+# Search endpoint
+# ---------------------------------------------------------------------------
+@app.get("/api/search")
+def global_search(q: str = "", db: Session = Depends(get_db)):
+    from app.models.ihe_models import PNRMaster, Client, Vendor
+    from sqlalchemy import select, func
+    results = {"pnrs": 0, "clients": 0, "vendors": 0}
+    if not q.strip():
+        return results
+    like = f"%{q.strip()}%"
+    try:
+        pnr_count = db.execute(select(func.count(PNRMaster.PNRNumber)).where(PNRMaster.PNRNumber.like(like))).scalar() or 0
+        results["pnrs"] = pnr_count
+    except Exception:
+        pass
+    try:
+        client_count = db.execute(select(func.count(Client.ClientCode)).where(Client.ClientName.like(like))).scalar() or 0
+        results["clients"] = client_count
+    except Exception:
+        pass
+    try:
+        vendor_count = db.execute(select(func.count(Vendor.VendorCode)).where(Vendor.VendorName.like(like))).scalar() or 0
+        results["vendors"] = vendor_count
+    except Exception:
+        pass
+    return results

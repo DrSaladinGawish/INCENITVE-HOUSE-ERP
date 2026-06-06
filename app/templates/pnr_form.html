@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}PNR Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</div>
+<div class="card" style="max-width:800px">
+    <form id="pnrForm" data-draft data-record-id="{{ record_id | default('new') }}" onsubmit="return savePnr(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label>PNR Number *</label>
+                <input type="text" id="PNRNumber" class="form-control" value="{{ pnr.PNRNumber if pnr else '' }}" required {{ 'readonly' if pnr else '' }}>
+            </div>
+            <div class="form-group">
+                <label>Client Code</label>
+                <input type="text" id="ClientCode" class="form-control" value="{{ pnr.ClientCode if pnr else '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Event Name</label>
+            <input type="text" id="EventName" class="form-control" value="{{ pnr.EventName if pnr else '' }}">
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date" id="EventStartDate" class="form-control" value="{{ pnr.EventStartDate if pnr else '' }}">
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date" id="EventEndDate" class="form-control" value="{{ pnr.EventEndDate if pnr else '' }}">
+            </div>
+        </div>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>Year</label>
+                <select id="Year" class="form-control">
+                    <option value="">Select</option>
+                    {% for y in range(2020, 2027) %}
+                    <option value="{{ y }}" {% if pnr and pnr.Year == y %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="Status" class="form-control">
+                    <option value="Active" {% if pnr and pnr.Status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="Completed" {% if pnr and pnr.Status == 'Completed' %}selected{% endif %}>Completed</option>
+                    <option value="Cancelled" {% if pnr and pnr.Status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Currency</label>
+                <select id="CurrencyCode" class="form-control">
+                    <option value="EGP" {% if pnr and pnr.CurrencyCode == 'EGP' %}selected{% endif %}>EGP</option>
+                    <option value="USD" {% if pnr and pnr.CurrencyCode == 'USD' %}selected{% endif %}>USD</option>
+                    <option value="EUR" {% if pnr and pnr.CurrencyCode == 'EUR' %}selected{% endif %}>EUR</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Job Folder</label>
+            <input type="text" id="JobFolder" class="form-control" value="{{ pnr.JobFolder if pnr else '' }}">
+        </div>
+        <div id="pnrFormError" class="alert alert-danger" style="display:none"></div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">Save PNR</button>
+            <a href="/evn" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+function savePnr(e) {
+    e.preventDefault();
+    var data = {
+        PNRNumber: document.getElementById('PNRNumber').value.trim(),
+        ClientCode: document.getElementById('ClientCode').value.trim() || null,
+        EventName: document.getElementById('EventName').value.trim() || null,
+        EventStartDate: document.getElementById('EventStartDate').value || null,
+        EventEndDate: document.getElementById('EventEndDate').value || null,
+        Year: document.getElementById('Year').value ? parseInt(document.getElementById('Year').value) : null,
+        Status: document.getElementById('Status').value || null,
+        CurrencyCode: document.getElementById('CurrencyCode').value || null,
+        JobFolder: document.getElementById('JobFolder').value.trim() || null
+    };
+    if (!data.PNRNumber) { showFormError('PNR Number is required'); return false; }
+    var token = localStorage.getItem('access_token');
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    var method = '{{ "PUT" if pnr else "POST" }}';
+    var url = '{{ "/api/evn/pnrs/" + pnr.PNRNumber if pnr else "/api/evn/pnrs" }}';
+    fetch(url, { method: method, headers: headers, body: JSON.stringify(data) })
+        .then(function(r) {
+            if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Save failed'); });
+            return r.json();
+        })
+        .then(function() { window.location.href = '/evn'; })
+        .catch(function(err) { showFormError(err.message); });
+    return false;
+}
+function showFormError(msg) {
+    var el = document.getElementById('pnrFormError');
+    el.textContent = msg; el.style.display = '';
+}
+</script>
+{% endblock %}

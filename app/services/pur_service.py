@@ -6,7 +6,7 @@ from app.schemas.pur import VendorCreate, VendorUpdate, PurchaseVoucherCreate
 
 
 def get_vendors(db: Session, skip: int = 0, limit: int = 100) -> list[Vendor]:
-    stmt = select(Vendor).offset(skip).limit(limit)
+    stmt = select(Vendor).order_by(Vendor.VendorCode).offset(skip).limit(limit)
     return list(db.execute(stmt).scalars().all())
 
 

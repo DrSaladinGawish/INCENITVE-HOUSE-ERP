@@ -71,3 +71,42 @@ def test_gl_employees(client, auth_headers):
 def test_dashboard_summary(client, auth_headers):
     resp = client.get("/api/dashboard/summary", headers=auth_headers)
     assert resp.status_code == 200
+
+
+def test_dashboard_export_pdf(client, auth_headers):
+    resp = client.get("/api/dashboard/export?format=pdf", headers=auth_headers)
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "application/pdf"
+
+
+def test_dashboard_export_csv(client, auth_headers):
+    resp = client.get("/api/dashboard/export?format=csv", headers=auth_headers)
+    assert resp.status_code == 200
+    assert "text/csv" in resp.headers["content-type"]
+
+
+def test_dashboard_export_xlsx(client, auth_headers):
+    resp = client.get("/api/dashboard/export?format=xlsx", headers=auth_headers)
+    assert resp.status_code == 200
+    assert "spreadsheetml" in resp.headers["content-type"]
+
+
+def test_dashboard_monthly(client, auth_headers):
+    resp = client.get("/api/dashboard/monthly", headers=auth_headers)
+    assert resp.status_code == 200
+
+
+def test_export_pnrs_pdf(client, auth_headers):
+    resp = client.get("/api/export/pnrs?format=pdf", headers=auth_headers)
+    assert resp.status_code == 200
+    assert resp.headers["content-type"] == "application/pdf"
+
+
+def test_export_sales_csv(client, auth_headers):
+    resp = client.get("/api/export/sales?format=csv", headers=auth_headers)
+    assert resp.status_code == 200
+
+
+def test_export_unknown_entity(client, auth_headers):
+    resp = client.get("/api/export/unknown?format=pdf", headers=auth_headers)
+    assert resp.status_code == 404

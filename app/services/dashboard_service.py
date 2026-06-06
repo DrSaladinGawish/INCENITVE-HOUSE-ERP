@@ -1,4 +1,5 @@
-from sqlalchemy import select, func
+from datetime import datetime
+from sqlalchemy import select, func, extract
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -11,6 +12,26 @@ def _safe_val(callback, default=0):
         return callback()
     except SQLAlchemyError:
         return default
+
+
+def get_monthly_data(db: Session) -> list[dict]:
+    months = []
+    for m in range(1, 13):
+        revenue = _safe_val(lambda m=m: float(db.execute(
+            select(func.coalesce(func.sum(SalesInvoice.TotalValue), 0))
+            .where(extract("month", SalesInvoice.InvoiceDate) == m)
+        ).scalar() or 0.0))
+        expenses = _safe_val(lambda m=m: float(db.execute(
+            select(func.coalesce(func.sum(PurchaseVoucher.TotalValue), 0))
+            .where(extract("month", PurchaseVoucher.InvoiceDate) == m)
+        ).scalar() or 0.0))
+        months.append({
+            "month": datetime(2000, m, 1).strftime("%b"),
+            "revenue": revenue,
+            "expenses": expenses,
+            "net": revenue - expenses,
+        })
+    return months
 
 
 def get_dashboard_summary(db: Session) -> DashboardSummary:

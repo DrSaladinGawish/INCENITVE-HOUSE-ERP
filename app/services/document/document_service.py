@@ -311,6 +311,50 @@ class DocumentService:
                 sha.update(chunk)
         return sha.hexdigest()
 
+    def upload_file(self, filename: str, content: bytes, module_code: str | None = None, description: str | None = None) -> dict:
+        upload_dir = "uploads"
+        os.makedirs(upload_dir, exist_ok=True)
+        safe_name = f"{int(datetime.now().timestamp())}_{filename}"
+        filepath = os.path.join(upload_dir, safe_name)
+        with open(filepath, "wb") as f:
+            f.write(content)
+        fsize = len(content)
+        sha256 = hashlib.sha256(content).hexdigest()
+        ext = os.path.splitext(filename)[1].lower()
+        mime_map = {".pdf": "application/pdf", ".jpg": "image/jpeg", ".jpeg": "image/jpeg",
+                    ".png": "image/png", ".xlsx": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    ".xls": "application/vnd.ms-excel", ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                    ".doc": "application/msword", ".txt": "text/plain", ".csv": "text/csv"}
+        mime = mime_map.get(ext, "application/octet-stream")
+        if not module_code:
+            module_code = self._guess_module(filename)
+        pnr_match = __import__("re").search(r"(PNR\d+)", filename, __import__("re").IGNORECASE)
+        pnr = pnr_match.group(1).upper() if pnr_match else None
+        year_match = __import__("re").search(r"(20\d{2})", filename)
+        year = int(year_match.group(1)) if year_match else None
+        doc = SupportingDocument(
+            FileName=filename, FilePath=filepath, FileSize=fsize,
+            SHA256=sha256, MimeType=mime, ModuleCode=module_code,
+            PNRNumber=pnr, Year=year, Description=description,
+            Status="active", IsVerified=True,
+        )
+        self.db.add(doc)
+        self.db.commit()
+        return {"uploaded": True, "document_id": doc.DocumentID, "file_name": filename}
+
+    def delete_document(self, doc_id: int) -> dict:
+        doc = self.db.get(SupportingDocument, doc_id)
+        if not doc:
+            return {"deleted": False, "error": "Document not found"}
+        if doc.FilePath and os.path.exists(doc.FilePath):
+            try:
+                os.remove(doc.FilePath)
+            except OSError:
+                pass
+        self.db.delete(doc)
+        self.db.commit()
+        return {"deleted": True, "document_id": doc_id}
+
     def _guess_module(self, fname: str) -> str:
         fname_lower = fname.lower()
         mapping = [

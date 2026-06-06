@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.auth import hash_password, verify_password, create_access_token
+from app.auth import hash_password, verify_password, create_access_token, get_current_user
 from app.config import settings
 from app.database import get_db
 
@@ -29,5 +29,10 @@ def login(payload: dict, db: Session = Depends(get_db)):
 
 
 @router.get("/verify")
-def verify_token(current_user: dict = Depends(lambda: None)):
+def verify_token(current_user: dict = Depends(get_current_user)):
     return {"valid": True, "user": current_user}
+
+
+@router.get("/me")
+def get_me(current_user: dict = Depends(get_current_user)):
+    return current_user
