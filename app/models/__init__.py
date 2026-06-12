@@ -7,6 +7,9 @@ from app.models.ihe_models import (  # noqa: F401
     PurchaseVoucher, PurchaseVoucherLine, BankTransaction,
     JournalVoucher, JournalVoucherLine,
 )
+from app.models.workflow_models import (  # noqa: F401
+    WorkflowDefinition, WorkflowState, ApprovalRequest, ApprovalHistory,
+)
 from app.models.neural import (  # noqa: F401
     NeuralNode, NeuralPrediction, NeuralFeatureStore,
     NeuralTrainingHistory, NeuralMemory,

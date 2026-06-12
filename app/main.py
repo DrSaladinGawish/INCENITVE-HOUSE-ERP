@@ -10,6 +10,7 @@ from app.config import settings
 from app.database import SyncSessionLocal, get_db
 from app.logging_config import setup_logging
 from app.middleware.request_id import RequestIDMiddleware
+from app.meta_layer import MetaLayerInjectorMiddleware, meta_router, meta_v2_router
 from app.routers import (
     auth_router,
     bnk_router,
@@ -26,6 +27,9 @@ from app.routers.neural import ai_api as neural_router
 from app.routers.neural_live import router as neural_live_router
 from app.routers import documents as documents_router
 from app.routers import export_router
+from app.routers import financial_reports
+from app.routers import e_invoice_router
+from app.routers import workflow_router
 
 log = setup_logging()
 
@@ -67,6 +71,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(RequestIDMiddleware)
+app.add_middleware(MetaLayerInjectorMiddleware)
 
 
 # ---------------------------------------------------------------------------
@@ -100,6 +105,11 @@ app.include_router(documents_router.router)
 app.include_router(export_router.router)
 app.include_router(pages_router.router)
 app.include_router(intelligence_router.router)
+app.include_router(meta_router)
+app.include_router(meta_v2_router)
+app.include_router(financial_reports.router)
+app.include_router(e_invoice_router.router)
+app.include_router(workflow_router.router)
 
 
 # ---------------------------------------------------------------------------

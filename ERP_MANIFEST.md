@@ -20,6 +20,9 @@
 | AI/Intelligence | ✅ Complete | app/routers/ai_router.py, app/routers/intelligence_router.py, app/services/ai/llm_service.py | 2026-06-12 |
 | Export | ✅ Complete | app/routers/export_router.py | 2026-06-12 |
 | Neural | ✅ Complete | app/routers/neural/, app/services/neural/, app/models/neural/ | 2026-06-12 |
+| Financial Reports | ✅ Complete | app/routers/financial_reports.py, app/services/financial_reports_service.py, app/templates/reports/financial/ | 2026-06-12 |
+| E-Invoice XML | ✅ Complete | app/routers/e_invoice.py, app/services/e_invoice_service.py, app/templates/e_invoice/ | 2026-06-12 |
+| Workflow Engine | ✅ Complete | app/routers/workflow.py, app/services/workflow_service.py, app/models/workflow_models.py, app/templates/workflow/ | 2026-06-12 |
 
 ### Scaffolding Generated (LOCKED — Full CRUD exists)
 | Module | Files | Location |
@@ -33,9 +36,6 @@
 ### In Progress (DO NOT OVERWRITE)
 | Feature | Assigned | Started | Blockers |
 |---------|----------|---------|----------|
-| Financial Reports | - | - | Waiting for GL data verification |
-| E-Invoice XML | - | - | Waiting for ETA spec |
-| Approval Workflow | - | - | Waiting for user roles definition |
 
 ### Global Rules
 1. NEVER regenerate a module marked ✅ Complete

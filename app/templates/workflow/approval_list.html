@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Approval Requests{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Approval Requests</h1>
+  <p>Total: {{ total }}</p>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>ID</th><th>Module</th><th>Reference</th><th>Requested By</th><th>Date</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for req in requests %}
+      <tr>
+        <td>{{ req.ApprovalID }}</td>
+        <td>{{ req.ReferenceModule }}</td>
+        <td>{{ req.ReferenceID }}</td>
+        <td>{{ req.RequestedBy }}</td>
+        <td>{{ req.RequestedAt.strftime("%Y-%m-%d %H:%M") if req.RequestedAt else "—" }}</td>
+        <td><span class="badge {% if req.Status == 'Pending' %}badge-warning{% elif req.Status == 'Approved' %}badge-success{% else %}badge-danger{% endif %}">{{ req.Status }}</span></td>
+        <td><a href="/workflow/approvals/{{ req.ApprovalID }}" class="btn btn-sm">View</a></td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;">No approval requests</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Trial Balance{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Trial Balance</h1>
+  <p>As of: <strong>{{ data.as_of_date }}</strong></p>
+  <form method="get" style="margin-bottom:16px;">
+    <label>As of date: <input type="date" name="as_of_date" value="{{ data.as_of_date }}"></label>
+    <button type="submit" class="btn">Refresh</button>
+  </form>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>Code</th><th>Account</th><th>Type</th><th>Debit</th><th>Credit</th><th>Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for acc in data.accounts %}
+      <tr>
+        <td>{{ acc.account_code }}</td>
+        <td>{{ acc.account_name }}</td>
+        <td>{{ acc.account_type }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(acc.debit) }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(acc.credit) }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(acc.balance) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr style="font-weight:bold;">
+        <td colspan="3">Total</td>
+        <td style="text-align:right">{{ "%.2f"|format(data.total_debit) }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(data.total_credit) }}</td>
+        <td></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{% endblock %}

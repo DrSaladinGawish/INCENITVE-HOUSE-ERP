@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Profit & Loss{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Profit &amp; Loss</h1>
+  <form method="get" style="margin-bottom:16px;">
+    <label>From: <input type="date" name="from_date" value="{{ data.from_date }}"></label>
+    <label>To: <input type="date" name="to_date" value="{{ data.to_date }}"></label>
+    <button type="submit" class="btn">Refresh</button>
+  </form>
+
+  <h2>Revenues</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Code</th><th>Account</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>
+      {% for r in data.revenues %}
+      <tr><td>{{ r.account_code }}</td><td>{{ r.account_name }}</td><td style="text-align:right">{{ "%.2f"|format(r.amount) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No revenue data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr style="font-weight:bold;"><td colspan="2">Total Revenue</td><td style="text-align:right">{{ "%.2f"|format(data.total_revenue) }}</td></tr>
+    </tfoot>
+  </table>
+
+  <h2 style="margin-top:24px;">Expenses</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Code</th><th>Account</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>
+      {% for e in data.expenses %}
+      <tr><td>{{ e.account_code }}</td><td>{{ e.account_name }}</td><td style="text-align:right">{{ "%.2f"|format(e.amount) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No expense data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr style="font-weight:bold;"><td colspan="2">Total Expenses</td><td style="text-align:right">{{ "%.2f"|format(data.total_expense) }}</td></tr>
+    </tfoot>
+  </table>
+
+  <div style="margin-top:24px;padding:16px;border:1px solid var(--border-color);border-radius:8px;">
+    <h3>Net Income: <span style="color:{% if data.net_income >= 0 %}green{% else %}red{% endif %}">{{ "%.2f"|format(data.net_income) }}</span></h3>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Cash Flow Statement{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Cash Flow Statement</h1>
+  <form method="get" style="margin-bottom:16px;">
+    <label>From: <input type="date" name="from_date" value="{{ data.from_date }}"></label>
+    <label>To: <input type="date" name="to_date" value="{{ data.to_date }}"></label>
+    <button type="submit" class="btn">Refresh</button>
+  </form>
+
+  {% if data.cash_accounts %}
+  <p>Cash accounts tracked:
+    {% for ca in data.cash_accounts %}
+      <span class="badge">{{ ca.code }} - {{ ca.name }}</span>
+    {% endfor %}
+  </p>
+  {% endif %}
+
+  <h2>Operating Activities</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>
+      {% for item in data.operating %}
+      <tr>
+        <td>{{ item.date }}</td>
+        <td>{{ item.narration }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(item.amount) }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3">No operating cash flow data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Net Operating</td><td style="text-align:right">{{ "%.2f"|format(data.net_operating) }}</td></tr></tfoot>
+  </table>
+
+  <h2 style="margin-top:24px;">Investing Activities</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>
+      {% for item in data.investing %}
+      <tr><td>{{ item.date }}</td><td>{{ item.narration }}</td><td style="text-align:right">{{ "%.2f"|format(item.amount) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No investing data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Net Investing</td><td style="text-align:right">{{ "%.2f"|format(data.net_investing) }}</td></tr></tfoot>
+  </table>
+
+  <h2 style="margin-top:24px;">Financing Activities</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Date</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>
+      {% for item in data.financing %}
+      <tr><td>{{ item.date }}</td><td>{{ item.narration }}</td><td style="text-align:right">{{ "%.2f"|format(item.amount) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No financing data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Net Financing</td><td style="text-align:right">{{ "%.2f"|format(data.net_financing) }}</td></tr></tfoot>
+  </table>
+
+  <div style="margin-top:24px;padding:16px;border:1px solid var(--border-color);border-radius:8px;">
+    <h3>Net Change in Cash: <span style="color:{% if data.net_change >= 0 %}green{% else %}red{% endif %}">{{ "%.2f"|format(data.net_change) }}</span></h3>
+  </div>
+</div>
+{% endblock %}

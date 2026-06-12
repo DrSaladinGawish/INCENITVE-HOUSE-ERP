@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Balance Sheet{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Balance Sheet</h1>
+  <p>As of: <strong>{{ data.as_of_date }}</strong></p>
+  <form method="get" style="margin-bottom:16px;">
+    <label>As of date: <input type="date" name="as_of_date" value="{{ data.as_of_date }}"></label>
+    <button type="submit" class="btn">Refresh</button>
+  </form>
+
+  <h2>Assets</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Code</th><th>Account</th><th style="text-align:right">Balance</th></tr></thead>
+    <tbody>
+      {% for a in data.assets %}
+      <tr><td>{{ a.account_code }}</td><td>{{ a.account_name }}</td><td style="text-align:right">{{ "%.2f"|format(a.balance) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No asset data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Total Assets</td><td style="text-align:right">{{ "%.2f"|format(data.total_assets) }}</td></tr></tfoot>
+  </table>
+
+  <h2 style="margin-top:24px;">Liabilities</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Code</th><th>Account</th><th style="text-align:right">Balance</th></tr></thead>
+    <tbody>
+      {% for l in data.liabilities %}
+      <tr><td>{{ l.account_code }}</td><td>{{ l.account_name }}</td><td style="text-align:right">{{ "%.2f"|format(l.balance) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No liability data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Total Liabilities</td><td style="text-align:right">{{ "%.2f"|format(data.total_liabilities) }}</td></tr></tfoot>
+  </table>
+
+  <h2 style="margin-top:24px;">Equity</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Code</th><th>Account</th><th style="text-align:right">Balance</th></tr></thead>
+    <tbody>
+      {% for eq in data.equity %}
+      <tr><td>{{ eq.account_code }}</td><td>{{ eq.account_name }}</td><td style="text-align:right">{{ "%.2f"|format(eq.balance) }}</td></tr>
+      {% else %}
+      <tr><td colspan="3">No equity data</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot><tr style="font-weight:bold;"><td colspan="2">Total Equity</td><td style="text-align:right">{{ "%.2f"|format(data.total_equity) }}</td></tr></tfoot>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Approval #{{ req.ApprovalID }}{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>Approval Request #{{ req.ApprovalID }}</h1>
+  <div style="padding:16px;border:1px solid var(--border-color);border-radius:8px;">
+    <p><strong>Module:</strong> {{ req.ReferenceModule }}</p>
+    <p><strong>Reference ID:</strong> {{ req.ReferenceID }}</p>
+    <p><strong>Requested By:</strong> {{ req.RequestedBy }}</p>
+    <p><strong>Status:</strong> <span class="badge {% if req.Status == 'Pending' %}badge-warning{% elif req.Status == 'Approved' %}badge-success{% else %}badge-danger{% endif %}">{{ req.Status }}</span></p>
+    <p><strong>Comments:</strong> {{ req.Comments or "—" }}</p>
+  </div>
+
+  <h2 style="margin-top:24px;">History</h2>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead><tr><th>Action</th><th>By</th><th>Date</th><th>Comments</th></tr></thead>
+    <tbody>
+      {% for h in history %}
+      <tr>
+        <td>{{ h.Action }}</td>
+        <td>{{ h.ActionBy }}</td>
+        <td>{{ h.ActionAt.strftime("%Y-%m-%d %H:%M") if h.ActionAt else "—" }}</td>
+        <td>{{ h.Comments or "—" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4" style="text-align:center;">No history</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% if req.Status == "Pending" %}
+  <div style="margin-top:24px;">
+    <form method="post" action="/workflow/api/approvals/{{ req.ApprovalID }}/approve" style="display:inline;">
+      <input type="hidden" name="approved_by" value="admin">
+      <input type="text" name="comments" placeholder="Approval comment" style="margin-right:8px;">
+      <button type="submit" class="btn btn-success">Approve</button>
+    </form>
+    <form method="post" action="/workflow/api/approvals/{{ req.ApprovalID }}/reject" style="display:inline;">
+      <input type="hidden" name="rejected_by" value="admin">
+      <input type="text" name="comments" placeholder="Rejection reason" style="margin-right:8px;">
+      <button type="submit" class="btn btn-danger">Reject</button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

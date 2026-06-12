@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}E-Invoice{% endblock %}
+{% block content %}
+<div class="container">
+  <h1>E-Invoice XML Generator</h1>
+  <p>Generate ETA-compliant XML for sales invoices.</p>
+  <table class="table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th>Invoice #</th><th>Client</th><th>Date</th><th>Amount</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for inv in invoices %}
+      <tr>
+        <td>{{ inv.InvoiceNumber }}</td>
+        <td>{{ inv.ClientCode or "—" }}</td>
+        <td>{{ inv.InvoiceDate }}</td>
+        <td style="text-align:right">{{ "%.2f"|format(inv.TotalAmount or 0) }}</td>
+        <td>
+          <a href="/e-invoice/generate/{{ inv.InvoiceNumber }}" class="btn btn-sm" target="_blank">View XML</a>
+          <a href="/e-invoice/download/{{ inv.InvoiceNumber }}" class="btn btn-sm">Download</a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" style="text-align:center;">No invoices found</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
