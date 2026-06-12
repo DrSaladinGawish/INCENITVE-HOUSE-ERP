@@ -1,0 +1,119 @@
+<div id="job-pnl-cards" class="mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Job Profit & Loss</h5>
+    <span class="badge bg-warning text-dark">Invoice-Accrual Basis — LOW CONFIDENCE</span>
+  </div>
+  <div class="alert alert-warning small py-2 mb-3">
+    <strong>Cost side is $0 for all jobs.</strong> Purchase invoices and payment vouchers have no amounts (source CSV stripped). Margin = Revenue only.
+  </div>
+  <div class="row g-3" id="job-cards-container">
+    <div class="col-12 text-center py-4">
+      <div class="spinner-border text-primary spinner-border-sm"></div>
+      <span class="text-muted ms-2">Loading jobs...</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var container = document.getElementById('job-cards-container');
+  if (!container) return;
+  fetch('/api/v1/jobs?limit=12')
+    .then(function(r) { return r.json(); })
+    .then(function(jobs) {
+      if (!Array.isArray(jobs) || jobs.length === 0) {
+        container.innerHTML = '<div class="col-12"><div class="alert alert-info">No jobs found.</div></div>';
+        return;
+      }
+      var html = jobs.map(function(j) {
+        var rev = j.total_revenue || 0;
+        var cost = j.total_cost || 0;
+        var margin = j.gross_profit || 0;
+        var marginPct = j.margin_pct || 0;
+        var badgeClass = rev > 0 ? 'bg-warning text-dark' : 'bg-secondary';
+        var confLabel = rev > 0 ? (margin > 0 ? 'LOW' : 'LOW') : 'NO DATA';
+        var marginDisplay = rev > 0 ? '$' + margin.toLocaleString('en-US', {minimumFractionDigits: 2}) + ' (' + marginPct + '%)' : 'N/A';
+        return '<div class="col-md-6 col-lg-4">' +
+          '<div class="card h-100">' +
+            '<div class="card-body">' +
+              '<div class="d-flex justify-content-between align-items-start">' +
+                '<h6 class="text-muted small text-uppercase mb-1 text-truncate" style="max-width:70%">' + (j.job_code || j.id) + '</h6>' +
+                '<span class="badge ' + badgeClass + '">' + confLabel + '</span>' +
+              '</div>' +
+              '<div class="small text-muted text-truncate">' + (j.event_name || '') + '</div>' +
+              '<h4 class="mb-1 text-primary mt-1">$' + rev.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</h4>' +
+              '<div class="small text-muted">Revenue</div>' +
+              '<div class="mt-2 small">' +
+                '<span class="text-danger">Cost: $' + cost.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</span> | ' +
+                '<span class="text-muted">Margin: ' + marginDisplay + '</span>' +
+              '</div>' +
+              '<button class="btn btn-sm btn-outline-primary mt-3 w-100 pnl-detail-btn" data-job-id="' + j.id + '" data-job-code="' + (j.job_code || '') + '" data-event-name="' + (j.event_name || '') + '">View P&L Details</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+      container.innerHTML = html;
+
+      // Attach click handlers for P&L detail buttons
+      container.querySelectorAll('.pnl-detail-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var jobId = this.getAttribute('data-job-id');
+          var modalBody = document.getElementById('job-detail-modal-body');
+          if (!modalBody) return;
+          modalBody.innerHTML = '<div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div><span class="ms-2 text-muted">Loading...</span></div>';
+          var modalEl = document.getElementById('job-detail-modal');
+          if (modalEl) {
+            var bsModal = new bootstrap.Modal(modalEl);
+            bsModal.show();
+          }
+          fetch('/api/v1/jobs/' + jobId + '/pnl')
+            .then(function(r) { return r.json(); })
+            .then(function(pnl) {
+              var rev = pnl.total_revenue || 0;
+              var cost = pnl.total_cost || 0;
+              var profit = pnl.gross_profit || 0;
+              var pct = pnl.margin_pct || 0;
+              var meta = pnl.meta || {};
+              modalBody.innerHTML =
+                '<div class="mb-3">' +
+                  '<h6 class="mb-0">' + (pnl.job_code || '') + '</h6>' +
+                  '<small class="text-muted">' + (pnl.event_name || '') + '</small>' +
+                '</div>' +
+                '<table class="table table-sm">' +
+                  '<tr><td>Revenue</td><td class="text-end fw-bold text-primary">$' + rev.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</td></tr>' +
+                  '<tr><td>Cost</td><td class="text-end text-danger">$' + cost.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</td></tr>' +
+                  '<tr class="table-group-divider"><td>Gross Profit</td><td class="text-end fw-bold ' + (profit >= 0 ? 'text-success' : 'text-danger') + '">$' + profit.toLocaleString('en-US', {minimumFractionDigits: 2}) + '</td></tr>' +
+                  '<tr><td>Margin</td><td class="text-end">' + pct + '%</td></tr>' +
+                '</table>' +
+                '<div class="small text-muted">' +
+                  '<div>Basis: ' + (meta.basis || 'invoice_accrual') + '</div>' +
+                  '<div>Coverage: ' + (meta.coverage_pct || 15.3) + '%</div>' +
+                  '<div>Confidence: <span class="badge bg-warning text-dark">' + (meta.confidence || 'low') + '</span></div>' +
+                  '<div class="mt-1">' + (meta.missing_reason || '') + '</div>' +
+                '</div>';
+            })
+            .catch(function() {
+              modalBody.innerHTML = '<div class="alert alert-danger">Failed to load P&L details.</div>';
+            });
+        });
+      });
+    })
+    .catch(function() {
+      container.innerHTML = '<div class="col-12"><div class="alert alert-danger">Failed to load jobs.</div></div>';
+    });
+})();
+</script>
+
+<div class="modal fade" id="job-detail-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Job P&L Detail</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="job-detail-modal-body">
+        <div class="text-center py-4"><div class="spinner-border spinner-border-sm"></div></div>
+      </div>
+    </div>
+  </div>
+</div>

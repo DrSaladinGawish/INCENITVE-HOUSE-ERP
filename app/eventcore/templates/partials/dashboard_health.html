@@ -1,0 +1,34 @@
+<div class="ih-card" style="margin-bottom:16px;">
+  <div class="ih-card-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <h3 class="ih-card-title">System Health &zero-width-space; Data Integrity</h3>
+    <span id="health-timestamp" class="ih-kpi-label" style="font-size:11px;"></span>
+  </div>
+  <div id="health-grid" class="ih-flip-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding:12px;">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Schema Utilization</span><span id="h-schema" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Rows</span><span id="h-rows" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Tables Populated</span><span id="h-active" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Categories</span><span id="h-cats" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Sub-Categories</span><span id="h-subs" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Bank Tx Linked</span><span id="h-bank" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Line Items</span><span id="h-items" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Rev (€)</span><span id="h-rev" class="ih-kpi-value">—</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Cost (€)</span><span id="h-cost" class="ih-kpi-value">—</span></div>
+  </div>
+  <script>
+  fetch('/api/v1/health/db')
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById('h-schema').textContent=d.schema_pct+'%';
+      document.getElementById('h-rows').textContent=d.total_rows?.toLocaleString();
+      document.getElementById('h-active').textContent=d.active_tables+'/'+d.total_tables;
+      document.getElementById('h-cats').textContent=d.categories;
+      document.getElementById('h-subs').textContent=d.sub_categories;
+      document.getElementById('h-bank').textContent=d.bank_linked_pct+'%';
+      document.getElementById('h-items').textContent=d.line_items;
+      document.getElementById('h-rev').textContent=(d.total_revenue||0).toLocaleString();
+      document.getElementById('h-cost').textContent=(d.total_cost||0).toLocaleString();
+      document.getElementById('health-timestamp').textContent='Updated: '+new Date().toLocaleTimeString();
+    })
+    .catch(e=>console.error('Health fetch failed:',e));
+  </script>
+</div>

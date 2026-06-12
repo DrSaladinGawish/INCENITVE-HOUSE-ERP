@@ -1,0 +1,48 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Vendors — EventCore ERP{% endblock %}
+{% block page_title %}Vendors{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active">Vendors</li>
+{% endblock %}
+{% block page_actions %}
+  <a href="/vendors/new" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New Vendor</a>
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Name</th><th>Contact</th><th>Email</th><th>Phone</th><th>Category</th></tr>
+      </thead>
+      <tbody id="vendors-tbody"
+             hx-get="/api/v1/vendors?limit=50"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+        <tr><td colspan="5" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+  if (evt.detail.elt.id !== 'vendors-tbody') return;
+  try {
+    var data = JSON.parse(evt.detail.xhr.responseText);
+    var html = '';
+    if (data.length === 0) {
+      html = '<tr><td colspan="5" class="text-center text-muted py-4">No vendors found</td></tr>';
+    } else {
+      for (var i = 0; i < data.length; i++) {
+        var v = data[i];
+        html += '<tr><td>' + (v.name||'') + '</td><td>' + (v.contact_person||'') + '</td><td>' + (v.email||'') + '</td><td>' + (v.phone||'') + '</td><td>' + (v.category||'') + '</td></tr>';
+      }
+    }
+    evt.detail.elt.innerHTML = html;
+  } catch(e) {
+    evt.detail.elt.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Failed to load vendors</td></tr>';
+  }
+});
+</script>
+{% endblock %}

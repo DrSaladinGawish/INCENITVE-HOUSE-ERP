@@ -1,0 +1,55 @@
+<div id="dq-banner" class="mb-3">
+  <div class="alert alert-secondary d-flex align-items-center">
+    <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+    <span>Loading data quality status...</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  var el = document.getElementById('dq-banner');
+  if (!el) return;
+  fetch('/api/v1/data-quality/summary')
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var pct = d.overall_data_density_pct || 0;
+      var cls = 'alert-danger';
+      var icon = '&#9888;';
+      var badgeCls = 'bg-danger';
+      var conf = 'CRITICAL';
+      if (pct >= 50) { cls = 'alert-warning'; badgeCls = 'bg-warning text-dark'; conf = 'PARTIAL'; }
+      if (pct >= 90) { cls = 'alert-success'; icon = '&#10004;'; badgeCls = 'bg-success'; conf = 'GOOD'; }
+      var cashHtml = d.cash_basis_available
+        ? '<span class="text-success">Available</span>'
+        : '<span class="text-danger">Unavailable</span>';
+      el.innerHTML =
+        '<div class="alert ' + cls + ' d-flex align-items-start mb-0" role="alert">' +
+          '<div class="me-3 fs-5">' + icon + '</div>' +
+          '<div class="w-100">' +
+            '<div class="d-flex justify-content-between align-items-center">' +
+              '<strong>Data Quality: ' + (d.reporting_basis || 'unknown') + '</strong>' +
+              '<span class="badge ' + badgeCls + '">' + conf + '</span>' +
+            '</div>' +
+            '<div class="small mt-1">' +
+              'Financial data density: <strong>' + pct + '%</strong> | ' +
+              'Cash basis: <strong>' + cashHtml + '</strong>' +
+            '</div>' +
+            '<div class="small mt-1 text-muted">' +
+              (d.warning || '') +
+            '</div>' +
+            '<div class="small mt-1 text-muted">' +
+              'Showing ' + d.total_rows_with_amounts + ' of ' + d.total_rows_across_tables + ' rows with monetary values. ' +
+              'New transactions entered directly into EventCore will have complete amounts.' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+    })
+    .catch(function() {
+      el.innerHTML =
+        '<div class="alert alert-warning d-flex align-items-start mb-0">' +
+          '<div class="me-3 fs-5">&#9888;</div>' +
+          '<div><strong>Could not load data quality status</strong><br><span class="small">API unavailable. Report values may be incomplete.</span></div>' +
+        '</div>';
+    });
+})();
+</script>

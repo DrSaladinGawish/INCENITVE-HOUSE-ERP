@@ -1,0 +1,404 @@
+{% extends "base.html" %}
+{% block title %}Maintenance Log{% endblock %}
+{% block content %}
+
+<!-- ==============================================================
+     HOME / DASHBOARD — Default Open
+     ============================================================== -->
+<div id="module-home" class="ih-module-section ih-module-active">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">System Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="home-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="home-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="home-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <!-- Flip panels -->
+  <div id="home-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/system/users" class="ih-flip-link">Add New User</a>
+      <a href="/system/company-profile" class="ih-flip-link">Create Company Profile</a>
+      <a href="/system/fiscal-year" class="ih-flip-link">Set Fiscal Year</a>
+      <a href="/system/tax-codes" class="ih-flip-link">Configure Tax Codes</a>
+      <a href="/system/exchange-rates" class="ih-flip-link">Set Exchange Rates</a>
+      <a href="/system/payment-terms" class="ih-flip-link">Define Payment Terms</a>
+      <a href="/system/cost-centers" class="ih-flip-link">Create Cost Centers</a>
+      <a href="/system/permissions" class="ih-flip-link">Assign User Permissions</a>
+    </div>
+  </div>
+  <div id="home-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/system/audit-log" class="ih-flip-link">System Audit Log</a>
+      <a href="/system/user-activity" class="ih-flip-link">User Activity Tracking</a>
+      <a href="/system/login-history" class="ih-flip-link">Login History</a>
+      <a href="/system/import-status" class="ih-flip-link">Data Import Status</a>
+      <a href="/system/backup-status" class="ih-flip-link">Backup Status</a>
+      <a href="/system/integration-health" class="ih-flip-link">Integration Health</a>
+    </div>
+  </div>
+  <div id="home-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/system/reports/usage" class="ih-flip-link">System Usage Report</a>
+      <a href="/system/reports/performance" class="ih-flip-link">User Performance Dashboard</a>
+      <a href="/system/reports/data-growth" class="ih-flip-link">Data Growth Analysis</a>
+      <a href="/system/reports/errors" class="ih-flip-link">Error Log Summary</a>
+      <a href="/system/reports/security" class="ih-flip-link">Security Compliance Report</a>
+    </div>
+  </div>
+
+  <!-- Home dashboard content -->
+  {% include 'partials/dashboard_health.html' %}
+  {% include 'partials/dashboard_kpi.html' %}
+  {% include 'partials/dashboard_timeline.html' %}
+  <div class="ih-dashboard-columns">
+    {% include 'partials/dashboard_status.html' %}
+    {% include 'partials/dashboard_quarter.html' %}
+  </div>
+  {% include 'partials/dashboard_actions.html' %}
+
+  {% include 'partials/pending_items.html' %}
+
+  {% include 'partials/activity_feed.html' %}
+
+  <!-- P0 Financial Reports -->
+  <hr class="my-4">
+  <h2 class="h4 mb-3">Financial Reports</h2>
+  {% include 'partials/data_quality_dashboard.html' %}
+  {% include 'partials/trial_balance_viewer.html' %}
+
+  <!-- P1: Revenue Pipeline -->
+  <section class="mb-4 mt-4">
+    {% include "partials/revenue_pipeline_chart.html" %}
+  </section>
+
+  <!-- P1: Job P&L -->
+  <section class="mb-4">
+    {% include "partials/job_pnl_cards.html" %}
+  </section>
+
+  <!-- P1: Voucher Entry -->
+  <section class="mb-4">
+    <div class="row g-4">
+      <div class="col-lg-6">
+        {% include "partials/payment_voucher_form.html" %}
+      </div>
+      <div class="col-lg-6">
+        {% include "partials/receipt_voucher_form.html" %}
+      </div>
+    </div>
+  </section>
+
+<!-- ==============================================================
+     SALES MODULE
+     ============================================================== -->
+<div id="module-sales" class="ih-module-section">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">Sales Module Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="sales-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="sales-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="sales-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <div id="sales-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/sales/new-client" class="ih-flip-link">Enter New Client</a>
+      <a href="/sales/manual-invoice" class="ih-flip-link">Enter Manual Invoice</a>
+      <a href="/sales/e-invoice" class="ih-flip-link">Enter E-Invoice</a>
+      <a href="/sales/quotation" class="ih-flip-link">Create Sales Quotation</a>
+      <a href="/sales/order" class="ih-flip-link">Create Sales Order</a>
+      <a href="/sales/delivery-note" class="ih-flip-link">Create Delivery Note</a>
+      <a href="/sales/credit-note" class="ih-flip-link">Create Credit Note</a>
+      <a href="/sales/import-excel" class="ih-flip-link">Import Sales from Excel</a>
+    </div>
+  </div>
+  <div id="sales-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/sales/client-statement" class="ih-flip-link">Client Statement of Accounts</a>
+      <a href="/sales/line-item-inquiry" class="ih-flip-link">Sales Line Item Inquiry</a>
+      <a href="/sales/uncollected-invoices" class="ih-flip-link">Uncollected Invoices Inquiry</a>
+      <a href="/sales/unapplied-rct" class="ih-flip-link">Unapplied Receipts Inquiry</a>
+      <a href="/sales/customer-aging" class="ih-flip-link">Customer Aging Analysis</a>
+      <a href="/sales/pipeline" class="ih-flip-link">Sales Pipeline View</a>
+      <a href="/sales/quotation-status" class="ih-flip-link">Quotation Status Tracker</a>
+      <a href="/sales/fulfillment" class="ih-flip-link">Order Fulfillment Status</a>
+    </div>
+  </div>
+  <div id="sales-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/sales/reports/period" class="ih-flip-link">Sales by Period</a>
+      <a href="/sales/reports/customer" class="ih-flip-link">Sales by Customer</a>
+      <a href="/sales/reports/product" class="ih-flip-link">Sales by Product</a>
+      <a href="/sales/reports/salesperson" class="ih-flip-link">Sales by Salesperson</a>
+      <a href="/sales/reports/region" class="ih-flip-link">Sales by Region</a>
+      <a href="/sales/reports/aging" class="ih-flip-link">Aging Report</a>
+      <a href="/sales/reports/statement" class="ih-flip-link">Customer Statement of Account</a>
+      <a href="/sales/reports/commission" class="ih-flip-link">Sales Commission Report</a>
+      <a href="/sales/reports/vat" class="ih-flip-link">VAT/Sales Tax Report</a>
+    </div>
+  </div>
+
+  <div class="ih-kpi-ribbon" id="kpi-ribbon-sales">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Sales YTD</span><span class="ih-kpi-value">€1,240,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Active Quotations</span><span class="ih-kpi-value">8</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Pending Orders</span><span class="ih-kpi-value">12</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Overdue Invoices</span><span class="ih-kpi-value">3</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Top Customer</span><span class="ih-kpi-value">€340K</span></div>
+  </div>
+  <div class="ih-card"><div class="ih-card-header"><h3 class="ih-card-title">Sales Trend</h3></div><div class="ih-chart-container" style="height:200px"><canvas id="salesChart"></canvas></div></div>
+</div>
+
+<!-- ==============================================================
+     PURCHASE MODULE
+     ============================================================== -->
+<div id="module-purchase" class="ih-module-section">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">Purchase Module Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="purchase-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="purchase-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="purchase-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <div id="purchase-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/purchase/new-vendor" class="ih-flip-link">Enter New Vendor</a>
+      <a href="/purchase/manual-invoice" class="ih-flip-link">Enter Manual Purchase Invoice</a>
+      <a href="/purchase/e-invoice" class="ih-flip-link">Enter Purchase E-Invoice</a>
+      <a href="/purchase/create-po" class="ih-flip-link">Create Purchase Order</a>
+      <a href="/purchase/create-rfq" class="ih-flip-link">Create Request for Quotation</a>
+      <a href="/purchase/create-grn" class="ih-flip-link">Create Goods Received Note</a>
+      <a href="/purchase/debit-note" class="ih-flip-link">Create Debit Note</a>
+      <a href="/purchase/vendor-payment" class="ih-flip-link">Create Vendor Payment Voucher</a>
+    </div>
+  </div>
+  <div id="purchase-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/purchase/vendor-statement" class="ih-flip-link">Vendor Statement of Accounts</a>
+      <a href="/purchase/quotation-inquiry" class="ih-flip-link">Unfulfilled Quotation Item Inquiry</a>
+      <a href="/purchase/uncollected-items" class="ih-flip-link">Uncollected Purchase Items Inquiry</a>
+      <a href="/purchase/unapplied-pmt" class="ih-flip-link">Unapplied Payments Inquiry</a>
+      <a href="/purchase/po-tracker" class="ih-flip-link">PO Status Tracker</a>
+      <a href="/purchase/vendor-aging" class="ih-flip-link">Vendor Aging Analysis</a>
+      <a href="/purchase/delivery-performance" class="ih-flip-link">Delivery Performance by Vendor</a>
+    </div>
+  </div>
+  <div id="purchase-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/purchase/reports/period" class="ih-flip-link">Purchase by Period</a>
+      <a href="/purchase/reports/vendor" class="ih-flip-link">Purchase by Vendor</a>
+      <a href="/purchase/reports/product" class="ih-flip-link">Purchase by Product</a>
+      <a href="/purchase/reports/po-aging" class="ih-flip-link">PO Aging Report</a>
+      <a href="/purchase/reports/spend" class="ih-flip-link">Spend Analysis by Category</a>
+      <a href="/purchase/reports/vendor-performance" class="ih-flip-link">Vendor Performance Scorecard</a>
+      <a href="/purchase/reports/lead-time" class="ih-flip-link">Procurement Lead Time Report</a>
+      <a href="/purchase/reports/vat" class="ih-flip-link">VAT/Purchase Tax Report</a>
+    </div>
+  </div>
+
+  <div class="ih-kpi-ribbon" id="kpi-ribbon-purchase">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Purchases YTD</span><span class="ih-kpi-value">€876,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Active POs</span><span class="ih-kpi-value">15</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Pending Deliveries</span><span class="ih-kpi-value">7</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Overdue Payments</span><span class="ih-kpi-value">2</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Top Vendor</span><span class="ih-kpi-value">€210K</span></div>
+  </div>
+  <div class="ih-card"><div class="ih-card-header"><h3 class="ih-card-title">Purchase Trend</h3></div><div class="ih-chart-container" style="height:200px"><canvas id="purchaseChart"></canvas></div></div>
+</div>
+
+<!-- ==============================================================
+     CASH & BANK MODULE
+     ============================================================== -->
+<div id="module-cashbank" class="ih-module-section">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">Cash &amp; Bank Module Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="cashbank-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="cashbank-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="cashbank-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <div id="cashbank-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/cashbank/new-cheque-book" class="ih-flip-link">Enter New Cheque Book</a>
+      <a href="/cashbank/fx-rates" class="ih-flip-link">Foreign Currency Rates Upload</a>
+      <a href="/cashbank/bank-statement" class="ih-flip-link">Bank Statement Upload</a>
+      <a href="/cashbank/petty-cash" class="ih-flip-link">Enter Petty Cash Voucher</a>
+      <a href="/cashbank/manual-payment" class="ih-flip-link">Enter Manual Payment Voucher</a>
+      <a href="/cashbank/transfers" class="ih-flip-link">Transfers Between Accounts</a>
+      <a href="/cashbank/reimbursement" class="ih-flip-link">Petty Cash Reimbursement</a>
+      <a href="/cashbank/bank-charges" class="ih-flip-link">Bank Charges Entry</a>
+      <a href="/cashbank/pos" class="ih-flip-link">POS Transaction Entry</a>
+      <a href="/cashbank/deposit" class="ih-flip-link">Deposit Entry</a>
+    </div>
+  </div>
+  <div id="cashbank-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/cashbank/reconciliation" class="ih-flip-link">Bank Reconciliation Status</a>
+      <a href="/cashbank/cheque-balances" class="ih-flip-link">Check Book Balances Inquiry</a>
+      <a href="/cashbank/unreconciled" class="ih-flip-link">Unreconciled Statement Items</a>
+      <a href="/cashbank/petty-cash-inquiry" class="ih-flip-link">Petty Cash Inquiry</a>
+      <a href="/cashbank/cashflow-projection" class="ih-flip-link">Cash Flow Projection</a>
+      <a href="/cashbank/bank-balances" class="ih-flip-link">Bank Account Balances</a>
+      <a href="/cashbank/outstanding-cheques" class="ih-flip-link">Outstanding Cheques Inquiry</a>
+      <a href="/cashbank/deposit-in-transit" class="ih-flip-link">Deposit in Transit Inquiry</a>
+    </div>
+  </div>
+  <div id="cashbank-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/cashbank/reports/reconciliation" class="ih-flip-link">Bank Reconciliation Report</a>
+      <a href="/cashbank/reports/cashflow-direct" class="ih-flip-link">Cash Flow Statement (Direct)</a>
+      <a href="/cashbank/reports/cashflow-indirect" class="ih-flip-link">Cash Flow Statement (Indirect)</a>
+      <a href="/cashbank/reports/summary" class="ih-flip-link">Bank Summary Report</a>
+      <a href="/cashbank/reports/petty-cash" class="ih-flip-link">Petty Cash Report</a>
+      <a href="/cashbank/reports/cheque-register" class="ih-flip-link">Cheque Register Report</a>
+      <a href="/cashbank/reports/deposit-summary" class="ih-flip-link">Deposit Summary Report</a>
+      <a href="/cashbank/reports/charges-analysis" class="ih-flip-link">Bank Charges Analysis</a>
+    </div>
+  </div>
+
+  <div class="ih-kpi-ribbon" id="kpi-ribbon-cashbank">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Cash on Hand</span><span class="ih-kpi-value">€45,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Bank Balance</span><span class="ih-kpi-value">€1,240,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Unreconciled Items</span><span class="ih-kpi-value">8</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Petty Cash Balance</span><span class="ih-kpi-value">€2,340</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Monthly Cash Flow</span><span class="ih-kpi-value">€+34K</span></div>
+  </div>
+  <div class="ih-card"><div class="ih-card-header"><h3 class="ih-card-title">Cash Position</h3></div><div class="ih-chart-container" style="height:200px"><canvas id="cashChart"></canvas></div></div>
+</div>
+
+<!-- ==============================================================
+     ACCOUNTS & FINANCIAL MODULE
+     ============================================================== -->
+<div id="module-accounts" class="ih-module-section">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">Accounts &amp; Financial Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="accounts-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="accounts-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="accounts-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <div id="accounts-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/accounts/new-account" class="ih-flip-link">Create New Account</a>
+      <a href="/accounts/new-asset" class="ih-flip-link">Create New Fixed Asset</a>
+      <a href="/accounts/new-cost-center" class="ih-flip-link">Create New Admin Cost Center</a>
+      <a href="/accounts/manual-jv" class="ih-flip-link">Create Manual Journal Voucher</a>
+      <a href="/accounts/adjusting-entry" class="ih-flip-link">Create Adjusting Entry</a>
+      <a href="/accounts/closing-entry" class="ih-flip-link">Create Closing Entry</a>
+      <a href="/accounts/reversing-entry" class="ih-flip-link">Create Reversing Entry</a>
+      <a href="/accounts/overhead-allocation" class="ih-flip-link">Allocate Overhead Costs</a>
+      <a href="/accounts/depreciation" class="ih-flip-link">Depreciation Run</a>
+    </div>
+  </div>
+  <div id="accounts-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/accounts/ledger" class="ih-flip-link">General Ledger Inquiry</a>
+      <a href="/accounts/tb" class="ih-flip-link">Trial Balance Inquiry</a>
+      <a href="/accounts/cost-center-balances" class="ih-flip-link">Cost Center Balances Inquiry</a>
+      <a href="/accounts/exchange-diff" class="ih-flip-link">Difference of Exchange Accounts Inquiry</a>
+      <a href="/accounts/fixed-assets" class="ih-flip-link">Fixed Assets Register Inquiry</a>
+      <a href="/accounts/budget-vs-actual" class="ih-flip-link">Budget vs. Actual Inquiry</a>
+      <a href="/accounts/inter-company" class="ih-flip-link">Inter-Company Balances Inquiry</a>
+      <a href="/accounts/retained-earnings" class="ih-flip-link">Retained Earnings Inquiry</a>
+    </div>
+  </div>
+  <div id="accounts-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/accounts/reports/ifrs" class="ih-flip-link">IFRS Updated Presentation</a>
+      <a href="/accounts/reports/financial-statement" class="ih-flip-link">Financial Statement</a>
+      <a href="/accounts/reports/cashflow" class="ih-flip-link">Cash Flow Statement</a>
+      <a href="/accounts/reports/balance-sheet" class="ih-flip-link">Balance Sheet</a>
+      <a href="/accounts/reports/income-statement" class="ih-flip-link">Income Statement</a>
+      <a href="/accounts/reports/equity" class="ih-flip-link">Statement of Changes in Equity</a>
+      <a href="/accounts/reports/notes" class="ih-flip-link">Notes to Financial Statements</a>
+      <a href="/accounts/reports/trial-balance" class="ih-flip-link">Monthly/Quarterly Trial Balance</a>
+      <a href="/accounts/reports/gl-detail" class="ih-flip-link">General Ledger Detail Report</a>
+      <a href="/accounts/reports/cost-center-perf" class="ih-flip-link">Cost Center Performance Report</a>
+      <a href="/accounts/reports/depreciation" class="ih-flip-link">Fixed Assets Depreciation Report</a>
+      <a href="/accounts/reports/exchange-gain-loss" class="ih-flip-link">Exchange Gain/Loss Report</a>
+      <a href="/accounts/reports/budget-variance" class="ih-flip-link">Budget Variance Report</a>
+    </div>
+  </div>
+
+  <div class="ih-kpi-ribbon" id="kpi-ribbon-accounts">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Assets</span><span class="ih-kpi-value">€4,200,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Liabilities</span><span class="ih-kpi-value">€1,800,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Net Equity</span><span class="ih-kpi-value">€2,400,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Current Month Rev</span><span class="ih-kpi-value">€320,000</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Net Profit</span><span class="ih-kpi-value">€85,000</span></div>
+  </div>
+  <div class="ih-card"><div class="ih-card-header"><h3 class="ih-card-title">Financial Position</h3></div><div class="ih-chart-container" style="height:200px"><canvas id="accountsChart"></canvas></div></div>
+</div>
+
+<!-- ==============================================================
+     EVENT MANAGEMENT MODULE
+     ============================================================== -->
+<div id="module-events" class="ih-module-section">
+  <div class="ih-module-header">
+    <h1 class="ih-page-title">Event Management Dashboard</h1>
+    <div class="ih-flip-tabs">
+      <button class="ih-flip-tab" data-tab="events-input">Input Entry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="events-inquiry">Module Inquiry <span class="ih-flip-arrow">&#9660;</span></button>
+      <button class="ih-flip-tab" data-tab="events-reports">Reports <span class="ih-flip-arrow">&#9660;</span></button>
+    </div>
+  </div>
+
+  <div id="events-input" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/events/new" class="ih-flip-link">Create New Event</a>
+      <a href="/events/conceptual-budget" class="ih-flip-link">Create Conceptual Budget</a>
+      <a href="/events/convert-budget" class="ih-flip-link">Convert Conceptual Budget to Execution</a>
+      <a href="/events/add-vendor" class="ih-flip-link">Add Event Vendor/Supplier</a>
+      <a href="/events/create-po" class="ih-flip-link">Create Event Purchase Order</a>
+      <a href="/events/invoice" class="ih-flip-link">Enter Event Invoice</a>
+      <a href="/events/assign-staff" class="ih-flip-link">Assign Event Staff</a>
+      <a href="/events/upload-docs" class="ih-flip-link">Upload Event Documents</a>
+      <a href="/events/change-order" class="ih-flip-link">Create Event Change Order</a>
+    </div>
+  </div>
+  <div id="events-inquiry" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/events/inquiry/fulfilled" class="ih-flip-link">Historical Fulfilled Events</a>
+      <a href="/events/inquiry/preparation" class="ih-flip-link">Events Under Preparation</a>
+      <a href="/events/inquiry/progress" class="ih-flip-link">Events On Progress</a>
+      <a href="/events/inquiry/wrapping" class="ih-flip-link">Events Wrapping Up</a>
+      <a href="/events/inquiry/conceptual" class="ih-flip-link">Conceptual Events</a>
+      <a href="/events/inquiry/change-order" class="ih-flip-link">Event Change Order Inquiry</a>
+      <a href="/events/inquiry/supplier" class="ih-flip-link">Events Supplier Inquiry</a>
+      <a href="/events/inquiry/profitability" class="ih-flip-link">Event Profitability Inquiry</a>
+      <a href="/events/inquiry/venue" class="ih-flip-link">Venue Availability Inquiry</a>
+    </div>
+  </div>
+  <div id="events-reports" class="ih-flip-panel">
+    <div class="ih-flip-grid">
+      <a href="/events/reports/summary" class="ih-flip-link">Event Summary Report</a>
+      <a href="/events/reports/profitability" class="ih-flip-link">Event Profitability Report</a>
+      <a href="/events/reports/client" class="ih-flip-link">Client Event History</a>
+      <a href="/events/reports/venue" class="ih-flip-link">Venue Utilization Report</a>
+      <a href="/events/reports/staff" class="ih-flip-link">Staff Assignment Report</a>
+      <a href="/events/reports/budget-vs-actual" class="ih-flip-link">Event Budget vs. Actual</a>
+      <a href="/events/reports/vendor-performance" class="ih-flip-link">Vendor Performance by Event</a>
+      <a href="/events/reports/timeline" class="ih-flip-link">Event Timeline Report</a>
+    </div>
+  </div>
+
+  <div class="ih-kpi-ribbon" id="kpi-ribbon-events">
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Total Events YTD</span><span class="ih-kpi-value">47</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Active Events</span><span class="ih-kpi-value">12</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Completed</span><span class="ih-kpi-value">28</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Upcoming (30d)</span><span class="ih-kpi-value">7</span></div>
+    <div class="ih-kpi-card"><span class="ih-kpi-label">Event Revenue</span><span class="ih-kpi-value">€890K</span></div>
+  </div>
+  <div class="ih-card"><div class="ih-card-header"><h3 class="ih-card-title">Event Overview</h3></div><div class="ih-chart-container" style="height:200px"><canvas id="eventsChart"></canvas></div></div>
+</div>
+
+<script src="/static/js/dashboard_charts.js"></script>
+{% endblock %}

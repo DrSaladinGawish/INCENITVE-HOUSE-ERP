@@ -1,0 +1,15 @@
+<div class="ih-quick-actions-bar" id="quick-actions">
+  <button class="ih-action-btn" data-action="new-event" data-permission="event:create" onclick="handleQuickAction(this)">
+    <span class="ih-action-icon">+</span> New Event
+  </button>
+  <button class="ih-action-btn" data-action="assign-staff" data-permission="staff:assign" onclick="handleQuickAction(this)">
+    <span class="ih-action-icon">👤</span> Assign Staff
+  </button>
+  <button class="ih-action-btn" data-action="gen-invoice" data-permission="invoice:create" onclick="handleQuickAction(this)">
+    <span class="ih-action-icon">📄</span> Generate Invoice
+  </button>
+  <button class="ih-action-btn" data-action="run-report" data-permission="report:read" onclick="handleQuickAction(this)">
+    <span class="ih-action-icon">📊</span> Run Report
+  </button>
+</div>
+{# TODO: Audit log POST to /api/v1/dashboard/audit/log per Spec §6 #}

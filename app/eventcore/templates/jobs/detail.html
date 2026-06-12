@@ -1,0 +1,114 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Job {{ job.job_code }} — EventCore ERP{% endblock %}
+{% block page_title %}{{ job.event_name }}{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item"><a href="/jobs">Jobs</a></li>
+  <li class="breadcrumb-item active">{{ job.job_code }}</li>
+{% endblock %}
+{% block page_actions %}
+  <span id="rx-badge"
+        hx-get="/api/v1/prescriptions/htmx/badge/{{ job.id }}"
+        hx-trigger="load, every:30s"
+        hx-swap="innerHTML">
+  </span>
+  <a href="#" class="btn btn-sm btn-outline-secondary ms-2"><i class="bi bi-pencil"></i> Edit</a>
+{% endblock %}
+
+{% block page_content %}
+<div class="row g-3">
+
+  <!-- Job Summary Card -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-3">
+            <small class="text-muted">Job Code</small>
+            <div class="fw-semibold">{{ job.job_code }}</div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Status</small>
+            <div><span class="badge bg-{{ 'success' if job.status == 'active' else 'warning' if job.status == 'planning' else 'secondary' }}">{{ job.status }}</span></div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Revenue</small>
+            <div class="fw-semibold text-success">${{ "{:,.2f}".format(job.total_revenue or 0) }}</div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Cost</small>
+            <div class="fw-semibold text-danger">${{ "{:,.2f}".format(job.total_cost or 0) }}</div>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <small class="text-muted">Description</small>
+            <div>{{ job.description or '—' }}</div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Margin Target</small>
+            <div>{{ job.margin_target or '—' }}%</div>
+          </div>
+          <div class="col-md-3">
+            <small class="text-muted">Gross Profit</small>
+            <div class="fw-semibold {{ 'text-success' if (job.gross_profit or 0) >= 0 else 'text-danger' }}">${{ "{:,.2f}".format(job.gross_profit or 0) }} ({{ job.margin_pct or 0 }}%)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OR Insights Section -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-graph-up me-1"></i> OR Insights</span>
+        <span id="or-badge"
+              hx-get="/api/v1/jobs/{{ job.id }}/or-insights/badge"
+              hx-trigger="load, every:30s"
+              hx-swap="innerHTML">
+        </span>
+      </div>
+      <div class="card-body" id="or-insights-container"
+           hx-get="/api/v1/jobs/{{ job.id }}/or-insights"
+           hx-trigger="load, every:30s"
+           hx-swap="innerHTML">
+        <div class="text-center py-3">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Prescriptions Section (P5 HTMX) -->
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <i class="bi bi-prescription2 me-1"></i> Prescriptions
+      </div>
+      <div class="card-body" id="prescriptions-container"
+           hx-get="/api/v1/prescriptions/htmx/job/{{ job.id }}"
+           hx-trigger="load, every:15s"
+           hx-swap="innerHTML">
+        <div class="text-center py-3">
+          <div class="spinner-border spinner-border-sm text-primary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (evt.detail.target.id === 'prescriptions-container') {
+      var cards = evt.detail.target.querySelectorAll('.prescription-card');
+      if (cards.length > 0 && document.getElementById('rx-badge')) {
+        htmx.trigger('#rx-badge', 'load');
+      }
+    }
+  });
+</script>
+{% endblock %}

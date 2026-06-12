@@ -1,0 +1,10 @@
+import sqlite3
+c = sqlite3.connect("D:\\EventCore_ERP\\backend\\eventcore.db")
+r = c.execute("SELECT amount FROM bank_transactions LIMIT 5").fetchall()
+print("Sample amounts:", r)
+r2 = c.execute("SELECT COUNT(*) FROM bank_transactions WHERE amount IS NULL").fetchone()
+print("NULL amounts:", r2[0])
+r3 = c.execute("SELECT COUNT(*) FROM bank_transactions WHERE amount = 0").fetchone()
+print("Zero amounts:", r3[0])
+r4 = c.execute("SELECT COUNT(*) FROM bank_transactions WHERE amount IS NOT NULL AND amount != 0").fetchone()
+print("Non-zero amounts:", r4[0])

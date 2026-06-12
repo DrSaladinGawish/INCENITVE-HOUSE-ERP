@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <div>
+    <h4 class="mb-1">{% block page_title %}Page Title{% endblock %}</h4>
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-0">
+        <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+        {% block breadcrumbs %}{% endblock %}
+      </ol>
+    </nav>
+  </div>
+  <div>
+    {% block page_actions %}{% endblock %}
+  </div>
+</div>
+
+{% block page_content %}{% endblock %}
+{% endblock %}
+
+{% block extra_scripts %}{% endblock %}

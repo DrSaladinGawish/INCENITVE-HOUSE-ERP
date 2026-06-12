@@ -1,0 +1,95 @@
+[Lifespan] EventCore ERP v1.0.0 starting...
+2026-05-30 11:39:14,886 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-30 11:39:14,892 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("clients")
+2026-05-30 11:39:14,897 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:14,951 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("jobs")
+2026-05-30 11:39:14,958 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:14,964 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("job_line_items")
+2026-05-30 11:39:14,968 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:14,979 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("vendors")
+2026-05-30 11:39:14,983 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:14,994 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("purchase_invoices")
+2026-05-30 11:39:14,996 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,000 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("bank_transactions")
+2026-05-30 11:39:15,003 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,007 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("petty_cash")
+2026-05-30 11:39:15,012 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,017 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("quotations")
+2026-05-30 11:39:15,021 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,026 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("quotation_line_items")
+2026-05-30 11:39:15,030 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,041 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_invoices")
+2026-05-30 11:39:15,043 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,054 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_invoice_line_items")
+2026-05-30 11:39:15,056 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,065 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cost_centers")
+2026-05-30 11:39:15,067 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,071 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("payment_vouchers")
+2026-05-30 11:39:15,073 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,080 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-05-30 11:39:15,082 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,088 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("activity_log")
+2026-05-30 11:39:15,094 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,100 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("events")
+2026-05-30 11:39:15,106 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,112 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("employees")
+2026-05-30 11:39:15,115 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,122 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("leave_requests")
+2026-05-30 11:39:15,126 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,131 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("task_assignments")
+2026-05-30 11:39:15,136 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,144 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("journal_vouchers")
+2026-05-30 11:39:15,149 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,153 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("vat_returns")
+2026-05-30 11:39:15,159 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,165 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("company_profiles")
+2026-05-30 11:39:15,171 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,183 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("categories")
+2026-05-30 11:39:15,187 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,197 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sub_categories")
+2026-05-30 11:39:15,200 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,215 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("chart_accounts")
+2026-05-30 11:39:15,226 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,234 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("e_invoice_lines")
+2026-05-30 11:39:15,236 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,246 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_periods")
+2026-05-30 11:39:15,251 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,261 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_lines")
+2026-05-30 11:39:15,264 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,274 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_commitments")
+2026-05-30 11:39:15,280 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,289 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("prescriptions")
+2026-05-30 11:39:15,295 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,303 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("receipt_vouchers")
+2026-05-30 11:39:15,309 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,312 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("or_insights")
+2026-05-30 11:39:15,317 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,329 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("or_insights")
+2026-05-30 11:39:15,335 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,351 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_logs")
+2026-05-30 11:39:15,356 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-30 11:39:15,365 INFO sqlalchemy.engine.Engine 
+CREATE TABLE or_insights (
+	id UUID NOT NULL, 
+	job_id VARCHAR(50) NOT NULL, 
+	insight_id VARCHAR(100) NOT NULL, 
+	module VARCHAR(50) NOT NULL, 
+	integration_type VARCHAR(50), 
+	or_score FLOAT, 
+	sensitivity_range JSON, 
+	status VARCHAR(50), 
+	analysis_url TEXT, 
+	recommendations JSON, 
+	raw_data JSON, 
+	ui_render_hints JSON, 
+	created_at DATETIME, 
+	received_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (insight_id)
+)
+
+
+2026-05-30 11:39:15,379 INFO sqlalchemy.engine.Engine [no key 0.00510s] ()
+2026-05-30 11:39:15,466 INFO sqlalchemy.engine.Engine CREATE INDEX ix_or_insights_job_id ON or_insights (job_id)
+2026-05-30 11:39:15,467 INFO sqlalchemy.engine.Engine [no key 0.00087s] ()
+2026-05-30 11:39:15,507 INFO sqlalchemy.engine.Engine COMMIT

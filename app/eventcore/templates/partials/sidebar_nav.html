@@ -1,0 +1,99 @@
+<nav class="ih-sidebar">
+  <div class="ih-sidebar-nav">
+    <div class="ih-menu-item">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-speedometer2 ih-menu-icon"></i> Home
+      </a>
+    </div>
+
+    <div class="ih-menu-item" style="padding:16px 20px 4px;">
+      <small style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;text-transform:uppercase;">Operations</small>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/events" class="ih-menu-label {{ 'ih-active' if request.url.path.startswith('/events') else '' }}">
+        <i class="bi bi-calendar-event ih-menu-icon"></i>Events
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/jobs" class="ih-menu-label {{ 'ih-active' if request.url.path.startswith('/jobs') else '' }}">
+        <i class="bi bi-briefcase ih-menu-icon"></i>Jobs
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/clients" class="ih-menu-label {{ 'ih-active' if request.url.path.startswith('/clients') else '' }}">
+        <i class="bi bi-people ih-menu-icon"></i>Clients
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/vendors" class="ih-menu-label {{ 'ih-active' if request.url.path.startswith('/vendors') else '' }}">
+        <i class="bi bi-truck ih-menu-icon"></i>Vendors
+      </a>
+    </div>
+
+    <div class="ih-menu-item" style="padding:16px 20px 4px;">
+      <small style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;text-transform:uppercase;">Modules</small>
+    </div>
+    <div class="ih-menu-item" data-module="sales">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-cart ih-menu-icon"></i>Sales
+      </a>
+    </div>
+    <div class="ih-menu-item" data-module="purchase">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-bag ih-menu-icon"></i>Purchase
+      </a>
+    </div>
+    <div class="ih-menu-item" data-module="cashbank">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-bank ih-menu-icon"></i>Cash &amp; Bank
+      </a>
+    </div>
+    <div class="ih-menu-item" data-module="accounts">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-journal-text ih-menu-icon"></i>Accounts
+      </a>
+    </div>
+    <div class="ih-menu-item" data-module="events">
+      <a href="/dashboard" class="ih-menu-label {{ 'ih-active' if request.url.path == '/dashboard' else '' }}">
+        <i class="bi bi-calendar-event ih-menu-icon"></i>Event Management
+      </a>
+    </div>
+
+    <div class="ih-menu-item" style="padding:16px 20px 4px;">
+      <small style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;text-transform:uppercase;">Finance</small>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/payment-vouchers" class="ih-menu-label {{ 'ih-active' if request.url.path == '/payment-vouchers' else '' }}">
+        <i class="bi bi-cash-stack ih-menu-icon"></i>Payment Vouchers
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/receipt-vouchers" class="ih-menu-label {{ 'ih-active' if request.url.path == '/receipt-vouchers' else '' }}">
+        <i class="bi bi-cash-coin ih-menu-icon"></i>Receipt Vouchers
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/reports" class="ih-menu-label {{ 'ih-active' if request.url.path.startswith('/reports') else '' }}">
+        <i class="bi bi-graph-up ih-menu-icon"></i>Reports
+      </a>
+    </div>
+
+    <div class="ih-menu-item" style="padding:16px 20px 4px;">
+      <small style="color:rgba(255,255,255,0.3);font-size:10px;letter-spacing:1px;text-transform:uppercase;">System</small>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/data-quality" class="ih-menu-label {{ 'ih-active' if request.url.path == '/data-quality' else '' }}">
+        <i class="bi bi-shield-check ih-menu-icon"></i>Data Quality
+      </a>
+    </div>
+    <div class="ih-menu-item">
+      <a href="/settings" class="ih-menu-label {{ 'ih-active' if request.url.path == '/settings' else '' }}">
+        <i class="bi bi-gear ih-menu-icon"></i>Settings
+      </a>
+    </div>
+  </div>
+
+  <div class="ih-sidebar-footer">
+    <div class="ih-sidebar-tagline">The EVENTailors &mdash; since 2010</div>
+  </div>
+</nav>

@@ -1,0 +1,10 @@
+import sqlite3
+c = sqlite3.connect("D:\\EventCore_ERP\\backend\\eventcore.db")
+r = c.execute("SELECT invoice_id, SUM(total_amount) FROM sales_invoice_line_items GROUP BY invoice_id LIMIT 3").fetchall()
+print("Sample:", r)
+r2 = c.execute("SELECT COUNT(*) FROM sales_invoice_line_items WHERE total_amount > 0").fetchone()
+print("With amount > 0:", r2[0])
+r3 = c.execute("SELECT COUNT(*) FROM job_line_items WHERE type='cost' AND source_type='purchase_invoice' AND source_id IS NOT NULL").fetchone()
+print("Job line items as cost + purchase:", r3[0])
+r4 = c.execute("SELECT COUNT(*) FROM job_line_items WHERE type='revenue' AND source_type='sales_invoice'").fetchone()
+print("Job line items as revenue + sales:", r4[0])

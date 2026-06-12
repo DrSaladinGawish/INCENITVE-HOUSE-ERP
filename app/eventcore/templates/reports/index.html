@@ -1,0 +1,48 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Reports — EventCore ERP{% endblock %}
+{% block page_title %}Reports{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active">Reports</li>
+{% endblock %}
+
+{% block page_content %}
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Trial Balance</h5>
+        <p class="card-text small text-muted">Journal Voucher-based trial balance. $857K balanced — high confidence.</p>
+        <a href="/accounts/tb" class="btn btn-sm btn-outline-success">View</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Revenue Pipeline</h5>
+        <p class="card-text small text-muted">Sales invoice pipeline by month. $2.2M — low confidence.</p>
+        <a href="/sales/pipeline" class="btn btn-sm btn-outline-warning">View</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Job Profit & Loss</h5>
+        <p class="card-text small text-muted">Per-job P&L on invoice-accrual basis. Low confidence.</p>
+        <a href="/jobs" class="btn btn-sm btn-outline-primary">View</a>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <h5 class="card-title">Data Quality</h5>
+        <p class="card-text small text-muted">Row-level completeness across all tables. 1.3% density.</p>
+        <a href="/data-quality" class="btn btn-sm btn-outline-danger">View</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

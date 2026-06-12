@@ -1,0 +1,811 @@
+[Lifespan] EventCore ERP v1.0.0 starting...
+2026-05-29 23:20:15,411 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-29 23:20:15,413 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("clients")
+2026-05-29 23:20:15,419 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,438 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("clients")
+2026-05-29 23:20:15,441 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,445 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("jobs")
+2026-05-29 23:20:15,447 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,453 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("jobs")
+2026-05-29 23:20:15,456 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,460 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("job_line_items")
+2026-05-29 23:20:15,461 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,462 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("job_line_items")
+2026-05-29 23:20:15,463 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,465 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("vendors")
+2026-05-29 23:20:15,465 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,473 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("vendors")
+2026-05-29 23:20:15,474 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,476 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("purchase_invoices")
+2026-05-29 23:20:15,476 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,478 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("purchase_invoices")
+2026-05-29 23:20:15,479 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,481 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("bank_transactions")
+2026-05-29 23:20:15,481 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,483 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("bank_transactions")
+2026-05-29 23:20:15,484 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,490 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("petty_cash")
+2026-05-29 23:20:15,492 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,494 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("petty_cash")
+2026-05-29 23:20:15,495 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,497 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("quotations")
+2026-05-29 23:20:15,498 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,500 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("quotations")
+2026-05-29 23:20:15,502 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,507 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("quotation_line_items")
+2026-05-29 23:20:15,508 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,511 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("quotation_line_items")
+2026-05-29 23:20:15,511 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,513 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_invoices")
+2026-05-29 23:20:15,514 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,518 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("sales_invoices")
+2026-05-29 23:20:15,522 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,524 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sales_invoice_line_items")
+2026-05-29 23:20:15,526 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,528 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("sales_invoice_line_items")
+2026-05-29 23:20:15,530 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,532 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("cost_centers")
+2026-05-29 23:20:15,533 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,538 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("cost_centers")
+2026-05-29 23:20:15,539 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,543 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("payment_vouchers")
+2026-05-29 23:20:15,545 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,547 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("payment_vouchers")
+2026-05-29 23:20:15,548 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,549 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("users")
+2026-05-29 23:20:15,550 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,554 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("users")
+2026-05-29 23:20:15,556 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,560 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("activity_log")
+2026-05-29 23:20:15,561 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,563 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("activity_log")
+2026-05-29 23:20:15,563 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,565 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("events")
+2026-05-29 23:20:15,565 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,572 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("events")
+2026-05-29 23:20:15,574 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,577 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("employees")
+2026-05-29 23:20:15,577 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,580 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("employees")
+2026-05-29 23:20:15,581 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,583 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("leave_requests")
+2026-05-29 23:20:15,583 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,593 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("leave_requests")
+2026-05-29 23:20:15,594 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,596 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("task_assignments")
+2026-05-29 23:20:15,597 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,598 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("task_assignments")
+2026-05-29 23:20:15,599 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,600 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("journal_vouchers")
+2026-05-29 23:20:15,602 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,609 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("journal_vouchers")
+2026-05-29 23:20:15,610 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,612 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("vat_returns")
+2026-05-29 23:20:15,612 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,616 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("vat_returns")
+2026-05-29 23:20:15,617 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,621 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("company_profiles")
+2026-05-29 23:20:15,623 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,627 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("company_profiles")
+2026-05-29 23:20:15,627 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,629 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("categories")
+2026-05-29 23:20:15,629 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,631 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("categories")
+2026-05-29 23:20:15,631 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,633 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("sub_categories")
+2026-05-29 23:20:15,633 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,638 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("sub_categories")
+2026-05-29 23:20:15,640 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,642 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("chart_accounts")
+2026-05-29 23:20:15,642 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,645 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("chart_accounts")
+2026-05-29 23:20:15,653 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,661 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("e_invoice_lines")
+2026-05-29 23:20:15,662 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,665 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("e_invoice_lines")
+2026-05-29 23:20:15,665 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,669 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_periods")
+2026-05-29 23:20:15,670 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,676 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("budget_periods")
+2026-05-29 23:20:15,676 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,678 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_lines")
+2026-05-29 23:20:15,689 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,693 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("budget_lines")
+2026-05-29 23:20:15,694 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,697 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("budget_commitments")
+2026-05-29 23:20:15,697 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,700 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("budget_commitments")
+2026-05-29 23:20:15,703 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,705 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("receipt_vouchers")
+2026-05-29 23:20:15,708 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,711 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("receipt_vouchers")
+2026-05-29 23:20:15,712 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,715 INFO sqlalchemy.engine.Engine PRAGMA main.table_info("audit_logs")
+2026-05-29 23:20:15,715 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,718 INFO sqlalchemy.engine.Engine PRAGMA temp.table_info("audit_logs")
+2026-05-29 23:20:15,720 INFO sqlalchemy.engine.Engine [raw sql] ()
+2026-05-29 23:20:15,728 INFO sqlalchemy.engine.Engine 
+CREATE TABLE clients (
+	id UUID NOT NULL, 
+	client_code VARCHAR(10) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	industry VARCHAR(100), 
+	vat_number VARCHAR(50), 
+	default_currency VARCHAR(3), 
+	credit_limit NUMERIC(15, 2), 
+	payment_terms INTEGER, 
+	status VARCHAR(20), 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (client_code)
+)
+
+
+2026-05-29 23:20:15,735 INFO sqlalchemy.engine.Engine [no key 0.00089s] ()
+2026-05-29 23:20:15,760 INFO sqlalchemy.engine.Engine 
+CREATE TABLE vendors (
+	id UUID NOT NULL, 
+	bio_vendor_id UUID, 
+	name VARCHAR(255) NOT NULL, 
+	category VARCHAR(50), 
+	contact_person VARCHAR(255), 
+	email VARCHAR(255), 
+	phone VARCHAR(50), 
+	vat_number VARCHAR(50), 
+	bank_account VARCHAR(100), 
+	bank_name VARCHAR(100), 
+	currency VARCHAR(3), 
+	payment_terms INTEGER, 
+	rating NUMERIC(3, 2), 
+	status VARCHAR(20), 
+	created_at DATETIME, 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,760 INFO sqlalchemy.engine.Engine [no key 0.00063s] ()
+2026-05-29 23:20:15,782 INFO sqlalchemy.engine.Engine 
+CREATE TABLE users (
+	id UUID NOT NULL, 
+	bio_user_id UUID, 
+	email VARCHAR(255) NOT NULL, 
+	full_name VARCHAR(255) NOT NULL, 
+	password_hash VARCHAR(255), 
+	role VARCHAR(50), 
+	department VARCHAR(50), 
+	is_active BOOLEAN, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (email)
+)
+
+
+2026-05-29 23:20:15,783 INFO sqlalchemy.engine.Engine [no key 0.00130s] ()
+2026-05-29 23:20:15,807 INFO sqlalchemy.engine.Engine 
+CREATE TABLE employees (
+	id UUID NOT NULL, 
+	employee_code VARCHAR(20) NOT NULL, 
+	full_name VARCHAR(255) NOT NULL, 
+	email VARCHAR(255) NOT NULL, 
+	phone VARCHAR(50), 
+	department VARCHAR(100), 
+	position VARCHAR(100), 
+	hire_date DATE, 
+	salary NUMERIC(15, 2), 
+	currency VARCHAR(3), 
+	bank_account VARCHAR(100), 
+	bank_name VARCHAR(100), 
+	status VARCHAR(20), 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (employee_code), 
+	UNIQUE (email)
+)
+
+
+2026-05-29 23:20:15,809 INFO sqlalchemy.engine.Engine [no key 0.00206s] ()
+2026-05-29 23:20:15,825 INFO sqlalchemy.engine.Engine 
+CREATE TABLE vat_returns (
+	id UUID NOT NULL, 
+	period_start DATE NOT NULL, 
+	period_end DATE NOT NULL, 
+	total_sales_vat NUMERIC(15, 2), 
+	total_purchase_vat NUMERIC(15, 2), 
+	net_vat_due NUMERIC(15, 2), 
+	status VARCHAR(20), 
+	submitted_at DATETIME, 
+	submitted_by UUID, 
+	created_by UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,827 INFO sqlalchemy.engine.Engine [no key 0.00140s] ()
+2026-05-29 23:20:15,843 INFO sqlalchemy.engine.Engine 
+CREATE TABLE company_profiles (
+	id UUID NOT NULL, 
+	company_name VARCHAR(255) NOT NULL, 
+	legal_name VARCHAR(255) NOT NULL, 
+	tax_number VARCHAR(50) NOT NULL, 
+	commercial_register VARCHAR(50), 
+	address_line1 VARCHAR(255) NOT NULL, 
+	address_line2 VARCHAR(255), 
+	city VARCHAR(100), 
+	country VARCHAR(100), 
+	phone VARCHAR(50), 
+	email VARCHAR(255), 
+	website VARCHAR(255), 
+	logo_url VARCHAR(500), 
+	default_currency VARCHAR(3), 
+	vat_rate NUMERIC(5, 2), 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,844 INFO sqlalchemy.engine.Engine [no key 0.00109s] ()
+2026-05-29 23:20:15,864 INFO sqlalchemy.engine.Engine 
+CREATE TABLE categories (
+	id VARCHAR NOT NULL, 
+	name VARCHAR NOT NULL, 
+	PRIMARY KEY (id), 
+	UNIQUE (name)
+)
+
+
+2026-05-29 23:20:15,864 INFO sqlalchemy.engine.Engine [no key 0.00065s] ()
+2026-05-29 23:20:15,879 INFO sqlalchemy.engine.Engine 
+CREATE TABLE sub_categories (
+	id VARCHAR NOT NULL, 
+	name VARCHAR NOT NULL, 
+	category_name VARCHAR NOT NULL, 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,880 INFO sqlalchemy.engine.Engine [no key 0.00106s] ()
+2026-05-29 23:20:15,893 INFO sqlalchemy.engine.Engine 
+CREATE TABLE chart_accounts (
+	id UUID NOT NULL, 
+	account_code VARCHAR(20) NOT NULL, 
+	account_name VARCHAR(255) NOT NULL, 
+	account_type VARCHAR(20) NOT NULL, 
+	is_cos BOOLEAN, 
+	description TEXT, 
+	is_active BOOLEAN, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (account_code)
+)
+
+
+2026-05-29 23:20:15,894 INFO sqlalchemy.engine.Engine [no key 0.00155s] ()
+2026-05-29 23:20:15,911 INFO sqlalchemy.engine.Engine 
+CREATE TABLE budget_periods (
+	id UUID NOT NULL, 
+	fiscal_year INTEGER NOT NULL, 
+	quarter INTEGER, 
+	month INTEGER, 
+	label VARCHAR(50) NOT NULL, 
+	start_date DATE NOT NULL, 
+	end_date DATE NOT NULL, 
+	is_closed BOOLEAN, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,913 INFO sqlalchemy.engine.Engine [no key 0.00234s] ()
+2026-05-29 23:20:15,933 INFO sqlalchemy.engine.Engine 
+CREATE TABLE audit_logs (
+	id BIGINT NOT NULL, 
+	timestamp DATETIME, 
+	actor_id VARCHAR(255), 
+	actor_name VARCHAR(255), 
+	action VARCHAR(50) NOT NULL, 
+	target_type VARCHAR(100) NOT NULL, 
+	target_id VARCHAR(255), 
+	old_value TEXT, 
+	new_value TEXT, 
+	description VARCHAR(1000), 
+	ip_address VARCHAR(50), 
+	user_agent VARCHAR(500), 
+	PRIMARY KEY (id)
+)
+
+
+2026-05-29 23:20:15,936 INFO sqlalchemy.engine.Engine [no key 0.00292s] ()
+2026-05-29 23:20:15,951 INFO sqlalchemy.engine.Engine CREATE INDEX ix_audit_logs_timestamp ON audit_logs (timestamp)
+2026-05-29 23:20:15,953 INFO sqlalchemy.engine.Engine [no key 0.00234s] ()
+2026-05-29 23:20:15,970 INFO sqlalchemy.engine.Engine 
+CREATE TABLE jobs (
+	id UUID NOT NULL, 
+	job_code VARCHAR(20) NOT NULL, 
+	year INTEGER NOT NULL, 
+	client_id UUID NOT NULL, 
+	sequence INTEGER NOT NULL, 
+	event_name VARCHAR(255) NOT NULL, 
+	event_dates VARCHAR(50), 
+	description TEXT, 
+	total_revenue NUMERIC(15, 2), 
+	total_cost NUMERIC(15, 2), 
+	gross_profit NUMERIC(15, 2), 
+	margin_pct NUMERIC(5, 2), 
+	status VARCHAR(20), 
+	margin_target NUMERIC(5, 2), 
+	created_by UUID, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (job_code), 
+	FOREIGN KEY(client_id) REFERENCES clients (id)
+)
+
+
+2026-05-29 23:20:15,973 INFO sqlalchemy.engine.Engine [no key 0.00199s] ()
+2026-05-29 23:20:15,993 INFO sqlalchemy.engine.Engine 
+CREATE TABLE cost_centers (
+	id UUID NOT NULL, 
+	code VARCHAR(10) NOT NULL, 
+	name VARCHAR(255) NOT NULL, 
+	client_id UUID, 
+	description TEXT, 
+	is_active BOOLEAN, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (code), 
+	FOREIGN KEY(client_id) REFERENCES clients (id)
+)
+
+
+2026-05-29 23:20:15,994 INFO sqlalchemy.engine.Engine [no key 0.00173s] ()
+2026-05-29 23:20:16,013 INFO sqlalchemy.engine.Engine 
+CREATE TABLE leave_requests (
+	id UUID NOT NULL, 
+	employee_id UUID NOT NULL, 
+	leave_type VARCHAR(50), 
+	start_date DATE NOT NULL, 
+	end_date DATE NOT NULL, 
+	reason TEXT, 
+	status VARCHAR(20), 
+	approved_by UUID, 
+	approved_at DATETIME, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(employee_id) REFERENCES employees (id)
+)
+
+
+2026-05-29 23:20:16,013 INFO sqlalchemy.engine.Engine [no key 0.00065s] ()
+2026-05-29 23:20:16,052 INFO sqlalchemy.engine.Engine 
+CREATE TABLE job_line_items (
+	id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	type VARCHAR(10) NOT NULL, 
+	category VARCHAR(50) NOT NULL, 
+	description VARCHAR(255) NOT NULL, 
+	sub_category VARCHAR(100), 
+	quantity NUMERIC(10, 2), 
+	unit_price NUMERIC(15, 2), 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	source_type VARCHAR(50), 
+	source_id UUID, 
+	vendor_id UUID, 
+	client_invoice_id UUID, 
+	is_committed BOOLEAN, 
+	is_locked BOOLEAN, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id) ON DELETE CASCADE
+)
+
+
+2026-05-29 23:20:16,053 INFO sqlalchemy.engine.Engine [no key 0.00153s] ()
+2026-05-29 23:20:16,074 INFO sqlalchemy.engine.Engine 
+CREATE TABLE bank_transactions (
+	id UUID NOT NULL, 
+	job_id UUID, 
+	bank_account VARCHAR(100) NOT NULL, 
+	transaction_date DATE NOT NULL, 
+	description TEXT NOT NULL, 
+	reference VARCHAR(255), 
+	amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	counterparty VARCHAR(255), 
+	counterparty_account VARCHAR(100), 
+	is_reconciled BOOLEAN, 
+	reconciled_at DATETIME, 
+	reconciled_by UUID, 
+	linked_job_id UUID, 
+	linked_at DATETIME, 
+	linked_by UUID, 
+	linked_method VARCHAR(20), 
+	match_confidence NUMERIC(5, 2), 
+	match_reason TEXT, 
+	import_batch_id UUID, 
+	raw_csv_row TEXT, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(linked_job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,075 INFO sqlalchemy.engine.Engine [no key 0.00210s] ()
+2026-05-29 23:20:16,093 INFO sqlalchemy.engine.Engine 
+CREATE TABLE petty_cash (
+	id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	staff_id UUID, 
+	staff_name VARCHAR(255) NOT NULL, 
+	expense_date DATE NOT NULL, 
+	category VARCHAR(50) NOT NULL, 
+	description TEXT NOT NULL, 
+	amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	has_receipt BOOLEAN, 
+	receipt_path VARCHAR(500), 
+	status VARCHAR(20), 
+	approved_by UUID, 
+	approved_at DATETIME, 
+	reimbursed_at DATETIME, 
+	reimbursement_method VARCHAR(20), 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,093 INFO sqlalchemy.engine.Engine [no key 0.00057s] ()
+2026-05-29 23:20:16,109 INFO sqlalchemy.engine.Engine 
+CREATE TABLE quotations (
+	id UUID NOT NULL, 
+	client_id UUID NOT NULL, 
+	quote_number VARCHAR(50) NOT NULL, 
+	quote_date DATE NOT NULL, 
+	valid_until DATE, 
+	event_name VARCHAR(255) NOT NULL, 
+	event_dates VARCHAR(50), 
+	destination VARCHAR(255), 
+	pax_count INTEGER, 
+	subtotal NUMERIC(15, 2), 
+	vat_amount NUMERIC(15, 2), 
+	total_amount NUMERIC(15, 2), 
+	currency VARCHAR(3), 
+	status VARCHAR(20), 
+	converted_to_job_id UUID, 
+	converted_at DATETIME, 
+	pdf_path VARCHAR(500), 
+	created_by UUID, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(client_id) REFERENCES clients (id), 
+	UNIQUE (quote_number), 
+	FOREIGN KEY(converted_to_job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,110 INFO sqlalchemy.engine.Engine [no key 0.00081s] ()
+2026-05-29 23:20:16,128 INFO sqlalchemy.engine.Engine 
+CREATE TABLE sales_invoices (
+	id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	eta_doc_id VARCHAR(100), 
+	eta_csv_row INTEGER, 
+	eta_imported_at DATETIME, 
+	invoice_number VARCHAR(100) NOT NULL, 
+	invoice_date DATE NOT NULL, 
+	due_date DATE, 
+	client_id UUID NOT NULL, 
+	client_vat VARCHAR(50), 
+	subtotal NUMERIC(15, 2) NOT NULL, 
+	vat_amount NUMERIC(15, 2), 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	eta_prod_name VARCHAR(255), 
+	status VARCHAR(20), 
+	payment_status VARCHAR(20), 
+	collected_amount NUMERIC(15, 2), 
+	collected_date DATE, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(client_id) REFERENCES clients (id)
+)
+
+
+2026-05-29 23:20:16,129 INFO sqlalchemy.engine.Engine [no key 0.00111s] ()
+2026-05-29 23:20:16,143 INFO sqlalchemy.engine.Engine 
+CREATE TABLE activity_log (
+	id UUID NOT NULL, 
+	user_id UUID, 
+	action VARCHAR(50) NOT NULL, 
+	entity_type VARCHAR(50) NOT NULL, 
+	entity_id UUID NOT NULL, 
+	job_id UUID, 
+	old_values JSON, 
+	new_values JSON, 
+	ip_address VARCHAR(45), 
+	user_agent TEXT, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(user_id) REFERENCES users (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,144 INFO sqlalchemy.engine.Engine [no key 0.00071s] ()
+2026-05-29 23:20:16,158 INFO sqlalchemy.engine.Engine 
+CREATE TABLE events (
+	id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	event_name VARCHAR(255) NOT NULL, 
+	event_type VARCHAR(50), 
+	start_date DATE NOT NULL, 
+	end_date DATE, 
+	destination VARCHAR(255), 
+	venue VARCHAR(255), 
+	pax_count INTEGER, 
+	status VARCHAR(20), 
+	cos_account_code VARCHAR(20), 
+	notes TEXT, 
+	created_by UUID, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,159 INFO sqlalchemy.engine.Engine [no key 0.00110s] ()
+2026-05-29 23:20:16,173 INFO sqlalchemy.engine.Engine 
+CREATE TABLE task_assignments (
+	id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	employee_id UUID NOT NULL, 
+	title VARCHAR(255) NOT NULL, 
+	description TEXT, 
+	due_date DATE, 
+	priority VARCHAR(20), 
+	status VARCHAR(20), 
+	created_by UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(employee_id) REFERENCES employees (id)
+)
+
+
+2026-05-29 23:20:16,174 INFO sqlalchemy.engine.Engine [no key 0.00081s] ()
+2026-05-29 23:20:16,193 INFO sqlalchemy.engine.Engine 
+CREATE TABLE journal_vouchers (
+	id UUID NOT NULL, 
+	voucher_number VARCHAR(50) NOT NULL, 
+	voucher_date DATE NOT NULL, 
+	job_id UUID, 
+	description TEXT, 
+	debit_account VARCHAR(50) NOT NULL, 
+	credit_account VARCHAR(50) NOT NULL, 
+	amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	status VARCHAR(20), 
+	posted_by UUID, 
+	posted_at DATETIME, 
+	created_by UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (voucher_number), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id)
+)
+
+
+2026-05-29 23:20:16,194 INFO sqlalchemy.engine.Engine [no key 0.00072s] ()
+2026-05-29 23:20:16,210 INFO sqlalchemy.engine.Engine 
+CREATE TABLE purchase_invoices (
+	id UUID NOT NULL, 
+	job_id UUID, 
+	event_id UUID, 
+	vendor_id UUID, 
+	vendor_name VARCHAR(255) NOT NULL, 
+	invoice_number VARCHAR(100) NOT NULL, 
+	invoice_date DATE NOT NULL, 
+	due_date DATE, 
+	subtotal NUMERIC(15, 2) NOT NULL, 
+	vat_amount NUMERIC(15, 2), 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	exchange_rate NUMERIC(10, 6), 
+	eta_doc_id VARCHAR(100), 
+	eta_csv_row INTEGER, 
+	eta_imported_at DATETIME, 
+	status VARCHAR(20), 
+	payment_status VARCHAR(20), 
+	pdf_path VARCHAR(500), 
+	payment_voucher_id UUID, 
+	linked_by UUID, 
+	linked_at DATETIME, 
+	linked_method VARCHAR(20), 
+	created_by UUID, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(event_id) REFERENCES events (id), 
+	FOREIGN KEY(vendor_id) REFERENCES vendors (id)
+)
+
+
+2026-05-29 23:20:16,212 INFO sqlalchemy.engine.Engine [no key 0.00135s] ()
+2026-05-29 23:20:16,228 INFO sqlalchemy.engine.Engine 
+CREATE TABLE quotation_line_items (
+	id UUID NOT NULL, 
+	quotation_id UUID NOT NULL, 
+	category VARCHAR(50) NOT NULL, 
+	description VARCHAR(255) NOT NULL, 
+	quantity NUMERIC(10, 2), 
+	unit_price NUMERIC(15, 2) NOT NULL, 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	vendor_estimate VARCHAR(255), 
+	notes TEXT, 
+	sort_order INTEGER, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(quotation_id) REFERENCES quotations (id) ON DELETE CASCADE
+)
+
+
+2026-05-29 23:20:16,229 INFO sqlalchemy.engine.Engine [no key 0.00084s] ()
+2026-05-29 23:20:16,245 INFO sqlalchemy.engine.Engine 
+CREATE TABLE sales_invoice_line_items (
+	id UUID NOT NULL, 
+	invoice_id UUID NOT NULL, 
+	description VARCHAR(255) NOT NULL, 
+	quantity NUMERIC(10, 2), 
+	unit_price NUMERIC(15, 2), 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	sort_order INTEGER, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(invoice_id) REFERENCES sales_invoices (id) ON DELETE CASCADE
+)
+
+
+2026-05-29 23:20:16,246 INFO sqlalchemy.engine.Engine [no key 0.00090s] ()
+2026-05-29 23:20:16,261 INFO sqlalchemy.engine.Engine 
+CREATE TABLE budget_lines (
+	id UUID NOT NULL, 
+	event_id UUID NOT NULL, 
+	job_id UUID NOT NULL, 
+	budget_period_id UUID, 
+	category VARCHAR(50) NOT NULL, 
+	description VARCHAR(255), 
+	budgeted_amount NUMERIC(15, 2) NOT NULL, 
+	actual_amount NUMERIC(15, 2), 
+	committed_amount NUMERIC(15, 2), 
+	notes TEXT, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(event_id) REFERENCES events (id), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(budget_period_id) REFERENCES budget_periods (id)
+)
+
+
+2026-05-29 23:20:16,261 INFO sqlalchemy.engine.Engine [no key 0.00059s] ()
+2026-05-29 23:20:16,278 INFO sqlalchemy.engine.Engine 
+CREATE TABLE receipt_vouchers (
+	id UUID NOT NULL, 
+	voucher_number VARCHAR(50) NOT NULL, 
+	job_id UUID, 
+	client_id UUID, 
+	sales_invoice_id UUID, 
+	receipt_date DATE NOT NULL, 
+	amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	payment_method VARCHAR(20), 
+	bank_account VARCHAR(100), 
+	status VARCHAR(20), 
+	received_by UUID, 
+	received_at DATETIME, 
+	created_by UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (voucher_number), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(client_id) REFERENCES clients (id), 
+	FOREIGN KEY(sales_invoice_id) REFERENCES sales_invoices (id)
+)
+
+
+2026-05-29 23:20:16,278 INFO sqlalchemy.engine.Engine [no key 0.00061s] ()
+2026-05-29 23:20:16,293 INFO sqlalchemy.engine.Engine 
+CREATE TABLE payment_vouchers (
+	id UUID NOT NULL, 
+	voucher_number VARCHAR(50) NOT NULL, 
+	job_id UUID, 
+	vendor_id UUID, 
+	purchase_invoice_id UUID, 
+	payment_date DATE NOT NULL, 
+	amount NUMERIC(15, 2) NOT NULL, 
+	currency VARCHAR(3), 
+	payment_method VARCHAR(20), 
+	bank_account VARCHAR(100), 
+	status VARCHAR(20), 
+	pdf_path VARCHAR(500), 
+	pdf_page_count INTEGER, 
+	approved_by UUID, 
+	approved_at DATETIME, 
+	created_by UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	UNIQUE (voucher_number), 
+	FOREIGN KEY(job_id) REFERENCES jobs (id), 
+	FOREIGN KEY(vendor_id) REFERENCES vendors (id), 
+	FOREIGN KEY(purchase_invoice_id) REFERENCES purchase_invoices (id)
+)
+
+
+2026-05-29 23:20:16,294 INFO sqlalchemy.engine.Engine [no key 0.00080s] ()
+2026-05-29 23:20:16,314 INFO sqlalchemy.engine.Engine 
+CREATE TABLE e_invoice_lines (
+	id UUID NOT NULL, 
+	invoice_type VARCHAR(20) NOT NULL, 
+	sales_invoice_id UUID, 
+	purchase_invoice_id UUID, 
+	invoice_number VARCHAR(100) NOT NULL, 
+	issue_date DATE NOT NULL, 
+	total_amount NUMERIC(15, 2) NOT NULL, 
+	vat_amount NUMERIC(15, 2), 
+	net_amount NUMERIC(15, 2) NOT NULL, 
+	eta_status VARCHAR(20), 
+	is_synced BOOLEAN, 
+	created_at DATETIME, 
+	updated_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(sales_invoice_id) REFERENCES sales_invoices (id), 
+	FOREIGN KEY(purchase_invoice_id) REFERENCES purchase_invoices (id)
+)
+
+
+2026-05-29 23:20:16,315 INFO sqlalchemy.engine.Engine [no key 0.00074s] ()
+2026-05-29 23:20:16,334 INFO sqlalchemy.engine.Engine 
+CREATE TABLE budget_commitments (
+	id UUID NOT NULL, 
+	budget_line_id UUID NOT NULL, 
+	purchase_invoice_id UUID, 
+	sales_invoice_id UUID, 
+	amount NUMERIC(15, 2) NOT NULL, 
+	source_type VARCHAR(20), 
+	source_id UUID, 
+	created_at DATETIME, 
+	PRIMARY KEY (id), 
+	FOREIGN KEY(budget_line_id) REFERENCES budget_lines (id), 
+	FOREIGN KEY(purchase_invoice_id) REFERENCES purchase_invoices (id), 
+	FOREIGN KEY(sales_invoice_id) REFERENCES sales_invoices (id)
+)
+
+
+2026-05-29 23:20:16,336 INFO sqlalchemy.engine.Engine [no key 0.00177s] ()
+2026-05-29 23:20:16,357 INFO sqlalchemy.engine.Engine COMMIT
+[Lifespan] Database tables created
+2026-05-29 23:20:37,618 INFO sqlalchemy.engine.Engine BEGIN (implicit)
+2026-05-29 23:20:37,621 INFO sqlalchemy.engine.Engine SELECT COUNT(*) as cnt FROM bank_transactions WHERE amount = 0 OR amount IS NULL
+2026-05-29 23:20:37,626 INFO sqlalchemy.engine.Engine [generated in 0.00488s] ()
+2026-05-29 23:20:37,649 INFO sqlalchemy.engine.Engine SELECT COUNT(*) as cnt FROM purchase_invoices WHERE total_amount IS NULL OR total_amount = 0
+2026-05-29 23:20:37,649 INFO sqlalchemy.engine.Engine [generated in 0.00068s] ()
+2026-05-29 23:20:37,654 INFO sqlalchemy.engine.Engine SELECT COUNT(*) FROM vendors WHERE status = 'active'
+2026-05-29 23:20:37,655 INFO sqlalchemy.engine.Engine [generated in 0.00159s] ()
+2026-05-29 23:20:37,667 INFO sqlalchemy.engine.Engine SELECT COUNT(*) FROM chart_accounts WHERE is_active = 1
+2026-05-29 23:20:37,668 INFO sqlalchemy.engine.Engine [generated in 0.00107s] ()
+2026-05-29 23:20:37,673 INFO sqlalchemy.engine.Engine SELECT COUNT(*) FROM journal_vouchers WHERE amount > 0
+2026-05-29 23:20:37,674 INFO sqlalchemy.engine.Engine [generated in 0.00073s] ()
+2026-05-29 23:20:37,684 INFO sqlalchemy.engine.Engine SELECT COUNT(*) FROM sales_invoices WHERE total_amount > 0
+2026-05-29 23:20:37,686 INFO sqlalchemy.engine.Engine [generated in 0.00215s] ()
+2026-05-29 23:20:37,697 INFO sqlalchemy.engine.Engine COMMIT

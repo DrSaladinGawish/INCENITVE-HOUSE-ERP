@@ -1,0 +1,44 @@
+<div class="ih-card">
+  <div class="ih-card-header">
+    <h3 class="ih-card-title">Current Status</h3>
+  </div>
+  <div class="ih-status-layout">
+    <div class="ih-status-donut-col">
+      <div class="ih-chart-container" style="height: 160px; width: 160px;">
+        <canvas id="statusDonut"></canvas>
+      </div>
+      <p class="ih-donut-center-label" id="donut-center">12 Active</p>
+    </div>
+    <div class="ih-status-cards-col" id="status-cards-list">
+      <div class="ih-job-card">
+        <div class="ih-job-card-header">
+          <span class="ih-job-code">EV-1147</span>
+          <span class="ih-risk-flag" style="display:none">⚠️</span>
+        </div>
+        <p class="ih-job-name">AI-Futtaim Gala</p>
+        <p class="ih-job-client">Al-Futtaim</p>
+        <div class="ih-progress-bar"><div class="ih-progress-fill" style="width:65%;background:#10b981"></div></div>
+        <div class="ih-job-card-footer">
+          <span class="ih-stage-pill" style="background:#10b98120;color:#10b981">Execution</span>
+          <span class="ih-days-left ih-days-safe">18d</span>
+          <span class="ih-milestone">Venue setup</span>
+        </div>
+      </div>
+      <div class="ih-job-card">
+        <div class="ih-job-card-header">
+          <span class="ih-job-code">EV-1148</span>
+          <span class="ih-risk-flag">⚠️</span>
+        </div>
+        <p class="ih-job-name">Finance Gala</p>
+        <p class="ih-job-client">FinanceCo</p>
+        <div class="ih-progress-bar"><div class="ih-progress-fill" style="width:30%;background:#f59e0b"></div></div>
+        <div class="ih-job-card-footer">
+          <span class="ih-stage-pill" style="background:#f59e0b20;color:#f59e0b">Procurement</span>
+          <span class="ih-days-left ih-days-warn">25d</span>
+          <span class="ih-milestone">Vendor confirmation</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{# TODO: Wire to /api/v1/jobs/active per API Spec #}

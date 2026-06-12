@@ -1,0 +1,26 @@
+<footer class="ih-app-footer">
+  <div class="ih-footer-grid">
+    <div class="ih-footer-col">
+      <span class="ih-footer-brand">Incentive House</span>
+      <span class="ih-footer-tagline"> — The EVENTailors</span>
+      <p class="ih-footer-location">Cairo, Egypt</p>
+      <p class="ih-footer-addr">Smart Village, B7, 6th October</p>
+    </div>
+    <div class="ih-footer-col">
+      <p style="font-size:0.7rem;color:rgba(255,255,255,0.5);">
+        <i class="bi bi-database me-1"></i>EventCore ERP v1.0
+        <span class="ms-2"><i class="bi bi-shield-check me-1"></i>Data Quality 1.3%</span>
+      </p>
+    </div>
+    <div class="ih-footer-col ih-footer-col-right">
+      <a href="/dashboard" class="ih-footer-link">Dashboard</a>
+      <span class="mx-1" style="color:rgba(255,255,255,0.2);">|</span>
+      <a href="/reports" class="ih-footer-link">Reports</a>
+      <span class="mx-1" style="color:rgba(255,255,255,0.2);">|</span>
+      <a href="/data-quality" class="ih-footer-link">DQ</a>
+    </div>
+  </div>
+  <div class="ih-footer-copyright">
+    &copy; {{ now().year if now is defined else "2026" }} Incentive House. All rights reserved.
+  </div>
+</footer>

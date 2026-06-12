@@ -1,0 +1,25 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Clients — EventCore ERP{% endblock %}
+{% block page_title %}Clients{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active">Clients</li>
+{% endblock %}
+{% block page_actions %}
+  <a href="/clients/new" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New Client</a>
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Name</th><th>Contact</th><th>Email</th><th>Phone</th><th class="text-end">Events</th></tr>
+      </thead>
+      <tbody hx-get="/api/v1/clients?limit=50" hx-trigger="load" hx-swap="innerHTML">
+        <tr><td colspan="5" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

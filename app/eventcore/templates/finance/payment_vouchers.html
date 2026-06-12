@@ -1,0 +1,60 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Payment Vouchers — EventCore ERP{% endblock %}
+{% block page_title %}Payment Vouchers{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active">Payment Vouchers</li>
+{% endblock %}
+{% block page_actions %}
+  <a href="/payment-vouchers/new" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New Voucher</a>
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-body">
+    {% include "partials/payment_voucher_form.html" %}
+  </div>
+</div>
+<div class="card mt-3">
+  <div class="card-header bg-light"><strong>Recent Vouchers</strong></div>
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Voucher #</th><th>Job</th><th>Vendor</th><th class="text-end">Amount</th><th>Date</th><th>Status</th></tr>
+      </thead>
+      <tbody id="pv-tbody"
+             hx-get="/api/v1/payment-vouchers?limit=20"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+  if (evt.detail.elt.id !== 'pv-tbody') return;
+  try {
+    var data = JSON.parse(evt.detail.xhr.responseText);
+    var html = '';
+    if (data.length === 0) {
+      html = '<tr><td colspan="6" class="text-center text-muted py-4">No payment vouchers found</td></tr>';
+    } else {
+      for (var i = 0; i < data.length; i++) {
+        var v = data[i];
+        var statusClass = v.status === 'paid' ? 'success' : v.status === 'cancelled' ? 'danger' : v.status === 'approved' ? 'primary' : 'warning';
+        html += '<tr><td>' + (v.voucher_number||'') + '</td>'
+             + '<td class="small text-muted">' + (v.job_id||'').substring(0,8) + '</td>'
+             + '<td class="small text-muted">' + (v.vendor_id||'').substring(0,8) + '</td>'
+             + '<td class="text-end">' + Number(v.amount||0).toFixed(2) + '</td>'
+             + '<td>' + (v.payment_date||'') + '</td>'
+             + '<td><span class="badge bg-' + statusClass + '">' + (v.status||'') + '</span></td></tr>';
+      }
+    }
+    evt.detail.elt.innerHTML = html;
+  } catch(e) {
+    evt.detail.elt.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load vouchers</td></tr>';
+  }
+});
+</script>
+{% endblock %}

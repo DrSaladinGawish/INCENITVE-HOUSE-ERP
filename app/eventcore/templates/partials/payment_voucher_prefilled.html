@@ -1,0 +1,53 @@
+<div id="pv-prefilled" class="card border-primary mb-4">
+  <div class="card-header bg-primary text-white">
+    <strong>Pay Invoice #{{ invoice_number }}</strong>
+    <span class="badge bg-light text-dark ms-2">{{ vendor_name }}</span>
+  </div>
+  <div class="card-body">
+    <div class="alert alert-info small py-2 mb-3">
+      <i class="bi bi-info-circle me-1"></i>
+      This form is pre-filled from purchase invoice <strong>#{{ invoice_number }}</strong>.
+      The voucher will be linked to this invoice when created.
+    </div>
+    <form hx-post="/api/v1/payment-vouchers" hx-target="#pv-prefilled" hx-swap="outerHTML">
+      <input type="hidden" name="purchase_invoice_id" value="{{ purchase_invoice_id }}">
+      <input type="hidden" name="job_id" value="{{ job_id }}">
+      <input type="hidden" name="vendor_id" value="{{ vendor_id }}">
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Voucher #</label>
+          <input type="text" name="voucher_number" class="form-control form-control-sm" value="PV-{{ invoice_number }}" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Vendor</label>
+          <input type="text" class="form-control form-control-sm" value="{{ vendor_name }}" disabled>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Amount ({{ currency }})</label>
+          <input type="number" name="amount" class="form-control form-control-sm" value="{{ amount }}" step="0.01" min="0" readonly>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Payment Date</label>
+          <input type="date" name="payment_date" class="form-control form-control-sm" value="{{ today }}" required>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Method</label>
+          <select name="payment_method" class="form-select form-select-sm">
+            <option value="bank_transfer">Bank Transfer</option>
+            <option value="cash">Cash</option>
+            <option value="check">Check</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label small text-muted">Currency</label>
+          <input type="text" name="currency" class="form-control form-control-sm" value="{{ currency }}">
+        </div>
+      </div>
+      <div class="mt-3">
+        <button type="submit" class="btn btn-sm btn-primary">Create &amp; Pay Voucher</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="this.closest('#pv-prefilled').remove()">Cancel</button>
+        <span id="pv-prefill-result" class="ms-2"></span>
+      </div>
+    </form>
+  </div>
+</div>

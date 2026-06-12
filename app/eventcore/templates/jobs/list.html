@@ -1,0 +1,55 @@
+{% extends "page_shell.html" %}
+
+{% block title %}Jobs — EventCore ERP{% endblock %}
+{% block page_title %}Jobs{% endblock %}
+{% block breadcrumbs %}
+  <li class="breadcrumb-item active">Jobs</li>
+{% endblock %}
+{% block page_actions %}
+  <a href="/jobs/new" class="btn btn-sm btn-primary"><i class="bi bi-plus-lg"></i> New Job</a>
+{% endblock %}
+
+{% block page_content %}
+<div class="card">
+  <div class="card-body p-0">
+    <table class="table table-sm table-hover mb-0">
+      <thead class="table-light">
+        <tr><th>Job Code</th><th>Event Name</th><th>Client</th><th>Status</th><th class="text-end">Revenue</th><th class="text-end">Cost</th></tr>
+      </thead>
+      <tbody id="jobs-tbody"
+             hx-get="/api/v1/jobs?limit=50"
+             hx-trigger="load"
+             hx-swap="innerHTML">
+        <tr><td colspan="6" class="text-center py-4"><div class="spinner-border spinner-border-sm text-primary"></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script>
+document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+  if (evt.detail.elt.id !== 'jobs-tbody') return;
+  try {
+    var data = JSON.parse(evt.detail.xhr.responseText);
+    var html = '';
+    if (data.length === 0) {
+      html = '<tr><td colspan="6" class="text-center text-muted py-4">No jobs found</td></tr>';
+    } else {
+      for (var i = 0; i < data.length; i++) {
+        var j = data[i];
+        var match = j.description && j.description.match(/Customer:\s*([^|]+)/);
+        var client = match ? match[1].trim() : (j.client_id||'').substring(0,8);
+        html += '<tr><td>' + (j.job_code||'') + '</td>'
+             + '<td><a href="/jobs/' + j.id + '" class="text-decoration-none fw-medium">' + (j.event_name||'') + '</a></td>'
+             + '<td>' + client + '</td>'
+             + '<td><span class="badge bg-' + (j.status === 'active' ? 'success' : 'secondary') + '">' + (j.status||'') + '</span></td>'
+             + '<td class="text-end">' + (j.total_revenue||'0').toLocaleString() + '</td>'
+             + '<td class="text-end">' + (j.total_cost||'0').toLocaleString() + '</td></tr>';
+      }
+    }
+    evt.detail.elt.innerHTML = html;
+  } catch(e) {
+    evt.detail.elt.innerHTML = '<tr><td colspan="6" class="text-center text-danger py-4">Failed to load jobs</td></tr>';
+  }
+});
+</script>
+{% endblock %}

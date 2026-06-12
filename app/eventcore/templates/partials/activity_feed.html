@@ -1,0 +1,78 @@
+<div id="activity-feed" class="card mb-4">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <strong><i class="bi bi-clock-history me-2"></i>Recent Activity</strong>
+    <span class="badge bg-secondary" id="activity-count">...</span>
+  </div>
+  <div class="card-body p-0">
+    <div class="list-group list-group-flush" id="activity-list"
+         hx-get="/api/v1/audit/activity?limit=20&amp;since_hours=24"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+      <div class="text-center py-3">
+        <div class="spinner-border spinner-border-sm text-primary"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.body.addEventListener('htmx:afterOnLoad', function(evt) {
+    if (evt.detail.elt.id !== 'activity-list') return;
+    try {
+      var resp = JSON.parse(evt.detail.xhr.responseText);
+      var logs = resp.logs || [];
+      document.getElementById('activity-count').textContent = resp.count + ' in 24h';
+
+      var html = logs.map(function(log) {
+        var icon = ({
+          'create': 'bi-plus-circle text-success',
+          'update': 'bi-pencil text-warning',
+          'delete': 'bi-trash text-danger',
+          'approve': 'bi-check-circle text-success',
+          'pay': 'bi-cash-coin text-primary',
+          'submit': 'bi-send text-info',
+          'receive': 'bi-inbox text-success',
+          'cancel': 'bi-x-circle text-secondary'
+        })[log.action] || 'bi-circle text-muted';
+
+        return '<div class="list-group-item d-flex justify-content-between align-items-start">'
+          + '<div class="d-flex align-items-start">'
+          + '<i class="bi ' + icon + ' me-2 mt-1"></i>'
+          + '<div>'
+          + '<div class="small fw-semibold">' + (log.description || log.summary) + '</div>'
+          + '<div class="small text-muted">'
+          + (log.actor_name || log.user_id || 'System') + ' &bull; ' + new Date(log.created_at).toLocaleString()
+          + '</div></div></div>'
+          + '<button class="btn btn-sm btn-link"'
+          + ' hx-get="/api/v1/audit/activity/' + log.entity_type + '/' + log.entity_id + '"'
+          + ' hx-target="#audit-detail-modal-body"'
+          + ' hx-swap="innerHTML"'
+          + ' data-bs-toggle="modal"'
+          + ' data-bs-target="#audit-detail-modal">'
+          + 'Details</button></div>';
+      }).join('');
+
+      if (logs.length === 0) {
+        html = '<div class="list-group-item text-muted text-center py-3">No activity in the last 24 hours</div>';
+      }
+
+      evt.detail.elt.innerHTML = html;
+    } catch(e) {
+      evt.detail.elt.innerHTML = '<div class="list-group-item text-danger text-center py-3">Failed to load activity</div>';
+    }
+  });
+</script>
+
+<div class="modal fade" id="audit-detail-modal" tabindex="-1">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Change History</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="audit-detail-modal-body">
+        <div class="text-center py-3"><div class="spinner-border spinner-border-sm"></div></div>
+      </div>
+    </div>
+  </div>
+</div>

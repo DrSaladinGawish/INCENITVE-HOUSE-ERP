@@ -1,0 +1,58 @@
+<div id="pending-items" class="card mb-4">
+  <div class="card-header bg-light d-flex justify-content-between align-items-center">
+    <strong><i class="bi bi-bell me-2"></i>Pending Items</strong>
+    <span class="badge bg-danger" id="pending-count"
+          hx-get="/api/v1/data-quality/summary"
+          hx-trigger="load delay:2s"
+          hx-target="this"
+          hx-swap="innerHTML">Loading...</span>
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <div class="card border-warning h-100">
+          <div class="card-body">
+            <h6 class="text-warning small text-uppercase">Payment Vouchers</h6>
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0"
+                  hx-get="/api/v1/payment-vouchers/pending/count"
+                  hx-trigger="load"
+                  hx-target="this"
+                  hx-swap="innerHTML">
+                <span class="spinner-border spinner-border-sm"></span>
+              </h3>
+              <a href="/payment-vouchers" class="btn btn-sm btn-outline-warning">Review</a>
+            </div>
+            <div class="small text-muted mt-1">Awaiting approval</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card border-success h-100">
+          <div class="card-body">
+            <h6 class="text-success small text-uppercase">Receipt Vouchers</h6>
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0"
+                  hx-get="/api/v1/receipt-vouchers/pending/count"
+                  hx-trigger="load"
+                  hx-target="this"
+                  hx-swap="innerHTML">
+                <span class="spinner-border spinner-border-sm"></span>
+              </h3>
+              <a href="/receipt-vouchers" class="btn btn-sm btn-outline-success">Review</a>
+            </div>
+            <div class="small text-muted mt-1">Awaiting approval</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 mt-3">
+        <div class="alert alert-info small mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          Use <strong>Payment Vouchers</strong> for outflows (vendor payments) and
+          <strong>Receipt Vouchers</strong> for inflows (client collections).
+          All vouchers go through a <strong>draft &rarr; submitted &rarr; approved &rarr; paid/received</strong> workflow.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
