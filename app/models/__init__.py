@@ -17,3 +17,4 @@ from app.models.neural import (  # noqa: F401
 from app.models.document import (  # noqa: F401
     SupportingDocument, DocumentModule,
 )
+from app.models.fx_rate import FxRate  # noqa: F401

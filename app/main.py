@@ -32,6 +32,12 @@ from app.routers import e_invoice_router
 from app.routers import workflow_router
 from app.routers.reports_router_v2 import router as reports_v2_router
 from app.routers.archive_router import router as archive_router
+from app.routers.fx_router import router as fx_router
+from app.routers.inventory import router as inventory_router
+from app.routers.payroll import router as payroll_router
+from app.routers.crm import router as crm_router
+from app.routers.budgeting import router as budgeting_router
+from app.routers.fixed_assets import router as fixed_assets_router
 
 log = setup_logging()
 
@@ -114,6 +120,12 @@ app.include_router(e_invoice_router.router)
 app.include_router(workflow_router.router)
 app.include_router(reports_v2_router)
 app.include_router(archive_router)
+app.include_router(fx_router)
+app.include_router(inventory_router)
+app.include_router(payroll_router)
+app.include_router(crm_router)
+app.include_router(budgeting_router)
+app.include_router(fixed_assets_router)
 
 
 # ---------------------------------------------------------------------------
