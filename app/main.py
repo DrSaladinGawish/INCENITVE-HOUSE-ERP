@@ -31,6 +31,7 @@ from app.routers import financial_reports
 from app.routers import e_invoice_router
 from app.routers import workflow_router
 from app.routers.reports_router_v2 import router as reports_v2_router
+from app.routers.archive_router import router as archive_router
 
 log = setup_logging()
 
@@ -112,6 +113,7 @@ app.include_router(financial_reports.router)
 app.include_router(e_invoice_router.router)
 app.include_router(workflow_router.router)
 app.include_router(reports_v2_router)
+app.include_router(archive_router)
 
 
 # ---------------------------------------------------------------------------

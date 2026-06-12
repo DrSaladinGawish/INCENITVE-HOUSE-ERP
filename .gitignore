@@ -20,3 +20,8 @@ data/
 # OS
 Thumbs.db
 .DS_Store
+
+# Data & USB Drive
+Data_Sources/
+USB Drive/
+

@@ -1,12 +1,14 @@
 from datetime import date
 from fastapi import APIRouter, Depends, Query, HTTPException
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, Response
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.services import financial_reports_service as frs
 from app.reports import csv_export
 from app.reports import period_comparison as pcmp
+from app.reports.cash_flow import CashFlowReport
+from app.reports import pdf_export
 
 router = APIRouter(prefix="/reports/financial", tags=["Financial Reports v2"])
 
@@ -70,6 +72,36 @@ def cash_flow_csv(
         iter([csv]),
         media_type="text/csv",
         headers={"Content-Disposition": f"attachment; filename=cash_flow_{from_date}_to_{to_date}.csv"},
+    )
+
+
+# ---------------------------------------------------------------------------
+# Cash Flow v2 — full sections (operating + investing + financing)
+# ---------------------------------------------------------------------------
+
+@router.get("/api/cash-flow-v2")
+def cash_flow_v2(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    report = CashFlowReport(db)
+    return report.generate(from_date, to_date)
+
+
+@router.get("/api/cash-flow-v2/csv")
+def cash_flow_v2_csv(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    report = CashFlowReport(db)
+    data = report.generate(from_date, to_date)
+    csv = csv_export.cash_flow_csv(data)
+    return StreamingResponse(
+        iter([csv]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename=cash_flow_v2_{from_date}_to_{to_date}.csv"},
     )
 
 
@@ -155,3 +187,65 @@ def compare_by_period(
         return compare_fn(db, cur_from, cur_to, prev_from, prev_to)
 
     return compare_fn(db, cur_from, cur_to, prev_from, prev_to)
+
+
+# ---------------------------------------------------------------------------
+# PDF Export endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/api/trial-balance/pdf")
+def trial_balance_pdf(
+    as_of_date: date | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    data = frs.get_trial_balance(db, as_of_date)
+    pdf_bytes = pdf_export.trial_balance_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=trial_balance_{data['as_of_date']}.pdf"},
+    )
+
+
+@router.get("/api/profit-loss/pdf")
+def profit_loss_pdf(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    data = frs.get_profit_loss(db, from_date, to_date)
+    pdf_bytes = pdf_export.profit_loss_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=profit_loss_{from_date}_to_{to_date}.pdf"},
+    )
+
+
+@router.get("/api/balance-sheet/pdf")
+def balance_sheet_pdf(
+    as_of_date: date | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    data = frs.get_balance_sheet(db, as_of_date)
+    pdf_bytes = pdf_export.balance_sheet_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=balance_sheet_{data['as_of_date']}.pdf"},
+    )
+
+
+@router.get("/api/cash-flow/pdf")
+def cash_flow_pdf(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    data = frs.get_cash_flow(db, from_date, to_date)
+    pdf_bytes = pdf_export.cash_flow_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=cash_flow_{from_date}_to_{to_date}.pdf"},
+    )
