@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.services import gl_service
 from app.schemas.gl import (
-    ChartOfAccountsResponse, JournalVoucherCreate, JournalVoucherResponse, JournalVoucherList,
+    ChartOfAccountsResponse, JournalVoucherCreate, JournalVoucherUpdate, JournalVoucherResponse, JournalVoucherList,
     EmployeeCreate, EmployeeUpdate, EmployeeResponse,
 )
 
@@ -46,6 +46,20 @@ def get_voucher(jv_number: str, db: Session = Depends(get_db)):
 @router.post("/vouchers", response_model=JournalVoucherResponse, status_code=status.HTTP_201_CREATED)
 def create_voucher(data: JournalVoucherCreate, db: Session = Depends(get_db)):
     return gl_service.create_journal_voucher(db, data)
+
+
+@router.put("/vouchers/{jv_number}", response_model=JournalVoucherResponse)
+def update_jv(jv_number: str, data: JournalVoucherUpdate, db: Session = Depends(get_db)):
+    jv = gl_service.update_journal_voucher(db, jv_number, data)
+    if not jv:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Journal voucher not found")
+    return jv
+
+
+@router.delete("/vouchers/{jv_number}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_jv(jv_number: str, db: Session = Depends(get_db)):
+    if not gl_service.delete_journal_voucher(db, jv_number):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Journal voucher not found")
 
 
 @router.get("/employees", response_model=list[EmployeeResponse])

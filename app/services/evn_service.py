@@ -1,7 +1,7 @@
 from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
-from app.models.ihe_models import PNRMaster, PNRBudgetLineItem, ServiceMainCategory, ServiceSubCategory, ServiceType
+from app.models.ihe_models import PNRMaster, PNRBudgetLineItem, PurchaseVoucher, ServiceMainCategory, ServiceSubCategory, ServiceType
 from app.schemas.evn import PNRMasterCreate, PNRMasterUpdate, PNRBudgetLineItemCreate
 
 
@@ -85,6 +85,45 @@ def create_budget_line_item(db: Session, data: PNRBudgetLineItemCreate) -> PNRBu
     db.commit()
     db.refresh(item)
     return item
+
+
+def update_budget_line_item(db: Session, line_item_id: int, data) -> PNRBudgetLineItem | None:
+    item = db.get(PNRBudgetLineItem, line_item_id)
+    if not item:
+        return None
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(item, key, val)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def delete_budget_line_item(db: Session, line_item_id: int) -> bool:
+    item = db.get(PNRBudgetLineItem, line_item_id)
+    if not item:
+        return False
+    db.delete(item)
+    db.commit()
+    return True
+
+
+def get_pnr_budget_summary(db: Session, pnr_number: str) -> dict:
+    from sqlalchemy import func as sa_func
+    total_budget = db.execute(
+        select(sa_func.coalesce(sa_func.sum(PNRBudgetLineItem.Amount), 0))
+        .where(PNRBudgetLineItem.JobFolder == pnr_number)
+    ).scalar() or 0
+    total_actual = db.execute(
+        select(sa_func.coalesce(sa_func.sum(PurchaseVoucher.TotalValue), 0))
+        .where(PurchaseVoucher.PNRNumber == pnr_number)
+    ).scalar() or 0
+    return {
+        "pnr_number": pnr_number,
+        "total_budget": float(total_budget),
+        "total_actual": float(total_actual),
+        "variance": float(total_budget) - float(total_actual),
+        "utilization_pct": round(float(total_actual) / float(total_budget) * 100, 1) if float(total_budget) > 0 else 0,
+    }
 
 
 def get_service_categories(db: Session) -> list[ServiceMainCategory]:

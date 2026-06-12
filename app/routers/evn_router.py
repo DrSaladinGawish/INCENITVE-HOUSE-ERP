@@ -5,7 +5,7 @@ from app.database import get_db
 from app.services import evn_service
 from app.schemas.evn import (
     PNRMasterCreate, PNRMasterUpdate, PNRMasterResponse,
-    PNRBudgetLineItemCreate, PNRBudgetLineItemResponse,
+    PNRBudgetLineItemCreate, PNRBudgetLineItemUpdate, PNRBudgetLineItemResponse,
     ServiceMainCategoryResponse, ServiceSubCategoryResponse, ServiceTypeResponse,
 )
 
@@ -83,3 +83,22 @@ def list_budget_lines(
 @router.post("/budget-lines", response_model=PNRBudgetLineItemResponse, status_code=status.HTTP_201_CREATED)
 def create_budget_line(data: PNRBudgetLineItemCreate, db: Session = Depends(get_db)):
     return evn_service.create_budget_line_item(db, data)
+
+
+@router.put("/budget-lines/{line_item_id}", response_model=PNRBudgetLineItemResponse)
+def update_budget_line(line_item_id: int, data: PNRBudgetLineItemUpdate, db: Session = Depends(get_db)):
+    item = evn_service.update_budget_line_item(db, line_item_id, data)
+    if not item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Budget line item not found")
+    return item
+
+
+@router.delete("/budget-lines/{line_item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_budget_line(line_item_id: int, db: Session = Depends(get_db)):
+    if not evn_service.delete_budget_line_item(db, line_item_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Budget line item not found")
+
+
+@router.get("/pnrs/{pnr_number}/budget-summary")
+def pnr_budget_summary(pnr_number: str, db: Session = Depends(get_db)):
+    return evn_service.get_pnr_budget_summary(db, pnr_number)

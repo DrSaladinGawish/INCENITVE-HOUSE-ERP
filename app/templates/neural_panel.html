@@ -12,6 +12,20 @@
         <button class="btn btn-success btn-sm" onclick="refreshFeatures()">Refresh Features</button>
     </div>
 </div>
+<div class="card">
+    <div class="card-header">AI Neural Training</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <button class="btn" onclick="trainModel()" id="trainBtn">Train Cashflow Model</button>
+        <button class="btn" onclick="predictCashflow()" id="predictBtn" style="margin-left: 10px;">Predict Next 3 Months</button>
+    </div>
+    <div id="trainingStatus" style="margin-top: 10px; display: none;">
+        <span style="color: #2d8a8a;">Training... <span class="spinner">/</span></span>
+    </div>
+    <div id="predictionResult" style="margin-top: 10px; display: none; background: #f0f8ff; padding: 10px; border-radius: 4px;">
+        <h4>Forecast (EGP)</h4>
+        <div id="forecastValues"></div>
+    </div>
+</div>
 <div class="stats-grid" id="predictionCards">
     <div class="stat-card"><div class="stat-label">Cashflow Forecast</div><div class="stat-value" id="predCashflow">-</div></div>
     <div class="stat-card"><div class="stat-label">Revenue Forecast</div><div class="stat-value" id="predRevenue">-</div></div>
@@ -46,6 +60,24 @@ function refreshFeatures() {
     fetch('/api/v1/ai/refresh-features', {method:'POST', headers:{'Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}})
         .then(function(r) {return r.json();})
         .then(function(d) { alert('Features refreshed: ' + JSON.stringify(d)); });
+}
+async function trainModel() {
+    document.getElementById('trainingStatus').style.display = 'block';
+    document.getElementById('trainingStatus').innerHTML = '<span style="color: #2d8a8a;">Training... <span class="spinner">/</span></span>';
+    const r = await fetch('/api/v1/intelligence/neural/train/cashflow', {method: 'POST'});
+    const data = await r.json();
+    document.getElementById('trainingStatus').innerHTML =
+        '<span style="color: ' + (data.status === 'trained' ? 'green' : 'orange') + ';">' +
+        (data.status === 'trained' ? 'Trained on ' + data.data_points + ' records' : 'Warning: ' + data.status) +
+        '</span>';
+}
+async function predictCashflow() {
+    const r = await fetch('/api/v1/intelligence/neural/predict/cashflow?periods=3');
+    const data = await r.json();
+    document.getElementById('predictionResult').style.display = 'block';
+    document.getElementById('forecastValues').innerHTML = data.forecast.map(function(v, i) {
+        return '<div>Month ' + (i+1) + ': <strong>EGP ' + v.toLocaleString() + '</strong></div>';
+    }).join('');
 }
 </script>
 {% endblock %}

@@ -80,3 +80,23 @@ def create_purchase_voucher(db: Session, data: PurchaseVoucherCreate) -> Purchas
 def get_purchase_voucher(db: Session, voucher_id: int) -> PurchaseVoucher | None:
     stmt = select(PurchaseVoucher).where(PurchaseVoucher.VoucherID == voucher_id).options(joinedload(PurchaseVoucher.lines))
     return db.execute(stmt).unique().scalar_one_or_none()
+
+
+def update_purchase_voucher(db: Session, voucher_id: int, data) -> PurchaseVoucher | None:
+    voucher = db.get(PurchaseVoucher, voucher_id)
+    if not voucher:
+        return None
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(voucher, key, val)
+    db.commit()
+    db.refresh(voucher)
+    return voucher
+
+
+def delete_purchase_voucher(db: Session, voucher_id: int) -> bool:
+    voucher = db.get(PurchaseVoucher, voucher_id)
+    if not voucher:
+        return False
+    db.delete(voucher)
+    db.commit()
+    return True

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}CRM Lead Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</div>
+<div class="card" style="max-width:800px">
+    <form id="crmForm" data-draft data-record-id="{{ lead.LeadID if lead else 'new' }}" data-meta-config="/api/meta/config/crm_lead" onsubmit="return saveLead(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Company Name *</label>
+                <input type="text" id="CompanyName" class="form-control" value="{{ lead.CompanyName if lead else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Contact Name</label>
+                <input type="text" id="ContactName" class="form-control" value="{{ lead.ContactName if lead else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="Email" class="form-control" value="{{ lead.Email if lead else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Phone</label>
+                <input type="text" id="Phone" class="form-control" value="{{ lead.Phone if lead else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Mobile</label>
+                <input type="text" id="Mobile" class="form-control" value="{{ lead.Mobile if lead else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Source</label>
+                <select id="Source" class="form-control">
+                    <option value="">Select...</option>
+                    <option value="Website" {% if lead and lead.Source == 'Website' %}selected{% endif %}>Website</option>
+                    <option value="Referral" {% if lead and lead.Source == 'Referral' %}selected{% endif %}>Referral</option>
+                    <option value="Event" {% if lead and lead.Source == 'Event' %}selected{% endif %}>Event</option>
+                    <option value="Cold Call" {% if lead and lead.Source == 'Cold Call' %}selected{% endif %}>Cold Call</option>
+                    <option value="LinkedIn" {% if lead and lead.Source == 'LinkedIn' %}selected{% endif %}>LinkedIn</option>
+                    <option value="Other" {% if lead and lead.Source == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Industry</label>
+                <input type="text" id="Industry" class="form-control" value="{{ lead.Industry if lead else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="Status" class="form-control">
+                    <option value="New" {% if not lead or lead.Status == 'New' %}selected{% endif %}>New</option>
+                    <option value="Contacted" {% if lead and lead.Status == 'Contacted' %}selected{% endif %}>Contacted</option>
+                    <option value="Qualified" {% if lead and lead.Status == 'Qualified' %}selected{% endif %}>Qualified</option>
+                    <option value="Disqualified" {% if lead and lead.Status == 'Disqualified' %}selected{% endif %}>Disqualified</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Rating</label>
+                <select id="Rating" class="form-control">
+                    <option value="0" {% if lead and lead.Rating == 0 %}selected{% endif %}>Not Rated</option>
+                    <option value="1" {% if lead and lead.Rating == 1 %}selected{% endif %}>1 Star</option>
+                    <option value="2" {% if lead and lead.Rating == 2 %}selected{% endif %}>2 Stars</option>
+                    <option value="3" {% if lead and lead.Rating == 3 %}selected{% endif %}>3 Stars</option>
+                    <option value="4" {% if lead and lead.Rating == 4 %}selected{% endif %}>4 Stars</option>
+                    <option value="5" {% if lead and lead.Rating == 5 %}selected{% endif %}>5 Stars</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Assigned To</label>
+                <input type="text" id="AssignedTo" class="form-control" value="{{ lead.AssignedTo if lead else '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="Description" class="form-control" rows="3">{{ lead.Description if lead else '' }}</textarea>
+        </div>
+        <div id="crmFormError" class="alert alert-danger" style="display:none"></div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">Save Lead</button>
+            <a href="/crm" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+function saveLead(e) {
+    e.preventDefault();
+    var data = {
+        CompanyName: document.getElementById('CompanyName').value.trim(),
+        ContactName: document.getElementById('ContactName').value.trim() || null,
+        Email: document.getElementById('Email').value.trim() || null,
+        Phone: document.getElementById('Phone').value.trim() || null,
+        Mobile: document.getElementById('Mobile').value.trim() || null,
+        Source: document.getElementById('Source').value || null,
+        Industry: document.getElementById('Industry').value.trim() || null,
+        Status: document.getElementById('Status').value || 'New',
+        Rating: parseInt(document.getElementById('Rating').value) || 0,
+        AssignedTo: document.getElementById('AssignedTo').value.trim() || null,
+        Description: document.getElementById('Description').value.trim() || null,
+    };
+    if (!data.CompanyName) { showFormError('Company Name is required'); return false; }
+    var isEdit = window.location.pathname.includes('/lead/') && !window.location.pathname.endsWith('/new');
+    var method = isEdit ? 'PUT' : 'POST';
+    var url = isEdit ? '/api/crm/leads/' + window.location.pathname.split('/').pop() : '/api/crm/leads';
+    var token = localStorage.getItem('access_token');
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    fetch(url, { method: method, headers: headers, body: JSON.stringify(data) })
+        .then(function(r) { if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Save failed'); }); return r.json(); })
+        .then(function() { window.location.href = '/crm'; })
+        .catch(function(err) { showFormError(err.message); });
+    return false;
+}
+function showFormError(msg) {
+    document.getElementById('crmFormError').textContent = msg; document.getElementById('crmFormError').style.display = '';
+}
+</script>
+{% endblock %}

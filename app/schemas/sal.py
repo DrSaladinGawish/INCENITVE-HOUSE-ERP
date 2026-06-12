@@ -66,6 +66,9 @@ class SalesInvoiceBase(BaseModel):
     EventName: Optional[str] = Field(None, max_length=500)
     InvoiceDate: Optional[date] = None
     DueDate: Optional[date] = None
+    SubTotal: Optional[float] = None
+    VATRate: Optional[float] = None
+    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CollectedAmount: Optional[float] = None
     PaymentStatus: Optional[str] = Field(None, max_length=20)
@@ -74,6 +77,22 @@ class SalesInvoiceBase(BaseModel):
 
 class SalesInvoiceCreate(SalesInvoiceBase):
     lines: list[SalesInvoiceLineCreate] = []
+
+
+class SalesInvoiceUpdate(BaseModel):
+    InvoiceNumber: Optional[str] = None
+    ClientCode: Optional[str] = None
+    PNRNumber: Optional[str] = None
+    EventName: Optional[str] = None
+    InvoiceDate: Optional[date] = None
+    DueDate: Optional[date] = None
+    SubTotal: Optional[float] = None
+    VATRate: Optional[float] = None
+    VATAmount: Optional[float] = None
+    TotalValue: Optional[float] = None
+    CollectedAmount: Optional[float] = None
+    PaymentStatus: Optional[str] = None
+    CurrencyCode: Optional[str] = None
 
 
 class SalesInvoiceResponse(SalesInvoiceBase):

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Payroll Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</div>
+<div class="card" style="max-width:800px">
+    <form id="payrollForm" data-meta-config="/api/meta/config/payroll_employee" onsubmit="return savePayslip(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Employee Code *</label>
+                <input type="text" id="EmployeeCode" class="form-control" value="{{ slip.EmployeeCode if slip else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Pay Period *</label>
+                <input type="text" id="PayPeriod" class="form-control" value="{{ slip.PayPeriod if slip else '' }}" placeholder="YYYY-MM" required>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Pay Date *</label>
+                <input type="date" id="PayDate" class="form-control" value="{{ slip.PayDate if slip else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Status</label>
+                <select id="Status" class="form-control">
+                    <option value="draft" {% if slip and slip.Status == 'draft' %}selected{% endif %}>Draft</option>
+                    <option value="calculated" {% if slip and slip.Status == 'calculated' %}selected{% endif %}>Calculated</option>
+                    <option value="processed" {% if slip and slip.Status == 'processed' %}selected{% endif %}>Processed</option>
+                </select>
+            </div>
+        </div>
+        <fieldset style="border:1px solid rgba(197,165,90,0.3); border-radius:8px; padding:16px; margin:12px 0">
+            <legend style="font-size:13px; font-weight:600; color:#C5A55A; padding:0 8px">Salary Breakdown</legend>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>Basic Salary</label>
+                    <input type="number" step="0.01" id="BasicSalary" class="form-control" value="{{ slip.BasicSalary if slip else '0' }}" oninput="calcPayslip()">
+                </div>
+                <div class="form-group">
+                    <label>Total Allowances</label>
+                    <input type="number" step="0.01" id="TotalAllowances" class="form-control" value="{{ slip.TotalAllowances if slip else '0' }}" oninput="calcPayslip()">
+                </div>
+                <div class="form-group">
+                    <label>Total Deductions</label>
+                    <input type="number" step="0.01" id="TotalDeductions" class="form-control" value="{{ slip.TotalDeductions if slip else '0' }}" oninput="calcPayslip()">
+                </div>
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>Gross Pay</label>
+                    <input type="number" step="0.01" id="GrossPay" class="form-control" value="{{ slip.GrossPay if slip else '0' }}" readonly style="background:rgba(197,165,90,0.05)">
+                </div>
+                <div class="form-group">
+                    <label>Net Pay</label>
+                    <input type="number" step="0.01" id="NetPay" class="form-control" value="{{ slip.NetPay if slip else '0' }}" readonly style="background:rgba(197,165,90,0.05)">
+                </div>
+            </div>
+        </fieldset>
+        <div class="form-group">
+            <label>Remarks</label>
+            <textarea id="Remarks" class="form-control" rows="3">{{ slip.Remarks if slip else '' }}</textarea>
+        </div>
+        <div id="payrollFormError" class="alert alert-danger" style="display:none"></div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">Save Payslip</button>
+            <a href="/payroll" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+function calcPayslip() {
+    var basic = parseFloat(document.getElementById('BasicSalary').value) || 0;
+    var allow = parseFloat(document.getElementById('TotalAllowances').value) || 0;
+    var ded = parseFloat(document.getElementById('TotalDeductions').value) || 0;
+    var gross = basic + allow;
+    document.getElementById('GrossPay').value = gross.toFixed(2);
+    document.getElementById('NetPay').value = (gross - ded).toFixed(2);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    calcPayslip();
+});
+function savePayslip(e) {
+    e.preventDefault();
+    var data = {
+        EmployeeCode: document.getElementById('EmployeeCode').value.trim(),
+        PayPeriod: document.getElementById('PayPeriod').value.trim(),
+        PayDate: document.getElementById('PayDate').value,
+        BasicSalary: parseFloat(document.getElementById('BasicSalary').value) || 0,
+        TotalAllowances: parseFloat(document.getElementById('TotalAllowances').value) || 0,
+        GrossPay: parseFloat(document.getElementById('GrossPay').value) || 0,
+        TotalDeductions: parseFloat(document.getElementById('TotalDeductions').value) || 0,
+        NetPay: parseFloat(document.getElementById('NetPay').value) || 0,
+        Status: document.getElementById('Status').value,
+        Remarks: document.getElementById('Remarks').value.trim() || null,
+        allowances: [],
+        deductions: []
+    };
+    if (!data.EmployeeCode || !data.PayPeriod || !data.PayDate) {
+        showFormError('Employee Code, Pay Period, and Pay Date are required');
+        return false;
+    }
+    var token = localStorage.getItem('access_token');
+    var headers = { 'Content-Type': 'application/json' };
+    if (token) headers['Authorization'] = 'Bearer ' + token;
+    fetch('/api/payroll/payslips', { method: 'POST', headers: headers, body: JSON.stringify(data) })
+        .then(function(r) { if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Save failed'); }); return r.json(); })
+        .then(function() { window.location.href = '/payroll'; })
+        .catch(function(err) { showFormError(err.message); });
+    return false;
+}
+function showFormError(msg) {
+    document.getElementById('payrollFormError').textContent = msg;
+    document.getElementById('payrollFormError').style.display = '';
+}
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@ from app.database import get_db
 from app.services import pur_service
 from app.schemas.pur import (
     VendorCreate, VendorUpdate, VendorResponse,
-    PurchaseVoucherCreate, PurchaseVoucherResponse, PurchaseVoucherList,
+    PurchaseVoucherCreate, PurchaseVoucherUpdate, PurchaseVoucherResponse, PurchaseVoucherList,
 )
 
 router = APIRouter(prefix="/api/pur", tags=["Purchases"])
@@ -67,3 +67,17 @@ def get_voucher(voucher_id: int, db: Session = Depends(get_db)):
 @router.post("/vouchers", response_model=PurchaseVoucherResponse, status_code=status.HTTP_201_CREATED)
 def create_voucher(data: PurchaseVoucherCreate, db: Session = Depends(get_db)):
     return pur_service.create_purchase_voucher(db, data)
+
+
+@router.put("/vouchers/{voucher_id}", response_model=PurchaseVoucherResponse)
+def update_voucher(voucher_id: int, data: PurchaseVoucherUpdate, db: Session = Depends(get_db)):
+    voucher = pur_service.update_purchase_voucher(db, voucher_id, data)
+    if not voucher:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Voucher not found")
+    return voucher
+
+
+@router.delete("/vouchers/{voucher_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_voucher(voucher_id: int, db: Session = Depends(get_db)):
+    if not pur_service.delete_purchase_voucher(db, voucher_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Voucher not found")

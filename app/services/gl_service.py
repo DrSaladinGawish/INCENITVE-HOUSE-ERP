@@ -2,7 +2,27 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.ihe_models import ChartOfAccounts, JournalVoucher, JournalVoucherLine, Employee
-from app.schemas.gl import JournalVoucherCreate, EmployeeCreate, EmployeeUpdate
+from app.schemas.gl import JournalVoucherCreate, JournalVoucherUpdate, EmployeeCreate, EmployeeUpdate
+
+
+def update_journal_voucher(db: Session, jv_number: str, data: JournalVoucherUpdate) -> JournalVoucher | None:
+    jv = db.get(JournalVoucher, jv_number)
+    if not jv:
+        return None
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(jv, key, val)
+    db.commit()
+    db.refresh(jv)
+    return jv
+
+
+def delete_journal_voucher(db: Session, jv_number: str) -> bool:
+    jv = db.get(JournalVoucher, jv_number)
+    if not jv:
+        return False
+    db.delete(jv)
+    db.commit()
+    return True
 
 
 def get_accounts(db: Session, account_type: str | None = None) -> list[ChartOfAccounts]:

@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Asset Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</div>
+<div class="card" style="max-width:800px">
+    <form id="assetForm" data-draft data-record-id="{{ record_id | default('new') }}" data-meta-config="/api/meta/config/fixed_asset" onsubmit="return saveAsset(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Asset Code *</label>
+                <input type="text" id="AssetCode" class="form-control" value="{{ asset.AssetCode if asset else '' }}" required {{ 'readonly' if asset else '' }}>
+            </div>
+            <div class="form-group">
+                <label>Category *</label>
+                <select id="CategoryID" class="form-control" required>
+                    <option value="">-- Select --</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Asset Name *</label>
+            <input type="text" id="AssetName" class="form-control" value="{{ asset.AssetName if asset else '' }}" required>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Purchase Date *</label>
+                <input type="date" id="PurchaseDate" class="form-control" value="{{ asset.PurchaseDate if asset else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Purchase Cost *</label>
+                <input type="number" id="PurchaseCost" class="form-control" step="0.01" min="0" value="{{ asset.PurchaseCost if asset else '' }}" required>
+            </div>
+        </div>
+        <div class="form-row-3">
+            <div class="form-group">
+                <label>Salvage Value</label>
+                <input type="number" id="SalvageValue" class="form-control" step="0.01" min="0" value="{{ asset.SalvageValue if asset else '0' }}">
+            </div>
+            <div class="form-group">
+                <label>Useful Life (Years) *</label>
+                <input type="number" id="UsefulLifeYears" class="form-control" min="1" value="{{ asset.UsefulLifeYears if asset else '' }}" required>
+            </div>
+            <div class="form-group">
+                <label>Depreciation Method</label>
+                <select id="DepreciationMethod" class="form-control">
+                    <option value="StraightLine" {% if asset and asset.DepreciationMethod == 'StraightLine' %}selected{% endif %}>Straight Line</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Serial Number</label>
+                <input type="text" id="SerialNumber" class="form-control" value="{{ asset.SerialNumber if asset else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" id="Location" class="form-control" value="{{ asset.Location if asset else '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Vendor Code</label>
+                <input type="text" id="VendorCode" class="form-control" value="{{ asset.VendorCode if asset else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Invoice Reference</label>
+                <input type="text" id="InvoiceReference" class="form-control" value="{{ asset.InvoiceReference if asset else '' }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea id="Notes" class="form-control" rows="3">{{ asset.Notes if asset else '' }}</textarea>
+        </div>
+        <div id="depreciationPreview" class="card" style="margin-top:16px;display:none">
+            <div class="card-header">Depreciation Preview (Straight Line)</div>
+            <table>
+                <thead><tr><th>Period</th><th>Amount</th><th>Accumulated</th><th>Book Value</th></tr></thead>
+                <tbody id="depScheduleBody"></tbody>
+            </table>
+        </div>
+        <div id="assetFormError" class="alert alert-danger" style="display:none"></div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">Save Asset</button>
+            <a href="/fixed-assets" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+    function loadCategories() {
+        fetch('/api/fixed-assets/categories')
+            .then(r => r.json())
+            .then(cats => {
+                var sel = document.getElementById('CategoryID');
+                cats.forEach(function(c) {
+                    var opt = document.createElement('option');
+                    opt.value = c.CategoryID;
+                    opt.textContent = c.CategoryName;
+                    {% if asset %}
+                    if (c.CategoryID == {{ asset.CategoryID }}) opt.selected = true;
+                    {% endif %}
+                    sel.appendChild(opt);
+                });
+            });
+    }
+    document.addEventListener('DOMContentLoaded', loadCategories);
+
+    function computePreview() {
+        var cost = parseFloat(document.getElementById('PurchaseCost').value) || 0;
+        var salvage = parseFloat(document.getElementById('SalvageValue').value) || 0;
+        var life = parseInt(document.getElementById('UsefulLifeYears').value) || 0;
+        if (cost <= 0 || life <= 0) { document.getElementById('depreciationPreview').style.display = 'none'; return; }
+        var annual = (cost - salvage) / life;
+        var monthly = annual / 12;
+        var tbody = document.getElementById('depScheduleBody');
+        tbody.innerHTML = '';
+        var accum = 0;
+        for (var i = 0; i < Math.min(life * 12, 60); i++) {
+            accum += monthly;
+            var book = cost - accum;
+            if (book < salvage) break;
+            var d = new Date();
+            d.setMonth(d.getMonth() + i + 1);
+            var label = (d.getMonth() + 1) + '/' + d.getFullYear();
+            tbody.innerHTML += '<tr><td>' + label + '</td><td>' + monthly.toFixed(2) + '</td><td>' + accum.toFixed(2) + '</td><td>' + book.toFixed(2) + '</td></tr>';
+        }
+        document.getElementById('depreciationPreview').style.display = '';
+    }
+    document.getElementById('PurchaseCost').addEventListener('input', computePreview);
+    document.getElementById('SalvageValue').addEventListener('input', computePreview);
+    document.getElementById('UsefulLifeYears').addEventListener('input', computePreview);
+
+    function saveAsset(e) {
+        e.preventDefault();
+        var data = {
+            AssetCode: document.getElementById('AssetCode').value.trim(),
+            AssetName: document.getElementById('AssetName').value.trim(),
+            CategoryID: parseInt(document.getElementById('CategoryID').value),
+            PurchaseDate: document.getElementById('PurchaseDate').value,
+            PurchaseCost: parseFloat(document.getElementById('PurchaseCost').value) || 0,
+            SalvageValue: parseFloat(document.getElementById('SalvageValue').value) || 0,
+            UsefulLifeYears: parseInt(document.getElementById('UsefulLifeYears').value) || 0,
+            DepreciationMethod: document.getElementById('DepreciationMethod').value,
+            SerialNumber: document.getElementById('SerialNumber').value.trim() || null,
+            Location: document.getElementById('Location').value.trim() || null,
+            VendorCode: document.getElementById('VendorCode').value.trim() || null,
+            InvoiceReference: document.getElementById('InvoiceReference').value.trim() || null,
+            Notes: document.getElementById('Notes').value.trim() || null
+        };
+        if (!data.AssetCode) { showFormError('Asset Code is required'); return false; }
+        if (!data.AssetName) { showFormError('Asset Name is required'); return false; }
+        if (!data.CategoryID) { showFormError('Category is required'); return false; }
+        var token = localStorage.getItem('access_token');
+        var headers = { 'Content-Type': 'application/json' };
+        if (token) headers['Authorization'] = 'Bearer ' + token;
+        var method = '{{ "PUT" if asset else "POST" }}';
+        var url = '{{ "/api/fixed-assets/" + (asset.AssetID | string) if asset else "/api/fixed-assets" }}';
+        fetch(url, { method: method, headers: headers, body: JSON.stringify(data) })
+            .then(function(r) {
+                if (!r.ok) return r.json().then(function(d) { throw new Error(d.detail || 'Save failed'); });
+                return r.json();
+            })
+            .then(function() { window.location.href = '/fixed-assets'; })
+            .catch(function(err) { showFormError(err.message); });
+        return false;
+    }
+    function showFormError(msg) {
+        var el = document.getElementById('assetFormError');
+        el.textContent = msg; el.style.display = '';
+    }
+</script>
+{% endblock %}

@@ -54,6 +54,22 @@ class PNRBudgetLineItemCreate(PNRBudgetLineItemBase):
     pass
 
 
+class PNRBudgetLineItemUpdate(BaseModel):
+    Year: Optional[int] = None
+    JobFolder: Optional[str] = None
+    FileName: Optional[str] = None
+    SheetName: Optional[str] = None
+    RowNumber: Optional[int] = None
+    MainCategoryCode: Optional[str] = None
+    SubCategoryCode: Optional[str] = None
+    ClientCode: Optional[str] = None
+    Description: Optional[str] = None
+    Quantity: Optional[float] = None
+    UnitPrice: Optional[float] = None
+    Amount: Optional[float] = None
+    CurrencyCode: Optional[str] = None
+
+
 class PNRBudgetLineItemResponse(PNRBudgetLineItemBase):
     LineItemID: int
 

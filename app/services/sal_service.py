@@ -80,3 +80,23 @@ def create_sales_invoice(db: Session, data: SalesInvoiceCreate) -> SalesInvoice:
 def get_sales_invoice(db: Session, invoice_id: int) -> SalesInvoice | None:
     stmt = select(SalesInvoice).where(SalesInvoice.InvoiceID == invoice_id).options(joinedload(SalesInvoice.lines))
     return db.execute(stmt).unique().scalar_one_or_none()
+
+
+def update_sales_invoice(db: Session, invoice_id: int, data) -> SalesInvoice | None:
+    invoice = db.get(SalesInvoice, invoice_id)
+    if not invoice:
+        return None
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(invoice, key, val)
+    db.commit()
+    db.refresh(invoice)
+    return invoice
+
+
+def delete_sales_invoice(db: Session, invoice_id: int) -> bool:
+    invoice = db.get(SalesInvoice, invoice_id)
+    if not invoice:
+        return False
+    db.delete(invoice)
+    db.commit()
+    return True

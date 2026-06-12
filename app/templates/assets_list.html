@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Fixed Assets - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Fixed Assets{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Fixed Assets</h1>
+        <p>Manage asset register, depreciation, and disposals</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/assets?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/assets?format=csv'">CSV</button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">Filter Assets</div>
+    <form method="get" style="display:flex;gap:10px;flex-wrap:wrap;align-items:end">
+        <div class="form-group" style="margin:0">
+            <label>Category</label>
+            <select name="category_id" class="form-control" style="width:180px" id="filterCategory">
+                <option value="">All</option>
+            </select>
+        </div>
+        <div class="form-group" style="margin:0">
+            <label>Status</label>
+            <select name="status" class="form-control" style="width:140px">
+                <option value="">All</option>
+                <option value="Active" {% if request.query_params.get('status') == 'Active' %}selected{% endif %}>Active</option>
+                <option value="Disposed" {% if request.query_params.get('status') == 'Disposed' %}selected{% endif %}>Disposed</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="/fixed-assets" class="btn btn-warning">Clear</a>
+    </form>
+</div>
+
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Asset Register</span>
+        <a href="/fixed-assets/new" class="btn btn-success btn-sm">+ New Asset</a>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th data-sort="code">Asset Code</th>
+                <th data-sort="name">Asset Name</th>
+                <th data-sort="category">Category</th>
+                <th data-sort="cost">Purchase Cost</th>
+                <th data-sort="book">Book Value</th>
+                <th data-sort="life">Life (yrs)</th>
+                <th data-sort="status">Status</th>
+                <th data-sort="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody id="assetTableBody">
+            <tr><td colspan="8" style="text-align:center">Loading...</td></tr>
+        </tbody>
+    </table>
+    <div class="pagination" id="assetPagination"></div>
+</div>
+
+<script>
+    var currentPage = 1;
+    function loadCategories() {
+        fetch('/api/fixed-assets/categories')
+            .then(r => r.json())
+            .then(cats => {
+                var sel = document.getElementById('filterCategory');
+                cats.forEach(function(c) {
+                    var opt = document.createElement('option');
+                    opt.value = c.CategoryID;
+                    opt.textContent = c.CategoryName;
+                    if (new URLSearchParams(window.location.search).get('category_id') == c.CategoryID) opt.selected = true;
+                    sel.appendChild(opt);
+                });
+            });
+    }
+    function loadAssets(page) {
+        currentPage = page || 1;
+        var params = new URLSearchParams(window.location.search);
+        params.set('page', currentPage);
+        params.set('page_size', '20');
+        fetch('/api/fixed-assets?' + params.toString())
+            .then(r => r.json())
+            .then(d => {
+                var tbody = document.getElementById('assetTableBody');
+                if (!d.items || d.items.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center">No assets found.</td></tr>';
+                    return;
+                }
+                tbody.innerHTML = d.items.map(function(a) {
+                    var statusClass = a.Status === 'Active' ? 'badge-success' : 'badge-secondary';
+                    return '<tr>' +
+                        '<td><a href="/fixed-assets/' + a.AssetID + '">' + a.AssetCode + '</a></td>' +
+                        '<td>' + (a.AssetName || '-') + '</td>' +
+                        '<td>' + (a.CategoryID || '-') + '</td>' +
+                        '<td>' + parseFloat(a.PurchaseCost).toLocaleString() + '</td>' +
+                        '<td>' + parseFloat(a.CurrentBookValue).toLocaleString() + '</td>' +
+                        '<td>' + a.UsefulLifeYears + '</td>' +
+                        '<td><span class="badge ' + statusClass + '">' + a.Status + '</span></td>' +
+                        '<td><a href="/fixed-assets/' + a.AssetID + '" class="btn btn-sm btn-primary">View</a></td>' +
+                        '</tr>';
+                }).join('');
+                var totalPages = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('assetPagination');
+                var html = '';
+                for (var i = 1; i <= totalPages && i <= 20; i++) {
+                    html += '<a href="#" onclick="loadAssets(' + i + ');return false" class="' + (i === currentPage ? 'active' : '') + '">' + i + '</a>';
+                }
+                pag.innerHTML = html;
+            })
+            .catch(function(e) {
+                document.getElementById('assetTableBody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--danger)">Error loading assets: ' + e.message + '</td></tr>';
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadCategories(); loadAssets(1); });
+</script>
+{% endblock %}

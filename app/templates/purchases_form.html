@@ -7,7 +7,7 @@
     <p>{{ subtitle }}</p>
 </div>
 <div class="card" style="max-width:800px">
-    <form id="purForm" data-draft data-record-id="{{ record_id | default('new') }}" onsubmit="return savePur(event)">
+    <form id="purForm" data-draft data-record-id="{{ record_id | default('new') }}" onsubmit="return savePur(event)" data-meta-config="/api/meta/config/purchase_voucher" data-meta-vat='{"vatRateField":"VATRate","subtotalField":"SubTotal","vatAmountField":"VATAmount","totalField":"TotalValue"}'>
         <div class="form-row">
             <div class="form-group">
                 <label>Voucher Number</label>
@@ -28,14 +28,10 @@
                 <input type="text" id="EventName" class="form-control" value="{{ vch.EventName if vch else '' }}">
             </div>
         </div>
-        <div class="form-row-3">
+        <div class="form-row">
             <div class="form-group">
                 <label>Invoice Date</label>
                 <input type="date" id="InvoiceDate" class="form-control" value="{{ vch.InvoiceDate if vch else '' }}">
-            </div>
-            <div class="form-group">
-                <label>Total Value</label>
-                <input type="number" step="0.01" id="TotalValue" class="form-control" value="{{ vch.TotalValue if vch else '' }}">
             </div>
             <div class="form-group">
                 <label>Currency</label>
@@ -45,6 +41,27 @@
                 </select>
             </div>
         </div>
+        <fieldset style="border:1px solid rgba(197,165,90,0.3); border-radius:8px; padding:16px; margin:12px 0">
+            <legend style="font-size:13px; font-weight:600; color:#C5A55A; padding:0 8px">VAT Breakdown</legend>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>Subtotal (excl. VAT)</label>
+                    <input type="number" step="0.01" id="SubTotal" class="form-control" value="{{ vch.SubTotal if vch else '' }}" oninput="calcPurVat()">
+                </div>
+                <div class="form-group">
+                    <label>VAT Rate (%)</label>
+                    <input type="number" step="0.01" id="VATRate" class="form-control" value="14" oninput="calcPurVat()">
+                </div>
+                <div class="form-group">
+                    <label>VAT Amount</label>
+                    <input type="number" step="0.01" id="VATAmount" class="form-control" value="{{ vch.VATAmount if vch else '0' }}" readonly style="background:rgba(197,165,90,0.05)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Total Value (incl. VAT)</label>
+                <input type="number" step="0.01" id="TotalValue" class="form-control" value="{{ vch.TotalValue if vch else '' }}" readonly style="background:rgba(197,165,90,0.05)">
+            </div>
+        </fieldset>
         <div id="purFormError" class="alert alert-danger" style="display:none"></div>
         <div class="btn-group">
             <button type="submit" class="btn btn-success">Save Voucher</button>
@@ -53,6 +70,13 @@
     </form>
 </div>
 <script>
+function calcPurVat() {
+    var sub = parseFloat(document.getElementById('SubTotal').value) || 0;
+    var rate = parseFloat(document.getElementById('VATRate').value) || 0;
+    var vat = sub * rate / 100;
+    document.getElementById('VATAmount').value = vat.toFixed(2);
+    document.getElementById('TotalValue').value = (sub + vat).toFixed(2);
+}
 function savePur(e) {
     e.preventDefault();
     var data = {
@@ -61,7 +85,10 @@ function savePur(e) {
         PNRNumber: document.getElementById('PNRNumber').value.trim() || null,
         EventName: document.getElementById('EventName').value.trim() || null,
         InvoiceDate: document.getElementById('InvoiceDate').value || null,
-        TotalValue: document.getElementById('TotalValue').value ? parseFloat(document.getElementById('TotalValue').value) : null,
+        SubTotal: parseFloat(document.getElementById('SubTotal').value) || 0,
+        VATRate: parseFloat(document.getElementById('VATRate').value) || 0,
+        VATAmount: parseFloat(document.getElementById('VATAmount').value) || 0,
+        TotalValue: parseFloat(document.getElementById('TotalValue').value) || 0,
         CurrencyCode: document.getElementById('CurrencyCode').value || null,
         lines: []
     };

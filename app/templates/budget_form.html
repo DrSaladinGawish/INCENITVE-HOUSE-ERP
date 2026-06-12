@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Budget Form{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1>{{ title }}</h1>
+    <p>{{ subtitle }}</p>
+</div>
+<div class="card" style="max-width:800px">
+    <form id="budgetForm" data-draft data-record-id="{{ record_id | default('new') }}" data-meta-config="/api/meta/config/budget_period" onsubmit="return saveBudget(event)">
+        <div class="form-row">
+            <div class="form-group">
+                <label>Budget Period *</label>
+                <select id="BudgetPeriodCode" class="form-control" required>
+                    <option value="">-- Select Period --</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Category *</label>
+                <input type="text" id="Category" class="form-control" required placeholder="e.g. Accommodation, Catering">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label>Account Code</label>
+                <input type="text" id="AccountCode" class="form-control" placeholder="e.g. 5000-01">
+            </div>
+            <div class="form-group">
+                <label>Budgeted Amount *</label>
+                <input type="number" step="0.01" id="BudgetedAmount" class="form-control" value="0" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Description</label>
+            <textarea id="Description" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Notes</label>
+            <textarea id="Notes" class="form-control" rows="2"></textarea>
+        </div>
+        <div id="budgetFormError" class="alert alert-danger" style="display:none"></div>
+        <div class="btn-group">
+            <button type="submit" class="btn btn-success">Save Budget Line</button>
+            <a href="/budgeting" class="btn btn-outline">Cancel</a>
+        </div>
+    </form>
+</div>
+<script>
+    function loadPeriods() {
+        fetch('/api/budgeting/periods').then(r => r.json()).then(d => {
+            var sel = document.getElementById('BudgetPeriodCode');
+            d.forEach(function(p) {
+                var o = document.createElement('option');
+                o.value = p.BudgetPeriodCode;
+                o.textContent = p.Label + ' (' + p.FiscalYear + ')';
+                sel.appendChild(o);
+            });
+        });
+    }
+    function saveBudget(e) {
+        e.preventDefault();
+        var data = {
+            BudgetPeriodCode: document.getElementById('BudgetPeriodCode').value,
+            Category: document.getElementById('Category').value.trim(),
+            AccountCode: document.getElementById('AccountCode').value.trim() || null,
+            BudgetedAmount: parseFloat(document.getElementById('BudgetedAmount').value) || 0,
+            Description: document.getElementById('Description').value.trim() || null,
+            Notes: document.getElementById('Notes').value.trim() || null,
+        };
+        var errEl = document.getElementById('budgetFormError');
+        errEl.style.display = 'none';
+        if (!data.BudgetPeriodCode || !data.Category) { errEl.textContent = 'Period and Category are required.'; errEl.style.display = 'block'; return false; }
+        fetch('/api/budgeting/lines', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+        }).then(function(r) {
+            if (!r.ok) return r.json().then(function(e) { throw new Error(e.detail || 'Save failed'); });
+            return r.json();
+        }).then(function() {
+            window.location.href = '/budgeting';
+        }).catch(function(err) {
+            errEl.textContent = err.message;
+            errEl.style.display = 'block';
+        });
+        return false;
+    }
+    document.addEventListener('DOMContentLoaded', loadPeriods);
+</script>
+{% endblock %}

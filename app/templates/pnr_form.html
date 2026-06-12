@@ -7,7 +7,7 @@
     <p>{{ subtitle }}</p>
 </div>
 <div class="card" style="max-width:800px">
-    <form id="pnrForm" data-draft data-record-id="{{ record_id | default('new') }}" onsubmit="return savePnr(event)">
+    <form id="pnrForm" data-draft data-record-id="{{ record_id | default('new') }}" data-meta-config="/api/meta/config/pnr_master" onsubmit="return savePnr(event)">
         <div class="form-row">
             <div class="form-group">
                 <label>PNR Number *</label>

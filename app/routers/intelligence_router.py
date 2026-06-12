@@ -1,12 +1,14 @@
 import os
 import json
 from datetime import datetime
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import FileResponse
 from sqlalchemy import text, select, func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.services.ai.llm_service import llm_service
+from app.services.neural.trainer import trainer
 
 router = APIRouter(prefix="/api/v1/intelligence", tags=["Intelligence"])
 
@@ -69,3 +71,48 @@ def get_audit_log(db: Session = Depends(get_db)):
         return {"items": [dict(r) for r in rows]}
     except Exception:
         return {"items": []}
+
+
+@router.post("/ai/assist")
+async def ai_assist(data: dict):
+    message = data.get("message", "")
+    context = {
+        "page": data.get("page_context", "unknown"),
+        "user": data.get("user", "User"),
+        "form_data": data.get("form_data", {})
+    }
+    result = await llm_service.ask(message, context)
+    return result
+
+
+@router.post("/neural/train/{predictor_name}")
+async def train_predictor(predictor_name: str):
+    from app.database import SyncSessionLocal
+    from app.models import BankTransaction
+
+    db = SyncSessionLocal()
+    try:
+        txns = db.query(BankTransaction).order_by(BankTransaction.TransactionDate.desc()).limit(100).all()
+        historical = [{
+            "date": str(t.TransactionDate),
+            "net_amount": float(t.Deposit or 0) - float(t.Withdrawal or 0)
+        } for t in txns]
+
+        result = trainer.train_cashflow_predictor(historical)
+        return result
+    finally:
+        db.close()
+
+
+@router.get("/neural/predict/{predictor_name}")
+async def predict(predictor_name: str, periods: int = 3):
+    if predictor_name == "cashflow":
+        predictions = trainer.predict_cashflow(periods)
+        return {
+            "predictor": predictor_name,
+            "periods": periods,
+            "forecast": predictions,
+            "unit": "EGP",
+            "generated_at": datetime.now().isoformat()
+        }
+    return {"error": f"Unknown predictor: {predictor_name}"}

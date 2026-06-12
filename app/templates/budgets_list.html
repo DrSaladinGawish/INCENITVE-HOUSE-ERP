@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Budgeting - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Budgets{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Budgeting</h1>
+        <p>Budget periods, lines, commitments, and budget vs actual analysis</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/budgeting/new'">+ New Budget</button>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Budget Lines</span>
+        <div>
+            <select id="periodFilter" onchange="loadLines(1)" style="margin-right:8px">
+                <option value="">All Periods</option>
+            </select>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th>ID</th><th>Period</th><th>Category</th><th>Description</th><th>Budgeted</th><th>Actual</th><th>Committed</th><th>Utilization</th></tr></thead>
+        <tbody id="budgetBody"><tr><td colspan="8">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="budgetPagination"></div>
+</div>
+<div class="card">
+    <div class="card-header"><span>Budget vs Actual Summary</span></div>
+    <div id="vsActualSummary"><p class="text-muted">Select a period above to see summary.</p></div>
+</div>
+<script>
+    var bPage = 1;
+    function loadLines(page) {
+        bPage = page || 1;
+        var periodCode = document.getElementById('periodFilter').value;
+        var url = '/api/budgeting/lines?page=' + bPage + '&page_size=20';
+        if (periodCode) url += '&period_code=' + encodeURIComponent(periodCode);
+        fetch(url).then(r => r.json()).then(d => {
+            var body = document.getElementById('budgetBody');
+            if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="8">No budget lines.</td></tr>'; return; }
+            body.innerHTML = d.items.map(function(l) {
+                var bud = Number(l.BudgetedAmount||0);
+                var act = Number(l.ActualAmount||0);
+                var com = Number(l.CommittedAmount||0);
+                var util = bud > 0 ? ((act + com) / bud * 100).toFixed(1) : '0.0';
+                return '<tr><td>' + l.BudgetLineID + '</td><td>' + l.BudgetPeriodCode + '</td><td>' + l.Category + '</td><td>' + (l.Description ? l.Description.substring(0,40) : '-') + '</td><td>' + bud.toLocaleString() + '</td><td>' + act.toLocaleString() + '</td><td>' + com.toLocaleString() + '</td><td>' + util + '%</td></tr>';
+            }).join('');
+            var tp = Math.ceil(d.total / d.page_size);
+            var pag = document.getElementById('budgetPagination');
+            var h = '';
+            for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadLines(' + i + ');return false" class="' + (i === bPage ? 'active' : '') + '">' + i + '</a>';
+            pag.innerHTML = h;
+        });
+    }
+    function loadPeriods() {
+        fetch('/api/budgeting/periods').then(r => r.json()).then(d => {
+            var sel = document.getElementById('periodFilter');
+            d.forEach(function(p) { var o = document.createElement('option'); o.value = p.BudgetPeriodCode; o.textContent = p.Label + ' (' + p.FiscalYear + ')'; sel.appendChild(o); });
+        });
+    }
+    function loadVsActual() {
+        var periodCode = document.getElementById('periodFilter').value;
+        var url = '/api/budgeting/vs-actual';
+        if (periodCode) url += '?period_code=' + encodeURIComponent(periodCode);
+        fetch(url).then(r => r.json()).then(d => {
+            var el = document.getElementById('vsActualSummary');
+            el.innerHTML = '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:12px">'
+                + '<div><strong>Budgeted</strong><br>' + Number(d.total_budgeted).toLocaleString() + '</div>'
+                + '<div><strong>Actual</strong><br>' + Number(d.total_actual).toLocaleString() + '</div>'
+                + '<div><strong>Committed</strong><br>' + Number(d.total_committed).toLocaleString() + '</div>'
+                + '<div><strong>Variance</strong><br>' + Number(d.total_variance).toLocaleString() + '</div>'
+                + '</div>';
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadPeriods(); loadLines(1); loadVsActual(); });
+    document.getElementById('periodFilter').addEventListener('change', loadVsActual);
+</script>
+{% endblock %}

@@ -56,6 +56,13 @@ class JournalVoucherResponse(JournalVoucherBase):
         from_attributes = True
 
 
+class JournalVoucherUpdate(BaseModel):
+    JVDate: Optional[date] = None
+    Narration: Optional[str] = None
+    TotalDebit: Optional[float] = None
+    TotalCredit: Optional[float] = None
+
+
 class JournalVoucherList(BaseModel):
     items: list[JournalVoucherResponse]
     total: int

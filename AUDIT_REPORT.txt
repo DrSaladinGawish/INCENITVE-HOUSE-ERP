@@ -1,0 +1,691 @@
+======================================================================
+  SYSTEM AUDIT: IncentiveHouse-ERP
+  Path: D:\IncentiveHouse_ERP
+  Audited: 2026-06-12T08:50:38.339405
+======================================================================
+
+SUMMARY
+  Total Files: 576
+  Total Dirs:  238
+  Recently Modified (7d): 574
+
+BY CATEGORY
+  MODELS: 35 files
+    - app\models\__init__.py
+    - app\models\__pycache__\__init__.cpython-313.pyc
+    - app\models\__pycache__\ihe_models.cpython-313.pyc
+    - app\models\budgeting.py
+    - app\models\crm.py
+    - app\models\document\__init__.py
+    - app\models\document\__pycache__\__init__.cpython-313.pyc
+    - app\models\document\__pycache__\document_module.cpython-313.pyc
+    - app\models\document\__pycache__\supporting_document.cpython-313.pyc
+    - app\models\document\document_module.py
+    ... and 25 more
+
+  OTHER: 354 files
+    - .env
+    - .git\COMMIT_EDITMSG
+    - .git\HEAD
+    - .git\config
+    - .git\description
+    - .git\hooks\applypatch-msg.sample
+    - .git\hooks\commit-msg.sample
+    - .git\hooks\fsmonitor-watchman.sample
+    - .git\hooks\post-update.sample
+    - .git\hooks\pre-applypatch.sample
+    ... and 344 more
+
+  ROUTERS: 37 files
+    - app\routers\__init__.py
+    - app\routers\__pycache__\__init__.cpython-313.pyc
+    - app\routers\__pycache__\ai_router.cpython-313.pyc
+    - app\routers\__pycache__\auth_router.cpython-313.pyc
+    - app\routers\__pycache__\bnk_router.cpython-313.pyc
+    - app\routers\__pycache__\dashboard_router.cpython-313.pyc
+    - app\routers\__pycache__\documents.cpython-313.pyc
+    - app\routers\__pycache__\evn_router.cpython-313.pyc
+    - app\routers\__pycache__\export_router.cpython-313.pyc
+    - app\routers\__pycache__\gl_router.cpython-313.pyc
+    ... and 27 more
+
+  SCHEMAS: 22 files
+    - app\schemas\__init__.py
+    - app\schemas\__pycache__\__init__.cpython-313.pyc
+    - app\schemas\__pycache__\auth.cpython-313.pyc
+    - app\schemas\__pycache__\bnk.cpython-313.pyc
+    - app\schemas\__pycache__\dashboard.cpython-313.pyc
+    - app\schemas\__pycache__\evn.cpython-313.pyc
+    - app\schemas\__pycache__\gl.cpython-313.pyc
+    - app\schemas\__pycache__\pur.cpython-313.pyc
+    - app\schemas\__pycache__\sal.cpython-313.pyc
+    - app\schemas\auth.py
+    ... and 12 more
+
+  SERVICES: 32 files
+    - app\services\__init__.py
+    - app\services\__pycache__\__init__.cpython-313.pyc
+    - app\services\__pycache__\bnk_service.cpython-313.pyc
+    - app\services\__pycache__\dashboard_service.cpython-313.pyc
+    - app\services\__pycache__\evn_service.cpython-313.pyc
+    - app\services\__pycache__\gl_service.cpython-313.pyc
+    - app\services\__pycache__\pur_service.cpython-313.pyc
+    - app\services\__pycache__\sal_service.cpython-313.pyc
+    - app\services\ai\__init__.py
+    - app\services\ai\llm_service.py
+    ... and 22 more
+
+  STATIC: 19 files
+    - app\static\meta\meta_dashboard.js
+    - app\static\meta\meta_document.js
+    - app\static\meta\meta_layer.css
+    - app\static\meta\meta_layer.js
+    - app\static\meta\meta_list.js
+    - app\static\meta\meta_module_launcher.js
+    - app\static\meta\meta_nav.js
+    - app\static\meta\meta_report.js
+    - app\static\meta\meta_universal.css
+    - app\static\meta\meta_vat.js
+    ... and 9 more
+
+  TEMPLATES: 42 files
+    - .env.template
+    - app\templates\__init__.py
+    - app\templates\asset_form.html
+    - app\templates\assets_list.html
+    - app\templates\audit_log.html
+    - app\templates\backup.html
+    - app\templates\banking_form.html
+    - app\templates\banking_list.html
+    - app\templates\base.html
+    - app\templates\budget_form.html
+    ... and 32 more
+
+  TESTS: 35 files
+    - .pytest_cache\.gitignore
+    - .pytest_cache\CACHEDIR.TAG
+    - .pytest_cache\README.md
+    - .pytest_cache\v\cache\lastfailed
+    - .pytest_cache\v\cache\nodeids
+    - .pytest_cache\v\cache\stepwise
+    - test_ih.db
+    - tests\__init__.py
+    - tests\__pycache__\__init__.cpython-313.pyc
+    - tests\__pycache__\conftest.cpython-313-pytest-8.3.0.pyc
+    ... and 25 more
+
+RECENTLY MODIFIED (Last 7 Days)
+  [2026-06-12T08:45:25]   0.22 KB  app\meta_layer\__init__.py
+  [2026-06-12T08:45:18]   6.69 KB  app\meta_layer\meta_injector.py
+  [2026-06-12T08:45:05]  28.89 KB  app\templates\base.html
+  [2026-06-12T08:44:56]  22.07 KB  app\templates\dashboard.html
+  [2026-06-12T08:44:01]   12.4 KB  app\meta_layer\meta_api_v2.py
+  [2026-06-12T08:43:49]   6.66 KB  app\static\meta\meta_document.js
+  [2026-06-12T08:43:43]   5.83 KB  app\static\meta\meta_universal.css
+  [2026-06-12T08:43:39]   4.12 KB  app\static\meta\meta_module_launcher.js
+  [2026-06-12T08:43:33]   6.57 KB  app\static\meta\meta_report.js
+  [2026-06-12T08:43:24]   3.67 KB  app\static\meta\meta_nav.js
+  [2026-06-12T08:43:18]  10.22 KB  app\static\meta\meta_list.js
+  [2026-06-12T08:43:04]   7.59 KB  app\static\meta\meta_dashboard.js
+  [2026-06-12T08:32:57]    3.0 KB  app\templates\gl_form.html
+  [2026-06-12T08:32:56]   5.65 KB  app\templates\inventory_form.html
+  [2026-06-12T08:32:55]    8.9 KB  app\templates\asset_form.html
+  [2026-06-12T08:32:54]   4.79 KB  app\templates\banking_form.html
+  [2026-06-12T08:32:53]   3.96 KB  app\templates\budget_form.html
+  [2026-06-12T08:32:52]   6.95 KB  app\templates\crm_lead_form.html
+  [2026-06-12T08:32:51]   6.23 KB  app\templates\payroll_form.html
+  [2026-06-12T08:32:51]    5.3 KB  app\templates\pnr_form.html
+  [2026-06-12T08:32:23]   7.31 KB  app\templates\sales_form.html
+  [2026-06-12T08:32:22]   5.71 KB  app\templates\purchases_form.html
+  [2026-06-12T08:31:23]   4.39 KB  app\static\meta\meta_vat.js
+  [2026-06-12T08:31:16]   1.79 KB  app\static\meta\meta_layer.css
+  [2026-06-12T08:31:12]  11.07 KB  app\static\meta\meta_layer.js
+  [2026-06-12T08:29:29]   1.57 KB  app\templates\meta\meta_list.html
+  [2026-06-12T08:29:28]   7.63 KB  app\templates\meta\meta_form.html
+  [2026-06-12T08:29:16]   1.15 KB  app\routers\meta_router.py
+  [2026-06-12T08:29:14]    1.9 KB  app\meta\base_form.py
+  [2026-06-12T08:29:11]   0.58 KB  app\meta\form_registry.py
+  [2026-06-12T08:29:10]    0.0 KB  app\meta\__init__.py
+  [2026-06-12T08:20:13]    6.0 KB  app\routers\fixed_assets.py
+  [2026-06-12T08:19:49]   3.41 KB  app\templates\inventory_list.html
+  [2026-06-12T08:19:38]   6.37 KB  app\routers\inventory.py
+  [2026-06-12T08:19:00]   3.31 KB  app\templates\crm_leads_list.html
+  [2026-06-12T08:19:00]   6.64 KB  app\services\inventory_service.py
+  [2026-06-12T08:19:00]   4.44 KB  app\templates\budgets_list.html
+  [2026-06-12T08:18:35]   5.24 KB  app\routers\budgeting.py
+  [2026-06-12T08:18:34]   2.99 KB  app\schemas\budgeting.py
+  [2026-06-12T08:18:34]   5.99 KB  app\services\budgeting_service.py
+  [2026-06-12T08:18:34]   3.08 KB  app\models\budgeting.py
+  [2026-06-12T08:18:34]    8.1 KB  app\routers\crm.py
+  [2026-06-12T08:18:34]   5.75 KB  app\routers\payroll.py
+  [2026-06-12T08:18:34]   2.81 KB  app\schemas\inventory.py
+  [2026-06-12T08:18:34]   7.31 KB  app\services\crm_service.py
+  [2026-06-12T08:18:34]   6.59 KB  app\services\fixed_assets_service.py
+  [2026-06-12T08:18:34]   9.03 KB  app\services\payroll_service.py
+  [2026-06-12T08:18:34]   5.64 KB  app\templates\assets_list.html
+  [2026-06-12T08:18:34]   4.52 KB  app\templates\payroll_list.html
+  [2026-06-12T08:17:59]   5.68 KB  app\schemas\crm.py
+  [2026-06-12T08:17:58]   4.08 KB  app\schemas\fixed_assets.py
+  [2026-06-12T08:17:54]   3.81 KB  app\models\fixed_assets.py
+  [2026-06-12T08:17:53]   4.82 KB  app\models\crm.py
+  [2026-06-12T08:17:53]    3.6 KB  app\models\inventory.py
+  [2026-06-12T08:17:53]   3.65 KB  app\schemas\payroll.py
+  [2026-06-12T08:17:40]    3.3 KB  app\models\payroll.py
+  [2026-06-12T08:16:55]   4.43 KB  app\routers\evn_router.py
+  [2026-06-12T08:16:45]   3.44 KB  app\schemas\evn.py
+  [2026-06-12T08:16:37]   4.81 KB  app\services\evn_service.py
+  [2026-06-12T07:48:34]   3.97 KB  app\routers\gl_router.py
+  [2026-06-12T07:48:26]   3.47 KB  app\routers\bnk_router.py
+  [2026-06-12T07:48:18]   3.57 KB  app\routers\pur_router.py
+  [2026-06-12T07:48:10]   3.51 KB  app\routers\sal_router.py
+  [2026-06-12T07:48:02]   3.25 KB  app\services\gl_service.py
+  [2026-06-12T07:47:58]   2.73 KB  app\services\bnk_service.py
+  [2026-06-12T07:47:53]  13.47 KB  app\models\ihe_models.py
+  [2026-06-12T07:47:29]   2.49 KB  app\schemas\gl.py
+  [2026-06-12T07:47:25]   2.34 KB  app\schemas\bnk.py
+  [2026-06-12T07:47:21]   3.22 KB  app\schemas\sal.py
+  [2026-06-12T07:47:15]   3.71 KB  app\schemas\pur.py
+  [2026-06-12T07:46:58]    3.4 KB  app\services\pur_service.py
+  [2026-06-12T07:46:53]   3.26 KB  app\services\sal_service.py
+  [2026-06-06T12:27:26]   4.25 KB  app\routers\intelligence_router.py
+  [2026-06-06T12:17:20]   6.12 KB  app\services\ai\llm_service.py
+  [2026-06-06T12:15:27]   5.25 KB  app\main.py
+  [2026-06-06T12:09:57]   0.44 KB  app\services\neural\__init__.py
+  [2026-06-06T12:04:19]   1.83 KB  app\config.py
+  [2026-06-06T11:54:02]   0.93 KB  .env
+  [2026-06-06T11:53:06]   5.32 KB  app\templates\neural_panel.html
+  [2026-06-06T11:49:34]   1.44 KB  tests\test_neural_training.py
+  [2026-06-06T11:49:31]   1.28 KB  tests\test_llm_ollama.py
+  [2026-06-06T11:49:29]   1.84 KB  app\services\neural\trainer.py
+  [2026-06-06T11:49:15]    0.0 KB  app\services\ai\__init__.py
+  [2026-06-06T11:43:56]   0.04 KB  .git\refs\tags\v2.4.0
+  [2026-06-06T11:43:56]   0.16 KB  .git\objects\a6\94d5eb5c9bc341f564531e89cc44946e0ec13d
+  [2026-06-06T11:43:47]   2.28 KB  .git\logs\refs\heads\main
+  [2026-06-06T11:43:47]   2.47 KB  .git\logs\HEAD
+  [2026-06-06T11:43:47]   0.04 KB  .git\refs\heads\main
+  [2026-06-06T11:43:47]   0.21 KB  .git\objects\9c\8ac47f77f86897965e148f9f76f58fa661b638
+  [2026-06-06T11:43:47]   0.07 KB  .git\COMMIT_EDITMSG
+  [2026-06-06T11:43:47]   16.7 KB  .git\index
+  [2026-06-06T11:43:47]   0.69 KB  .git\objects\cc\6d5e429208f996083ffeb40f57a7e4f009148f
+  [2026-06-06T11:43:47]   0.12 KB  .git\objects\71\4d6c12a62b9adcca7ac983bc8fb981885bf670
+  [2026-06-06T11:43:47]   0.39 KB  .git\objects\0c\0813ecb5b7ca9ff389f73aca49030023e1fe5d
+  [2026-06-06T11:43:47]   0.18 KB  .git\objects\36\a5840a3a83a6fe004378352ca56b08fc2b127b
+  [2026-06-06T11:43:47]   0.09 KB  .git\objects\a6\e8d1754427d61f34c01b30adbb59fb2ff4a419
+  [2026-06-06T11:43:47]   0.14 KB  .git\objects\96\916e86a851a3f7fd3f212fb4f6e70a962aa7af
+  [2026-06-06T11:43:47]   0.25 KB  .git\objects\79\88701706e49633d2d48447240f2034740ee5ac
+  [2026-06-06T11:43:47]   0.15 KB  .git\objects\0e\adb80a1e5628eebc009945672a07d2b6eb7f3e
+  [2026-06-06T11:43:47]   0.34 KB  .git\objects\ac\6038c708e7340ef1f21c1d0184f9544e69d36b
+  [2026-06-06T11:43:47]   0.52 KB  .git\objects\b9\7d5bcc4cf32be4e7fae293f2f2811096c95bb3
+  [2026-06-06T11:43:47]   0.69 KB  .git\objects\92\9bb2973c0776be2d58ddaf3efdd9222ac159be
+  [2026-06-06T11:43:47]    0.3 KB  .git\objects\d0\04d19e3d15245b11a1edb30ed333f987f47bdb
+  [2026-06-06T11:43:47]   0.09 KB  .git\objects\ab\882f734c165f8b9fcbc51a72a78dbc0c5b12d3
+  [2026-06-06T11:43:47]   0.48 KB  .git\objects\56\da53f1a67da5cf1303b758e1ee35a112da45d2
+  [2026-06-06T11:43:38]   0.03 KB  .git\objects\1b\b8e4336b81012fd810108716919566c3eb933c
+  [2026-06-06T11:43:38]   0.03 KB  .git\objects\5e\1c309dae7f45e0f39b1bf3ac3cd9db12e7d689
+  [2026-06-06T11:43:38]   0.35 KB  .git\objects\31\e8f5caaee4ad3bdb92574377ae3effad66f0bc
+  [2026-06-06T11:43:38]    0.5 KB  .git\objects\56\96d8bdd6a91b81f2c88073353e7de458b8d828
+  [2026-06-06T11:43:38]   0.36 KB  .git\objects\d6\407ac3446cefc976da2ff5ddf24ab30702312e
+  [2026-06-06T11:43:38]    0.5 KB  .git\objects\2a\ccc8ff60f8c9f2e974268f2820097c869dd3e6
+  [2026-06-06T11:43:38]   1.83 KB  .git\objects\c9\569b2de2246b26aefb13704272658044bb9764
+  [2026-06-06T11:43:38]   1.76 KB  .git\objects\14\cf77b5a62fd38c7ab97b56f01856acb5b3b47f
+  [2026-06-06T11:43:38]  10.48 KB  .git\objects\3d\0846ad1b17db8b2a18916cf0e2b552c73b5b4f
+  [2026-06-06T11:43:38]  13.19 KB  .git\objects\09\93460fb74b5110158952ff20a9bf9477686319
+  [2026-06-06T11:43:38]  10.48 KB  .git\objects\a8\c802f234673ec35c5cb3e1dd87e439ce2a7b94
+  [2026-06-06T11:43:38]  38.84 KB  .git\objects\19\fbbd2872e55b1f3694449a6bf6fdb5eebb5f38
+  [2026-06-06T11:43:38]  10.59 KB  .git\objects\5c\8df6c587eef61120199eed6b15bed62c28e690
+  [2026-06-06T11:43:38]   0.27 KB  .git\objects\14\a3e3211a902bc5032d3082ff21d0abff478a65
+  [2026-06-06T11:43:38]   0.75 KB  .git\objects\e8\b2121a042a347a633097b7bbac07b108eaef2c
+  [2026-06-06T11:43:38]   0.48 KB  .git\objects\fa\605050c8c267fdb75d2800358b0c765f12bc60
+  [2026-06-06T11:43:38]    5.0 KB  .git\objects\d8\ec7da1a6d0b626b437cddf84a06ee9fef68ad4
+  [2026-06-06T11:43:38]   1.28 KB  .git\objects\a0\7e8c1455b1701b1da33316ce50e80614f26008
+  [2026-06-06T11:43:38]   7.09 KB  .git\objects\22\4947a693bfb60404c91f4638313d65a3d67128
+  [2026-06-06T11:43:38]   1.22 KB  .git\objects\8a\2539ab2ee4e771fcebf1c7cdc34644763d2359
+  [2026-06-06T11:43:38]   1.45 KB  .git\objects\c2\3c681b2a301a782ca436fe530bfa1c96369008
+  [2026-06-06T11:43:38]   1.21 KB  .git\objects\24\e10c0524736673bfe583205f8642364c69104b
+  [2026-06-06T11:43:38]   1.54 KB  .git\objects\da\de7d322bafd484a141b30eaac239a315556196
+  [2026-06-06T11:43:38]   1.26 KB  .git\objects\45\430137ee7d107d9a1259f7f4fcc792b642ae33
+  [2026-06-06T11:43:38]   1.24 KB  .git\objects\95\45ae4e9265a8696a9b41d4222973e796646559
+  [2026-06-06T11:43:38]   1.59 KB  .git\objects\4a\e18b3629bbb08532c823431217e6f2b77ceeaf
+  [2026-06-06T11:43:38]   1.09 KB  .git\objects\18\3f7b883e66909c5551fc6e9b8bdd0bf24dee5a
+  [2026-06-06T11:43:38]   1.38 KB  .git\objects\2f\d10855aff56270bf029b187affcec4055ed8cf
+  [2026-06-06T11:43:38]   1.03 KB  .git\objects\ad\077e4c24f77d69ffef32219dd111deb4d10e53
+  [2026-06-06T11:43:38]   1.33 KB  .git\objects\9c\df87b5b8bef212c1a931e7c87826d935202cf6
+  [2026-06-06T11:43:38]   1.13 KB  .git\objects\c4\2ca3fd6cc8e4910f8bd09b828909a13290a6d4
+  [2026-06-06T11:43:38]   1.23 KB  .git\objects\53\355a0ae87e6a4797d23d735fc78d3dbcb4af54
+  [2026-06-06T11:43:38]   1.54 KB  .git\objects\9c\f6d0db6cf27c0e54d10fc1792e07f5e8570db4
+  [2026-06-06T11:43:38]   0.79 KB  .git\objects\fd\0b1d2e484381535b987098fe5ca05dbe7c9b76
+  [2026-06-06T11:43:38]   0.42 KB  .git\objects\a9\2601ace126de49bd7f0b8e0a01343e8df90f2a
+  [2026-06-06T11:43:38]    0.6 KB  .git\objects\e0\17688c47add58d343101e38646af74eefd0ea6
+  [2026-06-06T11:43:38]    0.5 KB  .git\objects\90\5d0e6f08500f66deb9f48781ab77b52d53eb53
+  [2026-06-06T11:43:38]   2.75 KB  .git\objects\52\1a039d07ffea82b2a7722a69955a5da10b7f33
+  [2026-06-06T11:43:38]   0.28 KB  .git\objects\14\fe4d092bf1c30849f01e032b964dc4d5e981b2
+  [2026-06-06T11:43:38]   1.99 KB  .git\objects\9e\1367a9f4beccb475891df84d0163997ea85d38
+  [2026-06-06T11:43:38]   0.49 KB  .git\objects\b9\723bbbac9b479e800b4982c7aefd62f0fd4585
+  [2026-06-06T11:43:38]   1.11 KB  .git\objects\ae\2e9970f0eff0961b53cb59c6752acd7eec69fe
+  [2026-06-06T11:43:38]   1.05 KB  .git\objects\4b\3cd1f2f26c14695744d79021aff13a8ae64357
+  [2026-06-06T11:43:38]   1.76 KB  .git\objects\b3\f0304166d81a896f07992240be7634e99935df
+  [2026-06-06T11:43:38]   1.06 KB  .git\objects\84\1d19d452ea4cdff485c290247b28257567e8c2
+  [2026-06-06T11:43:38]   1.07 KB  .git\objects\2b\71ae0b618436d3cd50215004d93eecee5ffcfb
+  [2026-06-06T11:43:38]    4.2 KB  .git\objects\bf\31a00ab3cbdbf73894e232166204ab9d7a3141
+  [2026-06-06T11:43:38]   5.91 KB  .git\objects\83\f83bd681ef5b0dab07b308aa80bb45f2b1ba07
+  [2026-06-06T11:43:38]   7.29 KB  .git\objects\dd\80364f371f3fe41db4d1986853f677df0cf9ee
+  [2026-06-06T11:43:38]   1.08 KB  .git\objects\cf\49e05e49b0418cda0c422fa65c3be5a5f5101a
+  [2026-06-06T11:43:37]   0.92 KB  .git\objects\cc\5230da1ad40b9133770abb183f506d7c55b3b9
+  [2026-06-06T11:43:37]   0.93 KB  .git\objects\6a\b86f8baa2ac74ca29024de014944f099449463
+  [2026-06-06T11:43:37]   0.93 KB  .git\objects\07\9f03d2652b4c56cc6db514f043ac6b5ab68005
+  [2026-06-06T11:43:37]   0.96 KB  .git\objects\7c\89deb46a3f732401dfd168aae8aee7744066d1
+  [2026-06-06T11:43:37]   5.06 KB  .git\objects\7a\47ab24f2825fd8000ad18af2f25399a6b0beb8
+  [2026-06-06T11:43:37]   0.85 KB  .git\objects\04\be78ef505918091807405ee8c0fde68e5328ae
+  [2026-06-06T11:43:37]   0.69 KB  .git\objects\c6\94389fa988e91697f96cd57bc1bf2b0c7f7eb6
+  [2026-06-06T11:43:37]   0.96 KB  .git\objects\8c\da669185620993d7400a87bdca7595a2fe9a27
+  [2026-06-06T11:43:37]   2.45 KB  .git\objects\59\cf77ce9b61f2496b722317ca4fb635928264f9
+  [2026-06-06T11:43:37]   1.65 KB  .git\objects\74\70d6be31ff6f5c4667de155f8a25f8fe340fc5
+  [2026-06-06T11:43:37]   0.83 KB  .git\objects\a2\96e80a34e4e83f7d228f0983604cd571208680
+  [2026-06-06T11:43:37]   0.59 KB  .git\objects\ce\a75d900890ce05455136f4daa1460949b47554
+  [2026-06-06T11:43:37]   1.55 KB  .git\objects\b3\ad16fb882e010793bb8fc99193f36519f48dcd
+  [2026-06-06T11:10:51]   5.09 KB  app\routers\pages_router.py
+  [2026-06-06T11:05:51]   0.44 KB  requirements.txt
+  [2026-06-06T11:04:45]    0.0 KB  .pytest_cache\v\cache\stepwise
+  [2026-06-06T11:04:45]    0.0 KB  .pytest_cache\v\cache\lastfailed
+  [2026-06-06T11:04:45]   5.22 KB  .pytest_cache\v\cache\nodeids
+  [2026-06-06T11:04:42]   0.01 KB  uploads\1780733082_hello.txt
+  [2026-06-06T11:04:42]   0.01 KB  uploads\1780733082_test.txt
+  [2026-06-06T11:04:33]  10.32 KB  tests\__pycache__\test_intelligence_ui.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T11:04:02]    2.0 KB  tests\test_intelligence_ui.py
+  [2026-06-06T11:02:15]   0.01 KB  uploads\1780732935_hello.txt
+  [2026-06-06T11:02:14]   0.01 KB  uploads\1780732934_test.txt
+  [2026-06-06T11:01:51]  10.74 KB  tests\__pycache__\test_list_enhancements.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T11:01:51]   9.72 KB  tests\__pycache__\test_final_integration.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T11:01:44]  12.56 KB  app\routers\__pycache__\neural_live.cpython-313.pyc
+  [2026-06-06T11:00:59]   1.33 KB  tests\test_list_enhancements.py
+  [2026-06-06T11:00:38]   1.72 KB  tests\test_final_integration.py
+  [2026-06-06T10:59:31]   7.46 KB  app\routers\neural_live.py
+  [2026-06-06T10:59:15]   0.01 KB  uploads\1780732755_hello.txt
+  [2026-06-06T10:59:15]   0.01 KB  uploads\1780732755_test.txt
+  [2026-06-06T10:59:10]   9.13 KB  tests\__pycache__\test_form_polish.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T10:59:03]   7.47 KB  app\routers\__pycache__\pages_router.cpython-313.pyc
+  [2026-06-06T10:25:03]    2.4 KB  app\templates\backup.html
+  [2026-06-06T10:24:52]   3.06 KB  app\templates\scm_workbench.html
+  [2026-06-06T10:24:47]   3.12 KB  app\templates\or_workbench.html
+  [2026-06-06T10:24:42]   3.21 KB  app\templates\audit_log.html
+  [2026-06-06T10:22:05]    2.6 KB  app\templates\gl_list.html
+  [2026-06-06T10:22:04]   2.79 KB  app\templates\banking_list.html
+  [2026-06-06T10:22:03]   2.65 KB  app\templates\purchases_list.html
+  [2026-06-06T10:22:02]   2.79 KB  app\templates\sales_list.html
+  [2026-06-06T10:22:01]    5.4 KB  app\templates\pnr_list.html
+  [2026-06-06T10:20:41]    1.3 KB  tests\test_form_polish.py
+  [2026-06-06T10:19:31]   4.96 KB  static\js\form_draft.js
+  [2026-06-06T10:19:23]   6.21 KB  static\js\tables.js
+  [2026-06-06T10:18:16]   0.01 KB  uploads\1780730296_hello.txt
+  [2026-06-06T10:18:16]   0.01 KB  uploads\1780730296_test.txt
+  [2026-06-06T10:17:40]  17.45 KB  tests\__pycache__\test_documents.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T10:17:39]  17.45 KB  tests\__pycache__\test_api_endpoints.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T10:17:37]   5.87 KB  app\routers\__pycache__\export_router.cpython-313.pyc
+  [2026-06-06T10:17:36]  27.22 KB  app\services\document\__pycache__\document_service.cpython-313.pyc
+  [2026-06-06T10:17:36]  10.81 KB  app\routers\__pycache__\documents.cpython-313.pyc
+  [2026-06-06T10:17:03]   3.55 KB  app\__pycache__\excel_generator.cpython-313.pyc
+  [2026-06-06T10:17:01]   7.91 KB  app\__pycache__\pdf_generator.cpython-313.pyc
+  [2026-06-06T10:17:01]   6.88 KB  app\services\__pycache__\dashboard_service.cpython-313.pyc
+  [2026-06-06T10:17:01]   3.26 KB  app\routers\__pycache__\dashboard_router.cpython-313.pyc
+  [2026-06-06T10:16:56]   7.32 KB  app\__pycache__\main.cpython-313.pyc
+  [2026-06-06T10:16:14]   3.54 KB  tests\test_api_endpoints.py
+  [2026-06-06T10:12:49]    3.3 KB  app\routers\export_router.py
+  [2026-06-06T10:11:53]   2.24 KB  app\routers\dashboard_router.py
+  [2026-06-06T10:11:25]   2.64 KB  app\services\dashboard_service.py
+  [2026-06-06T10:11:06]   1.69 KB  app\excel_generator.py
+  [2026-06-06T10:11:03]   5.07 KB  app\pdf_generator.py
+  [2026-06-06T10:09:54]   2.83 KB  tests\test_documents.py
+  [2026-06-06T10:09:35]  15.03 KB  app\templates\documents.html
+  [2026-06-06T10:08:43]   5.66 KB  app\routers\documents.py
+  [2026-06-06T10:08:14]  18.29 KB  app\services\document\document_service.py
+  [2026-06-06T10:02:19]  16.92 KB  tests\__pycache__\test_health.cpython-313-pytest-8.3.0.pyc
+  [2026-06-06T10:01:48]   5.89 KB  app\services\__pycache__\gl_service.cpython-313.pyc
+  [2026-06-06T10:01:48]   6.91 KB  app\services\__pycache__\evn_service.cpython-313.pyc
+  [2026-06-06T10:01:48]   5.75 KB  app\services\__pycache__\pur_service.cpython-313.pyc
+  [2026-06-06T10:01:47]   5.62 KB  app\services\__pycache__\sal_service.cpython-313.pyc
+  [2026-06-06T10:01:47]   4.21 KB  app\services\__pycache__\bnk_service.cpython-313.pyc
+  [2026-06-06T10:01:46]   2.09 KB  app\routers\__pycache__\auth_router.cpython-313.pyc
+  [2026-06-06T06:42:20]   7.09 KB  static\ai_smart_window.js
+  [2026-06-06T01:02:55]   23.5 KB  migrations\load_production_data.py
+  [2026-06-06T00:47:03]   3.19 KB  app\templates\pnr_detail.html
+  [2026-06-06T00:21:34]    2.0 KB  tests\test_health.py
+  [2026-06-06T00:11:39]   4.08 KB  app\templates\login.html
+  [2026-06-06T00:10:30]   1.28 KB  app\routers\auth_router.py
+  [2026-06-06T00:00:00]    0.9 KB  scripts\check_bioerp_ui.py
+  [2026-06-05T23:59:23]  39.69 KB  scripts\rendered_dashboard.html
+  [2026-06-05T23:59:13]   1.69 KB  scripts\check_rendered_html.py
+  [2026-06-05T23:50:23]   11.7 KB  output\Gap_Analysis_Report.md
+  [2026-06-05T23:16:44]   3.15 KB  migrations\seed_neural_demo.py
+  [2026-06-05T23:15:06]   6.03 KB  migrations\05_neural_seeder.py
+  [2026-06-05T23:09:51]   0.95 KB  docker-compose.yml
+  [2026-06-05T23:08:47]   0.37 KB  scripts\init_sql_tables.py
+  [2026-06-05T16:51:08]   0.04 KB  .git\refs\remotes\origin\main
+  [2026-06-05T16:51:08]   0.91 KB  .git\logs\refs\remotes\origin\main
+  [2026-06-05T16:51:04]    0.2 KB  .git\objects\d3\4cb70ad63c8b2f15bd2add4aa885593f4f8c36
+  [2026-06-05T16:51:04]   0.66 KB  .git\objects\aa\09310ceaa7b4a0059abc11ff1796398c7e4675
+  [2026-06-05T16:51:04]   0.05 KB  .git\objects\cb\be218271bc86396014a987b8e995e1a00d2e72
+  [2026-06-05T16:51:04]   0.05 KB  .git\objects\f5\e0f147ef58c8da213fb4460f95c8e6857844c5
+  [2026-06-05T16:51:04]   1.22 KB  .git\objects\52\02de6d531b280412d01ea71f357e104c4ca4d4
+  [2026-06-05T16:50:58]    2.9 KB  .github\workflows\ci.yml
+  [2026-06-05T16:46:02]   0.19 KB  .git\objects\5c\6a46237c53eb99c38cf045a8934a71c72b44a3
+  [2026-06-05T16:46:02]   0.05 KB  .git\objects\70\41a2cc398b3bb0f6afbc149678d56676103b08
+  [2026-06-05T16:46:02]   0.66 KB  .git\objects\b3\bc2eeb38f04356aebe6b5ca68a7fadbcab2314
+  [2026-06-05T16:46:02]   0.05 KB  .git\objects\a4\2841fa13ebc174e61d84bed6995904107c054d
+  [2026-06-05T16:46:02]   1.47 KB  .git\objects\b0\36c3df1115e34feb720cf0950425ac350eb9fb
+  [2026-06-05T16:38:39]   0.22 KB  .git\objects\f8\66b42292cdc6a3591b6db8aeb6cb60ac4abeb8
+  [2026-06-05T16:26:57]   0.21 KB  .git\objects\e3\f18f5a7b304c0b5e6b0b4d86ff0e03a13b4eba
+  [2026-06-05T16:26:57]   0.66 KB  .git\objects\7f\c5d21995d03d31d1daf8f8d39832c0793b8b18
+  [2026-06-05T16:26:57]   0.05 KB  .git\objects\9c\b4b277d227d4f1cdee32d58bd536c48aa02fc6
+  [2026-06-05T16:26:57]   0.05 KB  .git\objects\d6\342a0ae71c977a20fccbad9e78a3280ccb51ab
+  [2026-06-05T16:26:57]   1.15 KB  .git\objects\b5\1309e8d29d4e8d0442b9a46199eccd8f8d7fcf
+  [2026-06-05T16:22:24]   0.23 KB  .git\objects\98\77f1356064b594d91cd618b5696514e8e5b29a
+  [2026-06-05T16:22:24]   0.66 KB  .git\objects\c7\a0c5c402ed15b08d4bf5424391acaf4f81c236
+  [2026-06-05T16:22:24]   0.05 KB  .git\objects\e1\c730e4e91c9c605fb4bd2b701ceb687061d25d
+  [2026-06-05T16:22:24]   0.05 KB  .git\objects\2d\6a2d4d99658c18836973dcb2a5687fdf8a15fa
+  [2026-06-05T16:22:24]   1.19 KB  .git\objects\19\bad76393307ed28bcc7adc72e797b6bd36ffa0
+  [2026-06-05T16:10:35]   0.37 KB  .git\config
+  [2026-06-05T16:09:52]   0.21 KB  .git\objects\26\e9cbb8956c5d6e0f6798e6a4c7b4016cd30cd8
+  [2026-06-05T16:09:52]   0.66 KB  .git\objects\72\95a7ef9413897360609c9a5f33611fbb2c72f4
+  [2026-06-05T16:09:52]   0.05 KB  .git\objects\0e\83047333c1626ef332281854db7c5acc660b9e
+  [2026-06-05T16:09:52]   0.05 KB  .git\objects\d7\abb2e39d55a143120e02852e647158e07c4616
+  [2026-06-05T16:09:35]   1.24 KB  .git\objects\1b\679c232bfdc4d3aca837d6bd0b7fd3eecf09ae
+  [2026-06-05T16:09:34]   0.02 KB  .git\HEAD
+  [2026-06-05T15:20:03]  10.93 KB  static\img\logosmal.jpg
+  [2026-06-05T15:20:03]  20.13 KB  static\img\logos.jpg
+  [2026-06-05T15:20:03]  11.48 KB  static\img\hader.jpg
+  [2026-06-05T15:20:03]  45.34 KB  static\img\fotter.jpg
+  [2026-06-05T14:58:32]   0.23 KB  .git\objects\c5\88d4c0f33bbc94a910c8ff59063d8c86b00e4a
+  [2026-06-05T14:58:32]   0.66 KB  .git\objects\6c\8144187fee678e6ef6d038b842765af32012b6
+  [2026-06-05T14:57:26]   0.25 KB  .git\objects\4e\26722a5df49e0bbd4f7ac620ef5951e369d2b2
+  [2026-06-05T14:57:26]   0.48 KB  .git\objects\80\8f75c2ffe5e9b9ea89fcf225a3fd8f36e810d0
+  [2026-06-05T14:57:26]   0.56 KB  .git\objects\29\f2230dfbce1f3c73a45a01ac485cd8be7ddcef
+  [2026-06-05T14:33:10]   0.95 KB  Dockerfile
+  [2026-06-05T13:55:32]   0.18 KB  .git\objects\b0\456634d0d400d8ed9ca7a04f098c7ba13b8e10
+  [2026-06-05T13:55:31]   0.66 KB  .git\objects\e3\2dd2f3542b0c5b8f58900864485577cb21c246
+  [2026-06-05T13:55:31]   2.18 KB  .git\objects\af\cc947812970e23f68c0a33db8922a2f18e04a4
+  [2026-06-05T13:03:15]    4.8 KB  check_system.py
+  [2026-06-05T13:01:13]   0.25 KB  .git\objects\a5\d6781247bbc87a3d9b44a36ac9cd4db31cc89f
+  [2026-06-05T13:00:44]   0.66 KB  .git\objects\99\4c24fc5f4c0e1870e640fc3d42b01d9a041466
+  [2026-06-05T13:00:44]   0.24 KB  .git\objects\29\34b3ea8bc6e6ffdd0b4e50108045b347e860af
+  [2026-06-05T13:00:44]   0.13 KB  .git\objects\a1\85bc5239ca6e7e7325f658d5abdb5c03408db3
+  [2026-06-05T13:00:44]   0.06 KB  .git\objects\18\397b434a371d8502057b7e414e7294ff70e1c4
+  [2026-06-05T13:00:44]    0.1 KB  .git\objects\d8\c1ce5babd663c6e2c93135c94576d55a0bd42c
+  [2026-06-05T13:00:44]   0.22 KB  .git\objects\0e\8ea088e32ae82465288cda1e0195532020b370
+  [2026-06-05T13:00:44]    0.1 KB  .git\objects\85\0b243894d35ef3aa429f21ea80e8d968a065cd
+  [2026-06-05T13:00:44]    0.1 KB  .git\objects\05\fefee87f34413596314de5dc1a50db85d54df7
+  [2026-06-05T13:00:44]   0.06 KB  .git\objects\0e\c40bd4d8e5c8e7a53607871d0e761161eec79a
+  [2026-06-05T13:00:44]   0.06 KB  .git\objects\53\bfa00d3e2454b0a7106caf9a25892da8022fb1
+  [2026-06-05T13:00:44]    0.1 KB  .git\objects\08\35cbb730c68177fdad9a251da230958702b131
+  [2026-06-05T13:00:44]   0.23 KB  .git\objects\75\a25711497b6422854cb75d633c54414432f486
+  [2026-06-05T13:00:44]   0.15 KB  .git\objects\5c\7d6e77311d2ac9dae752a264848a5d4886d011
+  [2026-06-05T13:00:44]   0.27 KB  .git\objects\8a\caf9c8278576c486139fe9bd9929263c506fec
+  [2026-06-05T13:00:43]   0.45 KB  .git\objects\8d\d548644b9c5ab4b0f89c842d8de7d374286eb3
+  [2026-06-05T13:00:43]   0.37 KB  .git\objects\f1\231fef4b2de73ad75ae99489a0f4d65c67bcf0
+  [2026-06-05T13:00:43]    0.3 KB  .git\objects\cc\6ec931a97729f0a3ab3262ff70a7001bae21fc
+  [2026-06-05T13:00:43]   0.17 KB  .git\objects\77\e777efa6ac323111593b2bb8bea2ca08793cdf
+  [2026-06-05T13:00:43]   0.09 KB  .git\objects\e7\b91835cae53f38180a1d808f1ae022bd200807
+  [2026-06-05T13:00:43]   0.25 KB  .git\objects\42\9c0b6c75f14d38c8dafcd1d3f2281bab9d3ff5
+  [2026-06-05T13:00:43]   0.41 KB  .git\objects\e3\5dab4cdfe0aa5aeb68e9fb191542e747b4d5ce
+  [2026-06-05T13:00:43]   0.08 KB  .git\objects\51\98f4a9142b3855b3f4ab51bc32d459195ade53
+  [2026-06-05T13:00:43]   0.05 KB  .git\objects\28\93e751fb539d0c9c2dfcbd613935468d115097
+  [2026-06-05T13:00:43]   0.21 KB  .git\objects\ad\3bd056eab8ccc2a4e2e896ba4b5df30318606a
+  [2026-06-05T13:00:43]   0.15 KB  .git\objects\ee\06e68b4905b8d911ad9032df84657ab8986603
+  [2026-06-05T13:00:43]   0.23 KB  .git\objects\a0\402cf513878838fe395ddc9a09041a4b193796
+  [2026-06-05T13:00:43]   0.13 KB  .git\objects\f3\15dfd32d0b8dcd60e3cbd7e9fa0311afb9d652
+  [2026-06-05T13:00:43]   0.09 KB  .git\objects\21\2a8cf477f975f9d281366256784e4610c1d12b
+  [2026-06-05T13:00:43]   0.05 KB  .git\objects\68\7cf99778cbbe15910526e9a3d61788bc61bd73
+  [2026-06-05T13:00:43]   0.05 KB  .git\objects\03\65e64c980e9e2bfec8a4968842bfa89179ebb2
+  [2026-06-05T13:00:43]   0.21 KB  .git\objects\9e\756fc5c283a281742cdd4876c256c637c29cea
+  [2026-06-05T13:00:43]   0.36 KB  .git\objects\d7\7b4d7c17fc5b0f9efb650a5b2504de0d18d86c
+  [2026-06-05T13:00:43]   0.27 KB  .git\objects\b1\a6048041cec611eaac18b4ba2b198d5e128a36
+  [2026-06-05T13:00:43]   0.32 KB  .git\objects\d0\2a5980b99282b8a0c15abed99fbbec00ed6a28
+  [2026-06-05T13:00:43]   0.42 KB  .git\objects\d7\9c2ef07cfe43774d9b505c6096d072bb2e3ce0
+  [2026-06-05T13:00:43]   0.73 KB  .git\objects\d5\491c51b8a115bb501853f39706052290ccf594
+  [2026-06-05T13:00:43]   0.01 KB  .git\objects\e6\9de29bb2d1d6434b8b29ae775ad8c2e48c5391
+  [2026-06-05T13:00:43]   0.08 KB  .git\objects\07\9c71bf3a0537d5884aea757aa936da06ca4506
+  [2026-06-05T13:00:43]   3.02 KB  .git\objects\dc\ade439b74f5235a0c830585255a7ba87f8ab2f
+  [2026-06-05T13:00:43]   2.75 KB  .git\objects\dd\c8ad181f1a142d552daee01ff5dc99d7bc3c22
+  [2026-06-05T13:00:43]   0.22 KB  .git\objects\35\9b5bb1bb4747b14516e0e8ea6d67a08224f748
+  [2026-06-05T13:00:43]   0.48 KB  .git\objects\e2\0bf7d85c1808cf6912377a2c2cc48dac8adc8e
+  [2026-06-05T13:00:43]   0.15 KB  .git\objects\3a\835ed3c4829b93960742fc6b37cd13ded84aa6
+  [2026-06-05T13:00:43]   0.23 KB  .git\objects\79\e00d7b4f74a42a441cb524ce1106a98efc59c7
+  [2026-06-05T13:00:43]   6.16 KB  .git\objects\3e\89b058ea4906136ff43e0320349ef945ebbe9a
+  [2026-06-05T13:00:43]   5.19 KB  .git\objects\42\b881e9d4ae7b6e7e45705980c4b2d62a75fac7
+  [2026-06-05T13:00:43]   4.74 KB  .git\objects\62\d0d7ff92f73d95701edbccbdcb19c5b560e83d
+  [2026-06-05T13:00:43]   3.85 KB  .git\objects\ea\78f0dd99c9ce59d0300b7a2e6f15326356e78a
+  [2026-06-05T13:00:43]   4.68 KB  .git\objects\1f\4c77c34dddb19a6f96d10805df22cd2574658d
+  [2026-06-05T13:00:43]   2.72 KB  .git\objects\ee\63b7958a9853f973eb3b623a0f17d3f73e5719
+  [2026-06-05T13:00:43]   3.31 KB  .git\objects\2c\eacdf76d8784ca49e9f87c5844eabf2933ebe0
+  [2026-06-05T13:00:43]   3.21 KB  .git\objects\a9\722db4ae6fa598c18b4cca213e475b9b391501
+  [2026-06-05T13:00:43]   0.92 KB  .git\objects\ac\174ed7d364c4d82322bdd674ca8992875eb4c4
+  [2026-06-05T13:00:43]   0.71 KB  .git\objects\bf\f4f8bafc8a5c3343f8f1f2f6a1122bd14353c3
+  [2026-06-05T13:00:43]   1.39 KB  .git\objects\da\d1ceef61eef7fd205418ecc02eef29d6b00052
+  [2026-06-05T13:00:43]   1.83 KB  .git\objects\6a\a81f73dc63492d5cadbc302aa6eaae93974e44
+  [2026-06-05T13:00:43]   1.42 KB  .git\objects\c3\51c0c1e353c96e118ab308ffbbf8ae56197d3a
+  [2026-06-05T13:00:43]   1.53 KB  .git\objects\86\6d831a217a6c656d013bde4bcebddb6af6af07
+  [2026-06-05T13:00:43]   1.95 KB  .git\objects\41\13378e3ac85f10288d893f413e9d2b8307fb4c
+  [2026-06-05T13:00:43]   1.92 KB  .git\objects\d0\f95cf3f26cb4765508d0907223116ae26d4666
+  [2026-06-05T13:00:43]    2.3 KB  .git\objects\f7\1793ddf2e35bb579840db9e5ef0ba170a3d878
+  [2026-06-05T13:00:43]   1.87 KB  .git\objects\fc\dd7b82033202d850502726d0beaa533069960a
+  [2026-06-05T13:00:43]   2.17 KB  .git\objects\6c\11cf3a6e52865f53100e83c6b8671cc418ccd2
+  [2026-06-05T13:00:43]   1.41 KB  .git\objects\f5\3580713048d20d807278570ea84769bdb4802e
+  [2026-06-05T13:00:43]   1.08 KB  .git\objects\5f\2e14d14bc4e1d22ca05de0edfafe8a8cb3d06f
+  [2026-06-05T13:00:43]   0.26 KB  .git\objects\a2\accca3872014caa027f67b8ccecd0035e42197
+  [2026-06-05T13:00:43]   0.48 KB  .git\objects\c1\e4bc4b219eda857f7b516299abc0453bcd6d17
+  [2026-06-05T13:00:43]   0.48 KB  .git\objects\a8\2bb0e36b16d7ad9eea1b4b9ddc3a770888b95c
+  [2026-06-05T13:00:43]   2.14 KB  .git\objects\ba\9b0cf1dafe3b4ee4960ef79b9c8e3a6c6d51ac
+  [2026-06-05T13:00:42]   0.97 KB  .git\objects\c4\eab75f59c226b4ce0be963f2ce7661dbcf6403
+  [2026-06-05T13:00:42]   5.58 KB  .git\objects\74\53d3833ec6e5c1b7b14afdb5f7f265b51780ec
+  [2026-06-05T13:00:42]   0.92 KB  .git\objects\9b\bfc76e3e450e626159c6610c72cf3577ea0e99
+  [2026-06-05T13:00:42]   1.62 KB  .git\objects\1a\6f9c1f5aa26344b1e7930354d7cdbc57432cad
+  [2026-06-05T13:00:42]   1.02 KB  .git\objects\a8\14511162bead8e6d64a77e60806bfb9d5cafc4
+  [2026-06-05T13:00:42]   0.94 KB  .git\objects\69\bdf702b7b25318b385ff692784a92bcb1d357d
+  [2026-06-05T13:00:42]   3.26 KB  .git\objects\15\a340c68a5d4a346fedcc373c732d0adbb0df7c
+  [2026-06-05T13:00:42]   5.84 KB  .git\objects\88\dc86d4f61f386b3da20ee833dc3237fbdfde4c
+  [2026-06-05T13:00:42]    5.1 KB  .git\objects\fa\ebc645d5435a9a397752f0c9c424ce1fa8bc5d
+  [2026-06-05T13:00:42]   0.95 KB  .git\objects\7d\657d2c19a1b13115fefa6fb929340490ee7984
+  [2026-06-05T13:00:42]   0.92 KB  .git\objects\35\d13bbf5684a644994da8fed724443e1de6817a
+  [2026-06-05T13:00:42]    0.9 KB  .git\objects\58\21d3bdc511bfd0fb7df3ea285c74734ab163d5
+  [2026-06-05T13:00:42]   4.32 KB  .git\objects\22\010c5e306f9bc2866900e6af3fba5cd388ccc0
+  [2026-06-05T13:00:42]   1.07 KB  .git\objects\9b\a995fb7a5662cc83c8f237014bdd4bdef7dd86
+  [2026-06-05T13:00:42]   1.18 KB  .git\objects\af\4fb19d5415b750add82fa8940f51d9a7c11492
+  [2026-06-05T13:00:42]    0.2 KB  .git\objects\6f\c8de4cb61da7eb523a958ec3dd6cb469496bb0
+  [2026-06-05T13:00:42]   0.92 KB  .git\objects\22\aaa418f21980099d5aa0e1f4f9a89f7f153375
+  [2026-06-05T13:00:42]   0.96 KB  .git\objects\ab\40baa90eaaca0db0a7c5ef8e13a7a326dadb2b
+  [2026-06-05T13:00:42]   4.65 KB  .git\objects\ab\255af5635725f71e655ca5520be2739e37dbeb
+  [2026-06-05T13:00:42]   0.08 KB  .git\objects\57\fccb6855b7a5b5c5e9df9e2653501382927540
+  [2026-06-05T13:00:42]   0.63 KB  .git\objects\da\1b64eb8431e95a672f15a58a0e379f66868eb9
+  [2026-06-05T13:00:42]   0.68 KB  .git\objects\e2\a9124b68d52401b1552912fd0cb612d3e3b302
+  [2026-06-05T13:00:42]   0.65 KB  .git\objects\6c\1db35e34688517cdca3e463de555ebaa834203
+  [2026-06-05T13:00:42]   0.74 KB  .git\objects\60\e9cc9488636b3bd9e654d9ec9b87a43be3a586
+  [2026-06-05T13:00:42]   0.61 KB  .git\objects\ae\ed068bdb02427aaa87073768ddf25a484136a7
+  [2026-06-05T13:00:42]   0.63 KB  .git\objects\ea\c0db240fb804dc74e3bacfb4075e7e1f0c0ade
+  [2026-06-05T13:00:42]   0.53 KB  .git\objects\73\e69e0782c117d1662ee6675e8ac429c74c6528
+  [2026-06-05T13:00:42]   0.17 KB  .git\objects\8d\e23c7e65e1668ca8e4c9352b273b393f64e0c4
+  [2026-06-05T13:00:42]   0.29 KB  .git\objects\60\3d15a132bac93e823361bd8acaf48357b1b239
+  [2026-06-05T13:00:42]   0.83 KB  .git\objects\72\93e88525ccf6d20786847e83161867294cebf3
+  [2026-06-05T13:00:42]   0.84 KB  .git\objects\d5\56d25b92adb6d480572bbd591cb6f7ea2cfd8d
+  [2026-06-05T13:00:42]   0.53 KB  .git\objects\33\4323e82d9d2feb6c689caa3eb01f1b31a56ebd
+  [2026-06-05T13:00:42]   2.43 KB  .git\objects\ae\c72c8d329afb9bf011365d31691a1f1fd1fac2
+  [2026-06-05T13:00:42]   2.79 KB  .git\objects\e6\6b63446c643f50569d0295dc839a25a7bdc74b
+  [2026-06-05T13:00:42]   0.91 KB  .git\objects\d9\3260c55d971cb86718c79ade05209e6221f838
+  [2026-06-05T13:00:42]   0.97 KB  .git\objects\0b\a01ab0158c123a427fc78c9bc551404141e6b6
+  [2026-06-05T13:00:42]   1.35 KB  .git\objects\27\8726edde6c0b81483c61783f8c0c4df068d0ca
+  [2026-06-05T13:00:42]   0.28 KB  .git\objects\26\e99f30fdc21cc26ae2336afaf276dbe7df2706
+  [2026-06-05T13:00:42]   0.75 KB  .git\objects\b8\4a69801d31f0409e087faf69c92b2e25a979b1
+  [2026-06-05T13:00:42]   0.57 KB  .git\objects\e5\ed8e5c85ccd995184f5b6780f2a547d768a3e1
+  [2026-06-05T13:00:42]   2.41 KB  .git\objects\7c\63d7de7bdfcc6aaf90cc135fc76bd36db9ba1c
+  [2026-06-05T13:00:42]   0.29 KB  .git\objects\5f\27e9a83db0854bf887e383caeaee742f141359
+  [2026-06-05T13:00:42]   0.47 KB  .git\objects\8a\006a028a27a3c34dc1f59fdc8e4abd4cc2d712
+  [2026-06-05T13:00:42]   0.28 KB  .git\objects\5c\f1e2f87ee44aa89eca52988739232afb1b6392
+  [2026-06-05T13:00:42]   0.28 KB  .git\objects\62\79b55ab4d7f2a63066d0f957310f7f5ce248ba
+  [2026-06-05T13:00:42]   0.37 KB  .git\objects\ca\bf98a24a0419eba0a1be371e674ed76102bfe9
+  [2026-06-05T13:00:42]    0.4 KB  .git\objects\cb\5ed7b277463403073b77c851c78f5e3f947122
+  [2026-06-05T13:00:42]   0.39 KB  .git\objects\28\87afb84e25b358f29ac4f0bb3ef36c6d0deda6
+  [2026-06-05T13:00:42]   0.43 KB  .git\objects\a2\aa453fafaca403634b157c46f1b2f201781d30
+  [2026-06-05T13:00:42]    0.4 KB  .git\objects\fe\02017a0a9295ae672d52be4e9ffe0ed582a471
+  [2026-06-05T13:00:42]   0.35 KB  .git\objects\2a\c2e2348708db5378573f010f340d4e5a4a3f93
+  [2026-06-05T13:00:42]   0.17 KB  .git\objects\58\f234eb4333d0436a4b8aa41d264a6040f31925
+  [2026-06-05T13:00:42]   2.19 KB  .git\objects\f0\53ccf58b70299e9cda4b479ec57b9954b5757d
+  [2026-06-05T13:00:42]    0.5 KB  .git\objects\a8\e7a025d4a2359d100541d00b098b9c71746a78
+  [2026-06-05T13:00:42]   0.38 KB  .git\objects\57\d6ae6f2b4be6998617fbc548812bd314995633
+  [2026-06-05T13:00:42]   0.11 KB  .git\objects\86\edeac9755c698e98e8fe343b53282d44ff4f5e
+  [2026-06-05T13:00:42]   0.32 KB  .git\objects\4b\3b31d2629374de3848b513626d334d89ee0792
+  [2026-06-05T13:00:42]   1.08 KB  .git\objects\6d\538d9a6fa40849a0e09a7c2dc2949e9915a177
+  [2026-06-05T13:00:42]   0.37 KB  .git\objects\97\fc58e4487b4086c10cd2e9dfc7aac4d28a2863
+  [2026-06-05T13:00:42]   0.78 KB  .git\objects\b7\b5e768819d680ca22c5ccdbff46609694fbe7c
+  [2026-06-05T13:00:42]   1.73 KB  .git\objects\79\7452349b027463f97ae88df1b8db8c0c03242d
+  [2026-06-05T13:00:42]   0.46 KB  .git\objects\33\ef24bd6901b1776fd226fbc560393eba3f74ae
+  [2026-06-05T13:00:42]   0.91 KB  .git\objects\62\c1e2aa68895a12401899d1dfb4ffb4ef93f204
+  [2026-06-05T13:00:42]   0.77 KB  .git\objects\a8\f4dc6386249ff6584a4c5655b241750f3732b8
+  [2026-06-05T13:00:42]   0.51 KB  .git\objects\9c\09a80b2e4ec0f42472451d5fb2f96f9f83c3ac
+  [2026-06-05T13:00:42]   2.87 KB  .git\objects\9e\44a4416774888deb1fb7815aacc8af80962ae3
+  [2026-06-05T13:00:42]   0.14 KB  .git\objects\87\6b838ea192da6d1b20f0c4c682f8cb32040e4f
+  [2026-06-05T13:00:42]   1.12 KB  .git\objects\60\61ae28444d24c5ba44c3a3a2fa18c227c8913e
+  [2026-06-05T13:00:42]   0.63 KB  .git\objects\3c\c5c78e8c67439fae2db7726a9eb9b2f71dc0d4
+  [2026-06-05T13:00:42]   0.23 KB  .git\info\exclude
+  [2026-06-05T13:00:42]   3.56 KB  .git\hooks\update.sample
+  [2026-06-05T13:00:42]   2.25 KB  .git\hooks\sendemail-validate.sample
+  [2026-06-05T13:00:42]   4.78 KB  .git\hooks\pre-rebase.sample
+  [2026-06-05T13:00:42]   0.53 KB  .git\hooks\pre-receive.sample
+  [2026-06-05T13:00:42]   1.46 KB  .git\hooks\prepare-commit-msg.sample
+  [2026-06-05T13:00:42]   2.72 KB  .git\hooks\push-to-checkout.sample
+  [2026-06-05T13:00:42]   1.34 KB  .git\hooks\pre-push.sample
+  [2026-06-05T13:00:42]   0.41 KB  .git\hooks\pre-merge-commit.sample
+  [2026-06-05T13:00:42]   1.61 KB  .git\hooks\pre-commit.sample
+  [2026-06-05T13:00:42]   0.41 KB  .git\hooks\pre-applypatch.sample
+  [2026-06-05T13:00:42]   0.18 KB  .git\hooks\post-update.sample
+  [2026-06-05T13:00:42]   4.62 KB  .git\hooks\fsmonitor-watchman.sample
+  [2026-06-05T13:00:42]   0.88 KB  .git\hooks\commit-msg.sample
+  [2026-06-05T13:00:42]   0.47 KB  .git\hooks\applypatch-msg.sample
+  [2026-06-05T13:00:42]   0.07 KB  .git\description
+  [2026-06-05T12:46:58]   5.59 KB  DEPLOYMENT.md
+  [2026-06-05T12:46:44]   0.15 KB  requirements_p6.txt
+  [2026-06-05T12:46:43]   1.25 KB  app\neural\models\registry.py
+  [2026-06-05T12:46:41]   0.59 KB  app\neural\models\anomaly.py
+  [2026-06-05T12:46:39]   0.58 KB  app\neural\models\overrun.py
+  [2026-06-05T12:46:38]   0.57 KB  app\neural\models\churn.py
+  [2026-06-05T12:46:37]   0.79 KB  app\neural\models\cashflow.py
+  [2026-06-05T12:46:35]    0.0 KB  app\neural\models\__init__.py
+  [2026-06-05T12:38:16]   1.82 KB  app\middleware\__pycache__\request_id.cpython-313.pyc
+  [2026-06-05T12:38:16]   0.14 KB  app\middleware\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T12:38:16]   4.04 KB  app\__pycache__\logging_config.cpython-313.pyc
+  [2026-06-05T12:36:50]   0.76 KB  app\middleware\request_id.py
+  [2026-06-05T12:36:29]   1.82 KB  app\logging_config.py
+  [2026-06-05T12:34:49]   0.32 KB  scripts\generate_self_signed_cert.sh
+  [2026-06-05T12:34:48]   0.93 KB  scripts\generate_self_signed_cert.ps1
+  [2026-06-05T12:34:45]   1.04 KB  nginx.conf
+  [2026-06-05T12:34:39]    0.0 KB  app\middleware\__init__.py
+  [2026-06-05T12:29:43]   3.17 KB  app\__pycache__\config.cpython-313.pyc
+  [2026-06-05T12:28:23]    1.0 KB  .env.template
+  [2026-06-05T11:23:06]  20.97 KB  app\routers\__pycache__\ai_router.cpython-313.pyc
+  [2026-06-05T11:20:42]   8.94 KB  app\routers\ai_router.py
+  [2026-06-05T11:20:01]   5.07 KB  app\__pycache__\db_safe.cpython-313.pyc
+  [2026-06-05T11:19:58]   1.58 KB  app\__pycache__\database.cpython-313.pyc
+  [2026-06-05T11:16:15]   0.88 KB  app\database.py
+  [2026-06-05T11:16:05]    4.6 KB  app\db_safe.py
+  [2026-06-05T11:04:14]   2.13 KB  output\ihe_migration_package_v2\README.md
+  [2026-06-05T11:00:12]   1.99 KB  output\ihe_migration_package_v2\verify_migration.py
+  [2026-06-05T10:59:42]   9.16 KB  output\ihe_migration_package_v2\sql\00_Schema_DDL.sql
+  [2026-06-05T10:59:10]   3.43 KB  output\ihe_migration_package_v2\RUN_MIGRATIONS.bat
+  [2026-06-05T10:58:53]   3.23 KB  migrations\99_rollback.py
+  [2026-06-05T10:58:53]   3.23 KB  output\ihe_migration_package_v2\migrations\99_rollback.py
+  [2026-06-05T10:58:40]   3.72 KB  migrations\06_verify.py
+  [2026-06-05T10:58:40]   3.72 KB  output\ihe_migration_package_v2\migrations\06_verify.py
+  [2026-06-05T10:58:33]   5.85 KB  output\ihe_migration_package_v2\migrations\05_neural_seeder.py
+  [2026-06-05T10:58:23]   5.55 KB  migrations\04_document_ingest.py
+  [2026-06-05T10:58:23]   5.55 KB  output\ihe_migration_package_v2\migrations\04_document_ingest.py
+  [2026-06-05T10:58:07]   4.55 KB  migrations\03_gl_loader.py
+  [2026-06-05T10:58:07]   4.55 KB  output\ihe_migration_package_v2\migrations\03_gl_loader.py
+  [2026-06-05T10:57:58]   4.93 KB  migrations\02_bank_loader.py
+  [2026-06-05T10:57:58]   4.93 KB  output\ihe_migration_package_v2\migrations\02_bank_loader.py
+  [2026-06-05T10:57:49]   5.07 KB  migrations\01_master_loader.py
+  [2026-06-05T10:57:49]   5.07 KB  output\ihe_migration_package_v2\migrations\01_master_loader.py
+  [2026-06-05T10:27:16]  10.78 KB  static\css\dashboard.css
+  [2026-06-05T10:24:36]   0.29 KB  output\ihe_migration_package_v2\.env.example
+  [2026-06-05T10:23:00]  19.17 KB  app\templates\report_builder.html
+  [2026-06-05T10:22:09]  14.62 KB  output\ihe_smart_presentation\report_builder.html
+  [2026-06-05T10:19:03]  13.87 KB  output\ihe_smart_presentation\dashboard.html
+  [2026-06-05T10:11:13]   9.05 KB  output\ihe_smart_presentation\components\dashboard_charts.html
+  [2026-06-05T10:10:55]    8.3 KB  output\ihe_smart_presentation\components\kpi_cards.html
+  [2026-06-05T10:05:19]  20.22 KB  output\ihe_smart_presentation\templates\report_builder.html
+  [2026-06-05T10:03:43]  15.42 KB  output\ihe_smart_presentation\templates\dashboard.html
+  [2026-06-05T09:59:25]   9.38 KB  output\ihe_smart_presentation\css\dashboard.css
+  [2026-06-05T09:58:57]  10.65 KB  output\ihe_smart_presentation\js\dashboard.js
+  [2026-06-05T08:42:08]   3.01 KB  tests\__pycache__\conftest.cpython-313-pytest-8.3.0.pyc
+  [2026-06-05T08:41:57]   1.36 KB  tests\conftest.py
+  [2026-06-05T08:39:16]  15.35 KB  app\routers\neural\__pycache__\ai_api.cpython-313.pyc
+  [2026-06-05T08:38:55]   9.22 KB  app\routers\neural\ai_api.py
+  [2026-06-05T08:36:14]    0.0 KB  test_ih.db
+  [2026-06-05T08:35:17]   8.63 KB  tests\__pycache__\test_ai.cpython-313-pytest-8.3.0.pyc
+  [2026-06-05T08:34:42]   1.53 KB  tests\test_ai.py
+  [2026-06-05T08:33:56]   0.04 KB  .pytest_cache\.gitignore
+  [2026-06-05T08:33:56]   0.19 KB  .pytest_cache\CACHEDIR.TAG
+  [2026-06-05T08:33:56]    0.3 KB  .pytest_cache\README.md
+  [2026-06-05T08:32:07]   4.65 KB  tests\__pycache__\test_auth.cpython-313-pytest-8.3.0.pyc
+  [2026-06-05T08:30:48]   0.13 KB  tests\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T08:29:27]   0.69 KB  tests\test_auth.py
+  [2026-06-05T08:27:41]    0.0 KB  tests\__init__.py
+  [2026-06-05T02:20:35]   0.15 KB  .gitignore
+  [2026-06-05T01:41:19]   0.25 KB  app\services\document\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T01:41:19]   1.46 KB  app\models\document\__pycache__\document_module.cpython-313.pyc
+  [2026-06-05T01:41:19]   2.34 KB  app\models\document\__pycache__\supporting_document.cpython-313.pyc
+  [2026-06-05T01:41:19]   0.34 KB  app\models\document\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T01:41:13]   0.94 KB  app\models\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T01:40:57]   1.96 KB  08_Document_System.sql
+  [2026-06-05T01:40:57]   1.96 KB  output\ihe_migration_package_v2\sql\08_Document_System.sql
+  [2026-06-05T01:40:54]   0.61 KB  app\models\__init__.py
+  [2026-06-05T01:39:24]    0.1 KB  app\services\document\__init__.py
+  [2026-06-05T01:39:15]   0.76 KB  app\models\document\document_module.py
+  [2026-06-05T01:39:14]   1.38 KB  app\models\document\supporting_document.py
+  [2026-06-05T01:39:12]   0.18 KB  app\models\document\__init__.py
+  [2026-06-05T01:00:54]   0.15 KB  app\routers\neural\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T01:00:54]   5.99 KB  app\services\neural\__pycache__\model_registry.cpython-313.pyc
+  [2026-06-05T01:00:54]   9.06 KB  app\services\neural\__pycache__\feature_engineer.cpython-313.pyc
+  [2026-06-05T01:00:17]  29.35 KB  app\services\neural\__pycache__\predictor.cpython-313.pyc
+  [2026-06-05T01:00:17]   0.53 KB  app\services\neural\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T01:00:17]   1.56 KB  app\models\neural\__pycache__\neural_memory.cpython-313.pyc
+  [2026-06-05T01:00:17]   1.52 KB  app\models\neural\__pycache__\neural_training_history.cpython-313.pyc
+  [2026-06-05T01:00:17]   1.41 KB  app\models\neural\__pycache__\neural_feature_store.cpython-313.pyc
+  [2026-06-05T01:00:17]   1.55 KB  app\models\neural\__pycache__\neural_prediction.cpython-313.pyc
+  [2026-06-05T01:00:17]   2.11 KB  app\models\neural\__pycache__\neural_node.cpython-313.pyc
+  [2026-06-05T01:00:17]   0.57 KB  app\models\neural\__pycache__\__init__.cpython-313.pyc
+  [2026-06-05T00:56:17]   5.07 KB  07_Neural_AI_Tables.sql
+  [2026-06-05T00:56:17]   5.07 KB  output\ihe_migration_package_v2\sql\07_Neural_AI_Tables.sql
+  [2026-06-05T00:56:09]   0.85 KB  app\models\neural\neural_memory.py
+  [2026-06-05T00:56:07]   0.85 KB  app\models\neural\neural_training_history.py
+  [2026-06-05T00:56:06]   0.72 KB  app\models\neural\neural_feature_store.py
+  [2026-06-05T00:56:05]   0.88 KB  app\models\neural\neural_prediction.py
+  [2026-06-05T00:56:03]   1.07 KB  app\models\neural\neural_node.py
+  [2026-06-05T00:56:01]   0.44 KB  app\models\neural\__init__.py
+  [2026-06-05T00:55:38]    0.0 KB  app\routers\neural\__init__.py
+  [2026-06-05T00:55:38]   3.21 KB  app\services\neural\model_registry.py
+  [2026-06-05T00:55:33]   4.87 KB  app\services\neural\feature_engineer.py
+  [2026-06-05T00:55:27]  17.56 KB  app\services\neural\predictor.py
+  [2026-06-05T00:22:23]   0.07 KB  static\ihe_logo.png
+  [2026-06-05T00:19:43]    0.0 KB  app\templates\__init__.py
+  [2026-06-04T22:39:05]   2.97 KB  app\__pycache__\auth.cpython-313.pyc
+  [2026-06-04T22:39:05]   5.15 KB  app\routers\__pycache__\gl_router.cpython-313.pyc
+  [2026-06-04T22:39:05]   5.56 KB  app\routers\__pycache__\evn_router.cpython-313.pyc
+  [2026-06-04T22:39:05]   4.39 KB  app\routers\__pycache__\pur_router.cpython-313.pyc
+  [2026-06-04T22:39:05]   4.37 KB  app\routers\__pycache__\sal_router.cpython-313.pyc
+  [2026-06-04T22:39:04]   3.81 KB  app\routers\__pycache__\bnk_router.cpython-313.pyc
+  [2026-06-04T22:39:04]   0.14 KB  app\routers\__pycache__\__init__.cpython-313.pyc
+  [2026-06-04T22:39:04]   0.14 KB  app\services\__pycache__\__init__.cpython-313.pyc
+  [2026-06-04T22:39:04]   0.73 KB  app\schemas\__pycache__\dashboard.cpython-313.pyc
+  [2026-06-04T22:39:04]   1.96 KB  app\schemas\__pycache__\auth.cpython-313.pyc
+  [2026-06-04T22:39:04]    5.5 KB  app\schemas\__pycache__\gl.cpython-313.pyc
+  [2026-06-04T22:39:04]    6.2 KB  app\schemas\__pycache__\evn.cpython-313.pyc
+  [2026-06-04T22:39:03]   6.13 KB  app\schemas\__pycache__\pur.cpython-313.pyc
+  [2026-06-04T22:39:03]   5.43 KB  app\schemas\__pycache__\sal.cpython-313.pyc
+  [2026-06-04T22:39:03]   3.81 KB  app\schemas\__pycache__\bnk.cpython-313.pyc
+  [2026-06-04T22:39:03]   0.14 KB  app\schemas\__pycache__\__init__.cpython-313.pyc
+  [2026-06-04T22:39:03]  16.33 KB  app\models\__pycache__\ihe_models.cpython-313.pyc
+  [2026-06-04T22:39:00]   0.13 KB  app\__pycache__\__init__.cpython-313.pyc
+  [2026-06-04T22:35:49]    0.0 KB  app\routers\__init__.py
+  [2026-06-04T22:35:00]    0.0 KB  app\services\__init__.py
+  [2026-06-04T22:34:53]   0.29 KB  app\schemas\dashboard.py
+  [2026-06-04T22:34:53]   0.75 KB  app\schemas\auth.py
+  [2026-06-04T22:34:31]    0.0 KB  app\schemas\__init__.py
+  [2026-06-04T22:31:54]   1.73 KB  app\auth.py
+  [2026-06-04T22:31:47]    0.0 KB  app\__init__.py

@@ -5,7 +5,7 @@ from app.database import get_db
 from app.services import sal_service
 from app.schemas.sal import (
     ClientCreate, ClientUpdate, ClientResponse,
-    SalesInvoiceCreate, SalesInvoiceResponse, SalesInvoiceList,
+    SalesInvoiceCreate, SalesInvoiceUpdate, SalesInvoiceResponse, SalesInvoiceList,
 )
 
 router = APIRouter(prefix="/api/sal", tags=["Sales"])
@@ -67,3 +67,17 @@ def get_invoice(invoice_id: int, db: Session = Depends(get_db)):
 @router.post("/invoices", response_model=SalesInvoiceResponse, status_code=status.HTTP_201_CREATED)
 def create_invoice(data: SalesInvoiceCreate, db: Session = Depends(get_db)):
     return sal_service.create_sales_invoice(db, data)
+
+
+@router.put("/invoices/{invoice_id}", response_model=SalesInvoiceResponse)
+def update_invoice(invoice_id: int, data: SalesInvoiceUpdate, db: Session = Depends(get_db)):
+    invoice = sal_service.update_sales_invoice(db, invoice_id, data)
+    if not invoice:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found")
+    return invoice
+
+
+@router.delete("/invoices/{invoice_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_invoice(invoice_id: int, db: Session = Depends(get_db)):
+    if not sal_service.delete_sales_invoice(db, invoice_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invoice not found")

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Payroll - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Payroll{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Payroll Management</h1>
+        <p>Manage payslips, salary structures, and attendance</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-primary btn-sm" onclick="location.href='/payroll/run'">Run Payroll</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/payroll/new'">+ New Payslip</button>
+    </div>
+</div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value" id="totalPayslips">0</div>
+        <div class="stat-label">Total Payslips</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="totalGross">0</div>
+        <div class="stat-label">Total Gross</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value" id="totalNet">0</div>
+        <div class="stat-label">Total Net Pay</div>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Payslips</span>
+        <div style="display:flex;gap:6px">
+            <select id="periodFilter" class="form-control" style="width:auto;padding:4px 8px;font-size:12px" onchange="loadPayslips(1)">
+                <option value="">All Periods</option>
+            </select>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th data-sort="id">#</th><th data-sort="employee">Employee</th><th data-sort="period">Period</th><th data-sort="gross">Gross</th><th data-sort="deductions">Deductions</th><th data-sort="net">Net Pay</th><th data-sort="status">Status</th><th>Actions</th></tr></thead>
+        <tbody id="payrollBody"><tr><td colspan="8">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="payrollPagination"></div>
+</div>
+<script>
+    var prPage = 1;
+    function loadPayslips(page) {
+        prPage = page || 1;
+        var period = document.getElementById('periodFilter').value;
+        var url = '/api/payroll/payslips?page=' + prPage + '&page_size=20';
+        if (period) url += '&pay_period=' + encodeURIComponent(period);
+        fetch(url).then(r => r.json()).then(d => {
+            var body = document.getElementById('payrollBody');
+            if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="8">No payslips found.</td></tr>'; return; }
+            body.innerHTML = d.items.map(function(s) {
+                var statusClass = s.Status === 'processed' ? 'success' : (s.Status === 'draft' ? 'warning' : 'info');
+                return '<tr><td>' + s.PaySlipID + '</td><td>' + (s.EmployeeCode || '-') + '</td><td>' + (s.PayPeriod || '-') + '</td><td>' + Number(s.GrossPay||0).toLocaleString() + '</td><td>' + Number(s.TotalDeductions||0).toLocaleString() + '</td><td><strong>' + Number(s.NetPay||0).toLocaleString() + '</strong></td><td><span class="badge badge-' + statusClass + '">' + (s.Status || 'draft') + '</span></td><td><a href="/payroll/' + s.PaySlipID + '" class="btn btn-sm btn-outline">View</a></td></tr>';
+            }).join('');
+            document.getElementById('totalPayslips').textContent = d.total;
+            document.getElementById('totalGross').textContent = d.items.reduce(function(s, i) { return s + (i.GrossPay||0); }, 0).toLocaleString();
+            document.getElementById('totalNet').textContent = d.items.reduce(function(s, i) { return s + (i.NetPay||0); }, 0).toLocaleString();
+            var tp = Math.ceil(d.total / d.page_size);
+            var pag = document.getElementById('payrollPagination');
+            var h = '';
+            for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadPayslips(' + i + ');return false" class="' + (i === prPage ? 'active' : '') + '">' + i + '</a>';
+            pag.innerHTML = h;
+        });
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPayslips(1);
+        fetch('/api/payroll/payslips?page_size=1').then(r => r.json()).then(function(d) {
+            var periods = new Set();
+            if (d.items) d.items.forEach(function(s) { if (s.PayPeriod) periods.add(s.PayPeriod); });
+            var sel = document.getElementById('periodFilter');
+            periods.forEach(function(p) {
+                var opt = document.createElement('option');
+                opt.value = p; opt.textContent = p;
+                sel.appendChild(opt);
+            });
+        });
+    });
+</script>
+{% endblock %}

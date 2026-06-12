@@ -20,6 +20,7 @@ from app.routers import (
     dashboard_router,
     pages_router,
     ai_router,
+    intelligence_router,
 )
 from app.routers.neural import ai_api as neural_router
 from app.routers.neural_live import router as neural_live_router
@@ -98,6 +99,7 @@ app.include_router(neural_live_router)
 app.include_router(documents_router.router)
 app.include_router(export_router.router)
 app.include_router(pages_router.router)
+app.include_router(intelligence_router.router)
 
 
 # ---------------------------------------------------------------------------

@@ -81,12 +81,28 @@ class PurchaseVoucherBase(BaseModel):
     PNRNumber: Optional[str] = Field(None, max_length=50)
     EventName: Optional[str] = Field(None, max_length=500)
     InvoiceDate: Optional[date] = None
+    SubTotal: Optional[float] = None
+    VATRate: Optional[float] = None
+    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CurrencyCode: Optional[str] = Field(None, max_length=3)
 
 
 class PurchaseVoucherCreate(PurchaseVoucherBase):
     lines: list[PurchaseVoucherLineCreate] = []
+
+
+class PurchaseVoucherUpdate(BaseModel):
+    VoucherNumber: Optional[str] = None
+    DocumentNumber: Optional[str] = None
+    PNRNumber: Optional[str] = None
+    EventName: Optional[str] = None
+    InvoiceDate: Optional[date] = None
+    SubTotal: Optional[float] = None
+    VATRate: Optional[float] = None
+    VATAmount: Optional[float] = None
+    TotalValue: Optional[float] = None
+    CurrencyCode: Optional[str] = None
 
 
 class PurchaseVoucherResponse(PurchaseVoucherBase):

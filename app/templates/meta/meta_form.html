@@ -1,0 +1,176 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <h2>{{ title }}</h2>
+  <form id="meta-form" data-form-name="{{ form_name }}" data-endpoints='{{ endpoints | tojson }}' data-auto-calc='{{ auto_calc_rules }}'>
+    {% for section in sections %}
+    <fieldset class="mb-4 border p-3 rounded">
+      <legend class="w-auto px-2">{{ section.title }}</legend>
+      <div class="row">
+        {% for field in section.fields %}
+        <div class="col-12 col-md-{% if field.colSize == 'half' %}6{% elif field.colSize == 'third' %}4{% elif field.colSize == 'quarter' %}3{% else %}12{% endif %} mb-3">
+          <label for="{{ field.name }}" class="form-label">
+            {{ field.label }}{% if field.required %} <span class="text-danger">*</span>{% endif %}
+          </label>
+          {% if field.type == 'select' %}
+          <select class="form-select" id="{{ field.name }}" name="{{ field.name }}"
+            {% if field.required %}required{% endif %}
+            {% if field.readonly %}disabled{% endif %}
+            data-options-endpoint="{{ field.optionsEndpoint or '' }}"
+            data-option-value="{{ field.optionValue or '' }}"
+            data-option-label="{{ field.optionLabel or '' }}">
+            {% if field.options %}
+            <option value="">-- Select --</option>
+            {% for opt in field.options %}
+            <option value="{{ opt.value }}" {% if data.get(field.name) == opt.value %}selected{% endif %}>{{ opt.label }}</option>
+            {% endfor %}
+            {% endif %}
+          </select>
+          {% elif field.type == 'textarea' %}
+          <textarea class="form-control" id="{{ field.name }}" name="{{ field.name }}" rows="3"
+            {% if field.required %}required{% endif %}
+            {% if field.readonly %}readonly{% endif %}
+            maxlength="{{ field.maxLength or '' }}"
+            placeholder="{{ field.placeholder or '' }}">{{ data.get(field.name, '') }}</textarea>
+          {% elif field.type == 'checkbox' %}
+          <input type="checkbox" class="form-check-input" id="{{ field.name }}" name="{{ field.name }}"
+            {% if data.get(field.name) %}checked{% endif %}
+            {% if field.readonly %}disabled{% endif %}>
+          {% elif field.type == 'number' %}
+          <input type="number" class="form-control" id="{{ field.name }}" name="{{ field.name }}"
+            value="{{ data.get(field.name, field.default or '') }}"
+            {% if field.required %}required{% endif %}
+            {% if field.readonly %}readonly{% endif %}
+            step="{{ field.step or 'any' }}"
+            min="{{ field.min or '' }}"
+            max="{{ field.max or '' }}"
+            placeholder="{{ field.placeholder or '' }}">
+          {% elif field.type == 'date' %}
+          <input type="date" class="form-control" id="{{ field.name }}" name="{{ field.name }}"
+            value="{{ data.get(field.name, '') }}"
+            {% if field.required %}required{% endif %}
+            {% if field.readonly %}readonly{% endif %}>
+          {% elif field.type == 'email' %}
+          <input type="email" class="form-control" id="{{ field.name }}" name="{{ field.name }}"
+            value="{{ data.get(field.name, '') }}"
+            {% if field.required %}required{% endif %}
+            maxlength="{{ field.maxLength or '' }}"
+            placeholder="{{ field.placeholder or '' }}">
+          {% elif field.type == 'tel' %}
+          <input type="tel" class="form-control" id="{{ field.name }}" name="{{ field.name }}"
+            value="{{ data.get(field.name, '') }}"
+            placeholder="{{ field.placeholder or '' }}">
+          {% elif field.type == 'hidden' %}
+          <input type="hidden" id="{{ field.name }}" name="{{ field.name }}" value="{{ data.get(field.name, '') }}">
+          {% else %}
+          <input type="text" class="form-control" id="{{ field.name }}" name="{{ field.name }}"
+            value="{{ data.get(field.name, field.default or '') }}"
+            {% if field.required %}required{% endif %}
+            {% if field.readonly %}readonly{% endif %}
+            maxlength="{{ field.maxLength or '' }}"
+            placeholder="{{ field.placeholder or '' }}">
+          {% endif %}
+          {% if field.helpText %}
+          <div class="form-text">{{ field.helpText }}</div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </fieldset>
+    {% endfor %}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">Save</button>
+      <a href="/" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.getElementById('meta-form');
+  if (!form) return;
+
+  // Auto-calc engine
+  const autoCalcRules = form.dataset.autoCalc;
+  if (autoCalcRules) {
+    try {
+      const rules = JSON.parse(autoCalcRules);
+      rules.forEach(function(rule) {
+        const triggerFields = rule.triggerFields || [];
+        triggerFields.forEach(function(fieldName) {
+          const el = document.getElementById(fieldName);
+          if (el) {
+            el.addEventListener('input', function() {
+              recalc(rule);
+            });
+            el.addEventListener('change', function() {
+              recalc(rule);
+            });
+          }
+        });
+      });
+    } catch(e) { console.warn('Auto-calc parse error', e); }
+  }
+
+  function recalc(rule) {
+    const target = document.getElementById(rule.targetField);
+    if (!target) return;
+    let formula = rule.formula;
+    // Replace field names with values
+    const matches = formula.match(/[A-Za-z_]\w*/g) || [];
+    matches.forEach(function(name) {
+      const el = document.getElementById(name);
+      const val = el ? parseFloat(el.value) || 0 : 0;
+      formula = formula.replace(new RegExp(name, 'g'), val);
+    });
+    try {
+      const result = Function('"use strict"; return (' + formula + ')')();
+      target.value = isNaN(result) ? '' : result.toFixed(2);
+    } catch(e) { console.warn('Calc error', e); }
+  }
+
+  // Dynamic select loading
+  document.querySelectorAll('[data-options-endpoint]').forEach(function(select) {
+    const endpoint = select.dataset.optionsEndpoint;
+    const valueKey = select.dataset.optionValue || 'value';
+    const labelKey = select.dataset.optionLabel || 'label';
+    if (!endpoint) return;
+    if (select.options.length > 1) return; // already has static options
+    fetch(endpoint)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var items = Array.isArray(data) ? data : (data.items || data.data || []);
+        items.forEach(function(item) {
+          var opt = document.createElement('option');
+          opt.value = item[valueKey] || item.id || '';
+          opt.textContent = item[labelKey] || item.name || opt.value;
+          select.appendChild(opt);
+        });
+      })
+      .catch(function(e) { console.warn('Failed to load options for', endpoint, e); });
+  });
+
+  // Form submit via POST
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var fd = new FormData(form);
+    var data = {};
+    fd.forEach(function(v, k) { data[k] = v; });
+    var endpoints = {};
+    try { endpoints = JSON.parse(form.dataset.endpoints); } catch(e) {}
+    var url = endpoints.create || '/api/' + form.dataset.formName.replace(/_/g, '/');
+    fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(data)
+    })
+    .then(function(r) {
+      if (r.ok) { window.location.href = '/'; }
+      else { return r.json().then(function(e) { alert('Error: ' + (e.detail || 'Unknown')); }); }
+    })
+    .catch(function(e) { alert('Error: ' + e.message); });
+  });
+});
+</script>
+{% endblock %}

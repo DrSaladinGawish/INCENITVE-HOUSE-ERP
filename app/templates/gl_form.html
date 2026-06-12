@@ -7,7 +7,7 @@
     <p>{{ subtitle }}</p>
 </div>
 <div class="card" style="max-width:800px">
-    <form id="glForm" data-draft data-record-id="{{ record_id | default('new') }}" onsubmit="return saveGl(event)">
+    <form id="glForm" data-draft data-record-id="{{ record_id | default('new') }}" data-meta-config="/api/meta/config/journal_voucher" onsubmit="return saveGl(event)">
         <div class="form-row">
             <div class="form-group">
                 <label>JV Number *</label>

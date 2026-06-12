@@ -5,7 +5,7 @@ from app.database import get_db
 from app.services import bnk_service
 from app.schemas.bnk import (
     BankCreate, BankUpdate, BankResponse,
-    BankTransactionCreate, BankTransactionResponse, BankTransactionList,
+    BankTransactionCreate, BankTransactionUpdate, BankTransactionResponse, BankTransactionList,
 )
 
 router = APIRouter(prefix="/api/bnk", tags=["Banking"])
@@ -58,3 +58,25 @@ def list_transactions(
 @router.post("/transactions", response_model=BankTransactionResponse, status_code=status.HTTP_201_CREATED)
 def create_transaction(data: BankTransactionCreate, db: Session = Depends(get_db)):
     return bnk_service.create_bank_transaction(db, data)
+
+
+@router.get("/transactions/{transaction_id}", response_model=BankTransactionResponse)
+def get_transaction(transaction_id: int, db: Session = Depends(get_db)):
+    tx = bnk_service.get_bank_transaction(db, transaction_id)
+    if not tx:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
+    return tx
+
+
+@router.put("/transactions/{transaction_id}", response_model=BankTransactionResponse)
+def update_transaction(transaction_id: int, data: BankTransactionUpdate, db: Session = Depends(get_db)):
+    tx = bnk_service.update_bank_transaction(db, transaction_id, data)
+    if not tx:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")
+    return tx
+
+
+@router.delete("/transactions/{transaction_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_transaction(transaction_id: int, db: Session = Depends(get_db)):
+    if not bnk_service.delete_bank_transaction(db, transaction_id):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Transaction not found")

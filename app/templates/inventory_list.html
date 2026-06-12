@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Inventory - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}Inventory{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>Inventory Items</h1>
+        <p>Manage stock items, warehouses, movements and counts</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/inventory?format=xlsx'">Excel</button>
+        <button class="btn btn-success btn-sm" onclick="location.href='/api/export/inventory?format=csv'">CSV</button>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Items</span>
+        <a href="/inventory/new" class="btn btn-success btn-sm">+ New Item</a>
+    </div>
+    <table>
+        <thead><tr><th data-sort="code">Code</th><th data-sort="name">Name</th><th data-sort="category">Category</th><th data-sort="sku">SKU</th><th data-sort="price">Unit Price</th><th data-sort="active">Active</th></tr></thead>
+        <tbody id="invBody"><tr><td colspan="6">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="invPagination"></div>
+</div>
+
+<div class="card" style="margin-top:16px">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Stock Movements</span>
+        <a href="/inventory/movements/new" class="btn btn-success btn-sm">+ New Movement</a>
+    </div>
+    <table>
+        <thead><tr><th>Date</th><th>Item</th><th>Type</th><th>Qty</th><th>Reference</th></tr></thead>
+        <tbody id="movBody"><tr><td colspan="5">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="movPagination"></div>
+</div>
+<script>
+    var invPage = 1, movPage = 1;
+    function loadItems(page) {
+        invPage = page || 1;
+        fetch('/api/inventory/items?skip=' + ((invPage - 1) * 20) + '&limit=20')
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('invBody');
+                if (!d || !d.length) { body.innerHTML = '<tr><td colspan="6">No items.</td></tr>'; return; }
+                body.innerHTML = d.map(function(v) {
+                    return '<tr><td>' + (v.ItemCode || '-') + '</td><td>' + (v.ItemName || '-') + '</td><td>' + (v.Category || '-') + '</td><td>' + (v.SKU || '-') + '</td><td>' + Number(v.UnitPrice||0).toLocaleString() + '</td><td>' + (v.IsActive ? 'Active' : 'Inactive') + '</td></tr>';
+                }).join('');
+            });
+    }
+    function loadMovements(page) {
+        movPage = page || 1;
+        fetch('/api/inventory/movements?skip=' + ((movPage - 1) * 20) + '&limit=20')
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('movBody');
+                if (!d || !d.length) { body.innerHTML = '<tr><td colspan="5">No movements.</td></tr>'; return; }
+                body.innerHTML = d.map(function(v) {
+                    return '<tr><td>' + (v.MovementDate ? v.MovementDate.slice(0,10) : '-') + '</td><td>' + v.ItemID + '</td><td>' + (v.MovementType || '-') + '</td><td>' + Number(v.Quantity||0) + '</td><td>' + (v.Reference || '-') + '</td></tr>';
+                }).join('');
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadItems(1); loadMovements(1); });
+</script>
+{% endblock %}

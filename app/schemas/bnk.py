@@ -55,6 +55,25 @@ class BankTransactionResponse(BankTransactionBase):
         from_attributes = True
 
 
+class BankTransactionUpdate(BaseModel):
+    TransactionDate: Optional[date] = None
+    Payee: Optional[str] = None
+    DocumentType: Optional[str] = None
+    DocumentNumber: Optional[str] = None
+    Withdrawal: Optional[float] = None
+    Deposit: Optional[float] = None
+    RunningBalance: Optional[float] = None
+    TransactionType: Optional[str] = None
+    JVNumber: Optional[str] = None
+    Narration: Optional[str] = None
+    DrAccount: Optional[str] = None
+    CrAccount: Optional[str] = None
+    FromSubCategory: Optional[str] = None
+    ToSubCategory: Optional[str] = None
+    BankCode: Optional[str] = None
+    CurrencyCode: Optional[str] = None
+
+
 class BankTransactionList(BaseModel):
     items: list[BankTransactionResponse]
     total: int

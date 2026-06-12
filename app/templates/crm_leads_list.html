@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}CRM Leads - IncentiveHouse ERP{% endblock %}
+{% block ai_context %}CRM Leads{% endblock %}
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center">
+    <div>
+        <h1>CRM Leads</h1>
+        <p>Manage leads and track conversions</p>
+    </div>
+    <div style="display:flex;gap:4px">
+        <a href="/crm/lead/new" class="btn btn-success btn-sm">+ New Lead</a>
+    </div>
+</div>
+<div class="card">
+    <div class="card-header" style="display:flex;justify-content:space-between;align-items:center">
+        <span>Leads</span>
+        <div style="display:flex;gap:6px">
+            <select id="filterStatus" class="form-control" style="width:auto;padding:4px 8px;font-size:12px" onchange="loadLeads(1)">
+                <option value="">All Status</option>
+                <option value="New">New</option>
+                <option value="Contacted">Contacted</option>
+                <option value="Qualified">Qualified</option>
+                <option value="Disqualified">Disqualified</option>
+            </select>
+        </div>
+    </div>
+    <table>
+        <thead><tr><th data-sort="company">Company</th><th data-sort="contact">Contact</th><th data-sort="email">Email</th><th data-sort="phone">Phone</th><th data-sort="source">Source</th><th data-sort="status">Status</th><th data-sort="rating">Rating</th><th>Actions</th></tr></thead>
+        <tbody id="crmBody"><tr><td colspan="8">Loading...</td></tr></tbody>
+    </table>
+    <div class="pagination" id="crmPagination"></div>
+</div>
+<script>
+    var crmPage = 1;
+    function loadLeads(page) {
+        crmPage = page || 1;
+        var status = document.getElementById('filterStatus').value;
+        var q = '/api/crm/leads?page=' + crmPage + '&page_size=20';
+        if (status) q += '&status=' + encodeURIComponent(status);
+        fetch(q)
+            .then(r => r.json()).then(d => {
+                var body = document.getElementById('crmBody');
+                if (!d.items || !d.items.length) { body.innerHTML = '<tr><td colspan="8">No leads.</td></tr>'; return; }
+                body.innerHTML = d.items.map(function(i) {
+                    var rating = '';
+                    for (var r = 0; r < (i.Rating || 0); r++) rating += '&#9733;';
+                    return '<tr><td>' + (i.CompanyName || '-') + '</td><td>' + (i.ContactName || '-') + '</td><td>' + (i.Email || '-') + '</td><td>' + (i.Phone || i.Mobile || '-') + '</td><td>' + (i.Source || '-') + '</td><td><span class="badge badge-' + (i.Status === 'Qualified' ? 'success' : i.Status === 'Contacted' ? 'info' : i.Status === 'Disqualified' ? 'danger' : 'secondary') + '">' + (i.Status || 'New') + '</span></td><td>' + rating + '</td><td><a class="btn btn-sm btn-outline" href="/crm/lead/' + i.LeadID + '">Edit</a></td></tr>';
+                }).join('');
+                var tp = Math.ceil(d.total / d.page_size);
+                var pag = document.getElementById('crmPagination');
+                var h = '';
+                for (var i = 1; i <= tp && i <= 20; i++) h += '<a href="#" onclick="loadLeads(' + i + ');return false" class="' + (i === crmPage ? 'active' : '') + '">' + i + '</a>';
+                pag.innerHTML = h;
+            });
+    }
+    document.addEventListener('DOMContentLoaded', function() { loadLeads(1); });
+</script>
+{% endblock %}

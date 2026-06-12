@@ -2,7 +2,32 @@ from sqlalchemy import select, func
 from sqlalchemy.orm import Session
 
 from app.models.ihe_models import Bank, BankTransaction
-from app.schemas.bnk import BankCreate, BankUpdate, BankTransactionCreate
+from app.schemas.bnk import BankCreate, BankUpdate, BankTransactionCreate, BankTransactionUpdate
+
+
+def get_bank_transaction(db: Session, transaction_id: int) -> BankTransaction | None:
+    stmt = select(BankTransaction).where(BankTransaction.TransactionID == transaction_id)
+    return db.execute(stmt).scalar_one_or_none()
+
+
+def update_bank_transaction(db: Session, transaction_id: int, data: BankTransactionUpdate) -> BankTransaction | None:
+    tx = db.get(BankTransaction, transaction_id)
+    if not tx:
+        return None
+    for key, val in data.model_dump(exclude_unset=True).items():
+        setattr(tx, key, val)
+    db.commit()
+    db.refresh(tx)
+    return tx
+
+
+def delete_bank_transaction(db: Session, transaction_id: int) -> bool:
+    tx = db.get(BankTransaction, transaction_id)
+    if not tx:
+        return False
+    db.delete(tx)
+    db.commit()
+    return True
 
 
 def get_banks(db: Session, skip: int = 0, limit: int = 100) -> list[Bank]:
