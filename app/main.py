@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.database import SyncSessionLocal, get_db
+from app.database import SyncSessionLocal, get_db, init_db
 from app.logging_config import setup_logging
 from app.middleware.request_id import RequestIDMiddleware
 from app.meta_layer import MetaLayerInjectorMiddleware, meta_router, meta_v2_router
@@ -28,8 +28,8 @@ from app.routers.neural_live import router as neural_live_router
 from app.routers import documents as documents_router
 from app.routers import export_router
 from app.routers import financial_reports
-from app.routers import e_invoice_router
-from app.routers import workflow_router
+from app.routers.e_invoice import router as e_invoice_router
+from app.routers.workflow import router as workflow_router
 from app.routers.reports_router_v2 import router as reports_v2_router
 from app.routers.archive_router import router as archive_router
 from app.routers.fx_router import router as fx_router
@@ -38,6 +38,7 @@ from app.routers.payroll import router as payroll_router
 from app.routers.crm import router as crm_router
 from app.routers.budgeting import router as budgeting_router
 from app.routers.fixed_assets import router as fixed_assets_router
+from app.routers.backup_router import router as backup_router
 
 log = setup_logging()
 
@@ -56,6 +57,8 @@ async def lifespan(app: FastAPI):
         )
         log.info("Database connection OK (SQL Server)")
         conn.close()
+        init_db()
+        log.info("All ORM tables verified/created")
     except Exception as e:
         log.warning("Database connection warning: %s", e)
     yield
@@ -116,8 +119,8 @@ app.include_router(intelligence_router.router)
 app.include_router(meta_router)
 app.include_router(meta_v2_router)
 app.include_router(financial_reports.router)
-app.include_router(e_invoice_router.router)
-app.include_router(workflow_router.router)
+app.include_router(e_invoice_router)
+app.include_router(workflow_router)
 app.include_router(reports_v2_router)
 app.include_router(archive_router)
 app.include_router(fx_router)
@@ -126,6 +129,7 @@ app.include_router(payroll_router)
 app.include_router(crm_router)
 app.include_router(budgeting_router)
 app.include_router(fixed_assets_router)
+app.include_router(backup_router)
 
 
 # ---------------------------------------------------------------------------

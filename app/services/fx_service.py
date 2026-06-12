@@ -126,8 +126,8 @@ def calculate_gain_loss(
 
     for model, label, date_col, amount_col, currency_col in [
         (BankTransaction, "Bank", BankTransaction.TxnDate, BankTransaction.Amount, BankTransaction.CurrencyCode),
-        (SalesInvoice, "Sales Invoice", SalesInvoice.InvoiceDate, SalesInvoice.TotalAmount, SalesInvoice.CurrencyCode),
-        (PurchaseVoucher, "Purchase", PurchaseVoucher.VoucherDate, PurchaseVoucher.TotalAmount, PurchaseVoucher.CurrencyCode),
+        (SalesInvoice, "Sales Invoice", SalesInvoice.InvoiceDate, SalesInvoice.TotalValue, SalesInvoice.CurrencyCode),
+        (PurchaseVoucher, "Purchase", PurchaseVoucher.InvoiceDate, PurchaseVoucher.TotalValue, PurchaseVoucher.CurrencyCode),
     ]:
         stmt = select(model).where(date_col.between(from_date, to_date), currency_col.isnot(None))
         rows = db.execute(stmt).scalars().all()

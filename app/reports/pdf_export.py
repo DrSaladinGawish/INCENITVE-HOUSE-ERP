@@ -325,3 +325,146 @@ def cash_flow_pdf(data: dict) -> bytes:
         story.append(tbl)
     doc.build(story, onFirstPage=_header_footer, onLaterPages=_header_footer)
     return buf.getvalue()
+
+
+def comparison_pdf(data: dict) -> bytes:
+    report_type = data.get("report_type", "comparison")
+    title_map = {
+        "trial_balance": "Trial Balance Comparison",
+        "profit_loss": "Profit & Loss Comparison",
+        "balance_sheet": "Balance Sheet Comparison",
+        "cash_flow": "Cash Flow Comparison",
+    }
+    title = title_map.get(report_type, "Period Comparison")
+
+    doc, buf = _build_doc(title)
+    story = [
+        Paragraph(title, title_style),
+        Paragraph(f"From {_format_date(data.get('from_date', data.get('as_of_date', '')))} "
+                  f"vs {_format_date(data.get('compare_from', data.get('compare_date', '')))}",
+                  subtitle_style),
+    ]
+
+    if report_type == "trial_balance":
+        accounts = data.get("accounts", [])
+        if not accounts:
+            story.append(Paragraph("No comparison data available.", cell_style))
+        else:
+            tb_data = [[Paragraph("Code", header_cell), Paragraph("Account", header_cell),
+                         Paragraph("Current", header_cell), Paragraph("Previous", header_cell),
+                         Paragraph("Var %", header_cell)]]
+            for a in accounts:
+                cur = a.get("current_balance", 0)
+                prev = a.get("previous_balance", 0)
+                var = a.get("variance", {})
+                var_pct = var.get("percent", 0)
+                var_str = f"{var_pct:+.2f}%" if var_pct else "0.00%"
+                tb_data.append([
+                    Paragraph(str(a.get("account_code", "")), cell_center),
+                    Paragraph(str(a.get("account_name", "")), cell_style),
+                    Paragraph(_format_amount(cur), cell_right),
+                    Paragraph(_format_amount(prev), cell_right),
+                    Paragraph(var_str, cell_right),
+                ])
+            tbl = Table(tb_data, colWidths=[50, 170, 65, 65, 50], repeatRows=1)
+            tbl.setStyle(default_table_style(5))
+            story.append(tbl)
+    else:
+        for period_label in ("current", "previous"):
+            sub = data.get(period_label, {})
+            if not sub:
+                continue
+            period_title = "Current Period" if period_label == "current" else "Previous Period"
+            story.append(Paragraph(period_title, section_style))
+            if report_type == "profit_loss":
+                revenues = sub.get("revenues", [])
+                expenses = sub.get("expenses", [])
+                if revenues:
+                    rev_rows = [[Paragraph("Code", header_cell), Paragraph("Account", header_cell),
+                                 Paragraph("Amount", header_cell)]]
+                    for r in revenues:
+                        rev_rows.append([
+                            Paragraph(str(r.get("account_code", "")), cell_center),
+                            Paragraph(str(r.get("account_name", "")), cell_style),
+                            Paragraph(_format_amount(r.get("amount", 0)), cell_right),
+                        ])
+                    rev_rows.append([Paragraph("", cell_style), Paragraph("Total Revenue", total_label_style),
+                                     Paragraph(_format_amount(sub.get("total_revenue", 0)), total_value_style)])
+                    tbl = Table(rev_rows, colWidths=[55, 240, 60])
+                    tbl.setStyle(default_table_style(3))
+                    story.append(tbl)
+                if expenses:
+                    exp_rows = [[Paragraph("Code", header_cell), Paragraph("Account", header_cell),
+                                 Paragraph("Amount", header_cell)]]
+                    for e in expenses:
+                        exp_rows.append([
+                            Paragraph(str(e.get("account_code", "")), cell_center),
+                            Paragraph(str(e.get("account_name", "")), cell_style),
+                            Paragraph(_format_amount(e.get("amount", 0)), cell_right),
+                        ])
+                    exp_rows.append([Paragraph("", cell_style), Paragraph("Total Expenses", total_label_style),
+                                     Paragraph(_format_amount(sub.get("total_expense", 0)), total_value_style)])
+                    tbl = Table(exp_rows, colWidths=[55, 240, 60])
+                    tbl.setStyle(default_table_style(3))
+                    story.append(tbl)
+            elif report_type in ("balance_sheet",):
+                for key, label in (("assets", "Assets"), ("liabilities", "Liabilities"), ("equity", "Equity")):
+                    items = sub.get(key, [])
+                    if items:
+                        rows = [[Paragraph("Code", header_cell), Paragraph("Account", header_cell),
+                                 Paragraph("Balance", header_cell)]]
+                        for it in items:
+                            rows.append([
+                                Paragraph(str(it.get("account_code", "")), cell_center),
+                                Paragraph(str(it.get("account_name", "")), cell_style),
+                                Paragraph(_format_amount(it.get("balance", 0)), cell_right),
+                            ])
+                        tbl = Table(rows, colWidths=[55, 240, 60])
+                        tbl.setStyle(default_table_style(3))
+                        story.append(tbl)
+            elif report_type == "cash_flow":
+                sections = [
+                    ("Operating", sub.get("operating", []), sub.get("net_operating", 0)),
+                    ("Investing", sub.get("investing", []), sub.get("net_investing", 0)),
+                    ("Financing", sub.get("financing", []), sub.get("net_financing", 0)),
+                ]
+                for sec_label, items, net_val in sections:
+                    if items:
+                        rows = [[Paragraph("Narration", header_cell), Paragraph("Amount", header_cell)]]
+                        for it in items:
+                            rows.append([
+                                Paragraph(str(it.get("narration", "")), cell_style),
+                                Paragraph(_format_amount(it.get("amount", 0)), cell_right),
+                            ])
+                        rows.append([Paragraph(f"Net {sec_label}", total_label_style),
+                                     Paragraph(_format_amount(net_val), total_value_style)])
+                        tbl = Table(rows, colWidths=[295, 60])
+                        tbl.setStyle(default_table_style(2))
+                        story.append(tbl)
+
+        variance_keys = []
+        if report_type == "profit_loss":
+            variance_keys = ["revenue_variance", "expense_variance", "net_income_variance"]
+        elif report_type == "balance_sheet":
+            variance_keys = ["assets_variance", "liabilities_variance", "equity_variance"]
+        elif report_type == "cash_flow":
+            variance_keys = ["operating_variance", "net_change_variance"]
+
+        if variance_keys:
+            story.append(Spacer(1, 4 * mm))
+            story.append(Paragraph("Variance Summary", section_style))
+            var_data = [[Paragraph("Metric", header_cell), Paragraph("Amount", header_cell),
+                         Paragraph("Var %", header_cell)]]
+            for vk in variance_keys:
+                v = data.get(vk, {})
+                var_data.append([
+                    Paragraph(vk.replace("_", " ").title(), cell_style),
+                    Paragraph(_format_amount(v.get("amount", 0)), cell_right),
+                    Paragraph(f"{v.get('percent', 0):+.2f}%", cell_right),
+                ])
+            tbl = Table(var_data, colWidths=[200, 100, 100])
+            tbl.setStyle(default_table_style(3))
+            story.append(tbl)
+
+    doc.build(story, onFirstPage=_header_footer, onLaterPages=_header_footer)
+    return buf.getvalue()

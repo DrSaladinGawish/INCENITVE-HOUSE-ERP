@@ -7,37 +7,57 @@
 </div>
 <div class="card">
     <div class="card-header">Backup Controls</div>
-    <div style="display:flex;gap:10px;align-items:center">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
         <button class="btn btn-primary" onclick="createBackup()">Backup Now</button>
+        <button class="btn btn-secondary" onclick="runCleanup()">Cleanup Old</button>
         <span id="backupStatus" style="font-size:13px;color:#666"></span>
     </div>
 </div>
 <div class="card">
     <div class="card-header">Backup History</div>
-    <table><thead><tr><th data-sort="timestamp">Timestamp</th><th data-sort="size">Size</th><th data-sort="status">Status</th><th>Actions</th></tr></thead><tbody id="backupHistory"><tr><td colspan="4" style="text-align:center">Loading...</td></tr></tbody></table>
+    <table>
+        <thead><tr><th>Timestamp</th><th>Label</th><th>Size</th><th>SHA256</th><th>Actions</th></tr></thead>
+        <tbody id="backupHistory"><tr><td colspan="5" style="text-align:center">Loading...</td></tr></tbody>
+    </table>
 </div>
 <script>
+var token = localStorage.getItem('access_token') || '';
+function api(path, method) {
+    return fetch(path, {method:method||'GET', headers:{'Authorization':'Bearer '+token}}).then(function(r){return r.json()});
+}
 function createBackup() {
-    var status = document.getElementById('backupStatus');
-    status.textContent = 'Creating backup...';
-    fetch('/api/v1/intelligence/backup', {method:'POST', headers:{'Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}})
-        .then(function(r) {return r.json();})
-        .then(function(d) {
-            status.textContent = d.status === 'ok' ? 'Backup created: ' + d.filename : 'Error: ' + (d.error || 'unknown');
-            loadBackupHistory();
-        }).catch(function(e) { status.textContent = 'Backup failed'; });
+    var s = document.getElementById('backupStatus');
+    s.textContent = 'Creating backup...';
+    api('/api/v1/admin/backup/create?label=manual', 'POST').then(function(d) {
+        s.textContent = d.status === 'ok' ? 'Backup created: ' + d.filename : 'Error: ' + (d.error || 'unknown');
+        loadBackupHistory();
+    }).catch(function(e) { s.textContent = 'Backup failed'; });
+}
+function runCleanup() {
+    if (!confirm('Remove backups older than retention policy?')) return;
+    api('/api/v1/admin/backup/cleanup', 'POST').then(function(d) {
+        alert('Removed ' + d.count + ' old backups');
+        loadBackupHistory();
+    });
 }
 function loadBackupHistory() {
-    fetch('/api/v1/intelligence/backups', {headers:{'Authorization':'Bearer ' + (localStorage.getItem('access_token') || '')}})
-        .then(function(r) {return r.json();})
-        .then(function(d) {
-            var body = document.getElementById('backupHistory');
-            var items = d.backups || d || [];
-            if (!items.length) { body.innerHTML = '<tr><td colspan="4" style="text-align:center">No backups yet.</td></tr>'; return; }
-            body.innerHTML = items.map(function(b) {
-                return '<tr><td>' + (b.created_at || b.timestamp || '') + '</td><td>' + (b.size_mb ? b.size_mb + ' MB' : '-') + '</td><td><span class="badge badge-success">' + (b.status || 'completed') + '</span></td><td>' + (b.download_url ? '<a class="btn btn-sm btn-primary" href="' + b.download_url + '">Download</a>' : '-') + '</td></tr>';
-            }).join('');
-        });
+    api('/api/v1/admin/backup/list').then(function(items) {
+        var body = document.getElementById('backupHistory');
+        if (!items || !items.length) { body.innerHTML = '<tr><td colspan="5" style="text-align:center">No backups yet.</td></tr>'; return; }
+        body.innerHTML = items.map(function(b) {
+            var size = b.size_bytes ? (b.size_bytes / 1024 / 1024).toFixed(2) + ' MB' : '-';
+            var sha = b.sha256 ? b.sha256.substring(0, 12) + '...' : '-';
+            return '<tr><td>' + b.timestamp + '</td><td>' + b.label + '</td><td>' + size + '</td><td><code>' + sha + '</code></td><td>' +
+                '<a class="btn btn-sm btn-primary" href="/api/v1/admin/backup/download?filename=' + b.filename + '">Download</a>' +
+                ' <button class="btn btn-sm btn-secondary" onclick="verifyBackup(\'' + b.filename + '\')">Verify</button>' +
+                '</td></tr>';
+        }).join('');
+    });
+}
+function verifyBackup(filename) {
+    api('/api/v1/admin/backup/verify?filename=' + filename).then(function(d) {
+        alert(d.status === 'ok' ? '✅ Backup verified (SHA256: ' + d.sha256.substring(0, 16) + '...)' : '❌ ' + (d.error || 'verify failed'));
+    });
 }
 document.addEventListener('DOMContentLoaded', loadBackupHistory);
 </script>

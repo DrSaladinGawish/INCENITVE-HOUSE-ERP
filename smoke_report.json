@@ -1,0 +1,415 @@
+{
+  "timestamp": "2026-06-12T19:42:53.237469",
+  "base_url": "http://localhost:9002",
+  "total": 60,
+  "passed": 60,
+  "failed": 0,
+  "cycles": {
+    "auth": [
+      {
+        "method": "GET",
+        "path": "/api/auth/verify",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/auth/me",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "sales": [
+      {
+        "method": "GET",
+        "path": "/api/sal/clients",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/sal/invoices",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "purchases": [
+      {
+        "method": "GET",
+        "path": "/api/pur/vendors",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/pur/vouchers",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "banking": [
+      {
+        "method": "GET",
+        "path": "/api/bnk/banks",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/bnk/transactions",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "gl": [
+      {
+        "method": "GET",
+        "path": "/api/gl/accounts",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/gl/vouchers",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/gl/employees",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "events": [
+      {
+        "method": "GET",
+        "path": "/api/evn/pnrs",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/evn/categories",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/evn/budget-lines",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "inventory": [
+      {
+        "method": "GET",
+        "path": "/api/inventory/items",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/inventory/warehouses",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/inventory/movements",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/inventory/counts",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "payroll": [
+      {
+        "method": "GET",
+        "path": "/api/payroll/structures",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/payroll/payslips",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/payroll/attendance",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "crm": [
+      {
+        "method": "GET",
+        "path": "/api/crm/leads",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/crm/opportunities",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/crm/contacts",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/crm/activities",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/crm/deals",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "budgeting": [
+      {
+        "method": "GET",
+        "path": "/api/budgeting/periods",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/budgeting/lines",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/budgeting/commitments",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/budgeting/vs-actual",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "fixed_assets": [
+      {
+        "method": "GET",
+        "path": "/api/fixed-assets/categories",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "fx": [
+      {
+        "method": "GET",
+        "path": "/api/fx/currencies",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/fx/rates",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/fx/convert?from=USD&to=EGP&amount=100",
+        "status": 422,
+        "ok": true
+      }
+    ],
+    "workflow": [
+      {
+        "method": "GET",
+        "path": "/workflow/approvals",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "documents": [
+      {
+        "method": "GET",
+        "path": "/api/v1/documents/modules",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/documents/stats",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/documents/orphans",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "reports_v1": [
+      {
+        "method": "GET",
+        "path": "/reports/financial/trial-balance",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/profit-loss?from_date=2026-01-01&to_date=2026-06-12",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/balance-sheet",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/cash-flow?from_date=2026-01-01&to_date=2026-06-12",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "reports_v2": [
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/trial-balance/csv",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/profit-loss/csv?from_date=2026-01-01&to_date=2026-06-12",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/cash-flow-v2?from_date=2026-01-01&to_date=2026-06-12",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/trial-balance/pdf",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/profit-loss/pdf?from_date=2026-01-01&to_date=2026-06-12",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/reports/financial/api/compare",
+        "status": 422,
+        "ok": true
+      }
+    ],
+    "archive": [
+      {
+        "method": "GET",
+        "path": "/api/v1/archive/status",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/archive/browse?path=/",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/archive/duplicates",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "backup": [
+      {
+        "method": "GET",
+        "path": "/api/v1/admin/backup/list",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/admin/backup/status",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/admin/backup/schedule",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "einvoice": [
+      {
+        "method": "GET",
+        "path": "/e-invoice/generate/TEST-INV-001",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "dashboard": [
+      {
+        "method": "GET",
+        "path": "/api/dashboard/summary",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "meta": [
+      {
+        "method": "GET",
+        "path": "/api/meta/forms",
+        "status": 404,
+        "ok": true
+      }
+    ],
+    "intelligence": [
+      {
+        "method": "GET",
+        "path": "/api/v1/intelligence/backups",
+        "status": 200,
+        "ok": true
+      },
+      {
+        "method": "GET",
+        "path": "/api/v1/intelligence/audit",
+        "status": 200,
+        "ok": true
+      }
+    ],
+    "health": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "status": 200,
+        "ok": true
+      }
+    ]
+  }
+}

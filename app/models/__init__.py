@@ -18,3 +18,18 @@ from app.models.document import (  # noqa: F401
     SupportingDocument, DocumentModule,
 )
 from app.models.fx_rate import FxRate  # noqa: F401
+from app.models.inventory import (  # noqa: F401
+    Item, Warehouse, StockMovement, InventoryCount,
+)
+from app.models.payroll import (  # noqa: F401
+    SalaryStructure, PaySlip, Deduction, Allowance, Attendance,
+)
+from app.models.crm import (  # noqa: F401
+    Lead, Opportunity, Contact, Activity, Deal,
+)
+from app.models.budgeting import (  # noqa: F401
+    BudgetPeriod, BudgetLine, BudgetCommitment, BudgetRevision,
+)
+from app.models.fixed_assets import (  # noqa: F401
+    AssetCategory, Asset, Depreciation, AssetDisposal,
+)

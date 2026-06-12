@@ -249,3 +249,86 @@ def cash_flow_pdf(
         media_type="application/pdf",
         headers={"Content-Disposition": f"attachment; filename=cash_flow_{from_date}_to_{to_date}.pdf"},
     )
+
+
+@router.get("/api/cash-flow-v2/pdf")
+def cash_flow_v2_pdf(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    report = CashFlowReport(db)
+    pdf_bytes = report.to_pdf(from_date, to_date)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"attachment; filename=cash_flow_v2_{from_date}_to_{to_date}.pdf"},
+    )
+
+
+@router.get("/api/compare/trial-balance/pdf")
+def compare_trial_balance_pdf(
+    as_of_date: date | None = Query(None),
+    compare_date: date | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    data = pcmp.compare_trial_balance(db, as_of_date, compare_date)
+    data["report_type"] = "trial_balance"
+    pdf_bytes = pdf_export.comparison_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=compare_trial_balance.pdf"},
+    )
+
+
+@router.get("/api/compare/profit-loss/pdf")
+def compare_profit_loss_pdf(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    compare_from: date = Query(...),
+    compare_to: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    data = pcmp.compare_profit_loss(db, from_date, to_date, compare_from, compare_to)
+    data["report_type"] = "profit_loss"
+    pdf_bytes = pdf_export.comparison_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=compare_profit_loss.pdf"},
+    )
+
+
+@router.get("/api/compare/balance-sheet/pdf")
+def compare_balance_sheet_pdf(
+    as_of_date: date | None = Query(None),
+    compare_date: date | None = Query(None),
+    db: Session = Depends(get_db),
+):
+    data = pcmp.compare_balance_sheet(db, as_of_date, compare_date)
+    data["report_type"] = "balance_sheet"
+    pdf_bytes = pdf_export.comparison_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=compare_balance_sheet.pdf"},
+    )
+
+
+@router.get("/api/compare/cash-flow/pdf")
+def compare_cash_flow_pdf(
+    from_date: date = Query(...),
+    to_date: date = Query(...),
+    compare_from: date = Query(...),
+    compare_to: date = Query(...),
+    db: Session = Depends(get_db),
+):
+    data = pcmp.compare_cash_flow(db, from_date, to_date, compare_from, compare_to)
+    data["report_type"] = "cash_flow"
+    pdf_bytes = pdf_export.comparison_pdf(data)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=compare_cash_flow.pdf"},
+    )

@@ -98,9 +98,7 @@ def default_table_style(col_count: int, total_row: bool = True):
         ("LEFTPADDING", (0, 0), (-1, -1), 5),
         ("RIGHTPADDING", (0, 0), (-1, -1), 5),
     ]
-    for i in range(1, 100):
-        if i % 2 == 0:
-            cmds.append(("BACKGROUND", (0, i), (-1, i), COLOR_ROW_ALT))
+    cmds.append(("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, COLOR_ROW_ALT]))
     if total_row:
         cmds.append(("BACKGROUND", (0, -1), (-1, -1), COLOR_TOTAL_BG))
         cmds.append(("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"))

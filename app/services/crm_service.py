@@ -196,7 +196,7 @@ def get_activities(
         stmt = stmt.where(Activity.OpportunityID == opportunity_id)
     if status:
         stmt = stmt.where(Activity.Status == status)
-    stmt = stmt.order_by(Activity.ActivityDate.desc().nullslast(), Activity.CreatedAt.desc())
+    stmt = stmt.order_by(Activity.ActivityDate.desc(), Activity.CreatedAt.desc())
     return list(db.execute(stmt).scalars().all())
 
 

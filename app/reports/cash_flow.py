@@ -188,12 +188,7 @@ class CashFlowReport:
         for row in rows:
             atype = (row.AccountType or "").upper().strip()
             if any(t in atype for t in OPERATING_TYPES):
-        return "operating"
-
-    def to_pdf(self, from_date: date, to_date: date) -> bytes:
-        data = self.generate(from_date, to_date)
-        from app.reports.pdf_export import cash_flow_pdf
-        return cash_flow_pdf(data)
+                return "operating"
         for row in rows:
             atype = (row.AccountType or "").upper().strip()
             if "LIABILITY" in atype:
@@ -204,3 +199,8 @@ class CashFlowReport:
                 return "investing"
 
         return "operating"
+
+    def to_pdf(self, from_date: date, to_date: date) -> bytes:
+        data = self.generate(from_date, to_date)
+        from app.reports.pdf_export import cash_flow_pdf
+        return cash_flow_pdf(data)
