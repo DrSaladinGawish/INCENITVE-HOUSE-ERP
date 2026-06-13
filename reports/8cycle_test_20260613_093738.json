@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-06-13T09:36:24.845986",
+  "base_url": "http://localhost:9005",
+  "cycles": {
+    "events_to_sales": "FAIL",
+    "sales_to_banking": "PASS",
+    "banking_to_reports": "PASS",
+    "purchase_to_inventory": "PASS",
+    "hr_to_payroll": "PASS",
+    "cross_module": "FAIL",
+    "audit_trail": "PASS",
+    "backup_export": "PASS"
+  },
+  "summary": {
+    "total": 8,
+    "passed": 6,
+    "failed": 2
+  }
+}

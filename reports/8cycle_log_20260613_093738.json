@@ -1,0 +1,212 @@
+[
+  {
+    "cycle": "events_to_sales",
+    "step": "1a_create_pnr",
+    "status": "PASS",
+    "detail": "8CYCLE-PNR-093626",
+    "ts": "2026-06-13T09:36:28.999509"
+  },
+  {
+    "cycle": "events_to_sales",
+    "step": "1b_list_pnrs",
+    "status": "PASS",
+    "detail": "10",
+    "ts": "2026-06-13T09:36:31.065818"
+  },
+  {
+    "cycle": "events_to_sales",
+    "step": "1c_create_invoice",
+    "status": "FAIL",
+    "detail": "{\"detail\":\"Internal server error. Please contact support.\"}",
+    "ts": "2026-06-13T09:36:33.247100"
+  },
+  {
+    "cycle": "sales_to_banking",
+    "step": "2a_create_bank_txn",
+    "status": "PASS",
+    "detail": "264",
+    "ts": "2026-06-13T09:36:35.367484"
+  },
+  {
+    "cycle": "sales_to_banking",
+    "step": "2b_list_bank_txns",
+    "status": "PASS",
+    "detail": "50",
+    "ts": "2026-06-13T09:36:37.443182"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_trial_balance",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:39.523862"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_p&l",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:41.616644"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_balance_sheet",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:43.679961"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_cash_flow",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:45.769730"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_export_p&l_csv",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:47.858360"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_export_tb_csv",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:49.937621"
+  },
+  {
+    "cycle": "banking_to_reports",
+    "step": "3_export_bs_pdf",
+    "status": "PASS",
+    "detail": "200",
+    "ts": "2026-06-13T09:36:52.006748"
+  },
+  {
+    "cycle": "purchase_to_inventory",
+    "step": "4a_create_item",
+    "status": "PASS",
+    "detail": "ITM-093652 ID=1",
+    "ts": "2026-06-13T09:36:54.167970"
+  },
+  {
+    "cycle": "purchase_to_inventory",
+    "step": "4b_create_warehouse",
+    "status": "PASS",
+    "detail": "WH-093652 ID=1",
+    "ts": "2026-06-13T09:36:56.281362"
+  },
+  {
+    "cycle": "purchase_to_inventory",
+    "step": "4c_stock_movement",
+    "status": "PASS",
+    "detail": "1",
+    "ts": "2026-06-13T09:36:58.409928"
+  },
+  {
+    "cycle": "purchase_to_inventory",
+    "step": "4d_check_stock",
+    "status": "PASS",
+    "detail": "{\"item_id\":1,\"warehouse_id\":null,\"quantity\":100.0}",
+    "ts": "2026-06-13T09:37:00.489297"
+  },
+  {
+    "cycle": "hr_to_payroll",
+    "step": "5a_create_employee",
+    "status": "PASS",
+    "detail": "EMP-093700",
+    "ts": "2026-06-13T09:37:02.590779"
+  },
+  {
+    "cycle": "hr_to_payroll",
+    "step": "5b_salary_structure",
+    "status": "PASS",
+    "detail": "",
+    "ts": "2026-06-13T09:37:04.724389"
+  },
+  {
+    "cycle": "hr_to_payroll",
+    "step": "5c_create_payslip",
+    "status": "PASS",
+    "detail": "",
+    "ts": "2026-06-13T09:37:06.922819"
+  },
+  {
+    "cycle": "hr_to_payroll",
+    "step": "5d_calculate_payroll",
+    "status": "PASS",
+    "detail": "{'employee_code': 'EMP-093700', 'pay_period': '2026-06', 'pay_date': '2026-06-13', 'basic_salary': 5000.0, 'total_allowances': 2000.0, 'gross_pay': 7000.0, 'total_deductions': 7000.0, 'net_pay': 0.0, 'present_days': 0, 'absent_days': 30, 'status': 'calculated'}",
+    "ts": "2026-06-13T09:37:09.018580"
+  },
+  {
+    "cycle": "cross_module",
+    "step": "6a_create_jv",
+    "status": "FAIL",
+    "detail": "{\"detail\":\"Internal server error. Please contact support.\"}",
+    "ts": "2026-06-13T09:37:11.330936"
+  },
+  {
+    "cycle": "cross_module",
+    "step": "6b_create_lead",
+    "status": "PASS",
+    "detail": "1",
+    "ts": "2026-06-13T09:37:13.494893"
+  },
+  {
+    "cycle": "cross_module",
+    "step": "6c_upload_doc",
+    "status": "PASS",
+    "detail": "10019",
+    "ts": "2026-06-13T09:37:15.674975"
+  },
+  {
+    "cycle": "audit_trail",
+    "step": "7a_meta_audit",
+    "status": "WARN",
+    "detail": "405",
+    "ts": "2026-06-13T09:37:17.723060"
+  },
+  {
+    "cycle": "audit_trail",
+    "step": "7b_intel_audit",
+    "status": "PASS",
+    "detail": "0",
+    "ts": "2026-06-13T09:37:19.779523"
+  },
+  {
+    "cycle": "audit_trail",
+    "step": "7c_archive_status",
+    "status": "PASS",
+    "detail": "",
+    "ts": "2026-06-13T09:37:29.679438"
+  },
+  {
+    "cycle": "backup_export",
+    "step": "8a_backup_status",
+    "status": "PASS",
+    "detail": "{\"total_backups\": 0, \"total_size_bytes\": 0, \"latest_backup\": null, \"schedule\": {\"retention_days\": {\"daily\": 7, \"weekly\": 28, \"monthly\": 365}, \"schedule\": {\"daily\": {\"hour\": 2, \"minute\": 0}, \"weekly\": {\"day\": 6, \"hour\": 3, \"minute\": 0}, \"monthly\": {\"day\": 1, \"hour\": 4, \"minute\": 0}}, \"backup_dir\": \"D:\\\\IncentiveHouse_ERP\\\\backups\", \"engine\": \"none\"}}",
+    "ts": "2026-06-13T09:37:31.781921"
+  },
+  {
+    "cycle": "backup_export",
+    "step": "8b_create_backup",
+    "status": "WARN",
+    "detail": "500",
+    "ts": "2026-06-13T09:37:34.026574"
+  },
+  {
+    "cycle": "backup_export",
+    "step": "8c_export_events",
+    "status": "WARN",
+    "detail": "422",
+    "ts": "2026-06-13T09:37:36.084834"
+  },
+  {
+    "cycle": "backup_export",
+    "step": "8d_backup_list",
+    "status": "PASS",
+    "detail": "0",
+    "ts": "2026-06-13T09:37:38.137915"
+  }
+]
