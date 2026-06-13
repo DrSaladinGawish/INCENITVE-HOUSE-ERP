@@ -66,9 +66,6 @@ class SalesInvoiceBase(BaseModel):
     EventName: Optional[str] = Field(None, max_length=500)
     InvoiceDate: Optional[date] = None
     DueDate: Optional[date] = None
-    SubTotal: Optional[float] = None
-    VATRate: Optional[float] = None
-    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CollectedAmount: Optional[float] = None
     PaymentStatus: Optional[str] = Field(None, max_length=20)
@@ -86,9 +83,6 @@ class SalesInvoiceUpdate(BaseModel):
     EventName: Optional[str] = None
     InvoiceDate: Optional[date] = None
     DueDate: Optional[date] = None
-    SubTotal: Optional[float] = None
-    VATRate: Optional[float] = None
-    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CollectedAmount: Optional[float] = None
     PaymentStatus: Optional[str] = None

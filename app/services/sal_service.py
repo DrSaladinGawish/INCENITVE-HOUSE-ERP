@@ -70,7 +70,7 @@ def create_sales_invoice(db: Session, data: SalesInvoiceCreate) -> SalesInvoice:
     db.add(invoice)
     db.flush()
     for line_data in lines_data:
-        line = SalesInvoiceLine(invoice_id=invoice.InvoiceID, **line_data.model_dump())
+        line = SalesInvoiceLine(InvoiceID=invoice.InvoiceID, **line_data.model_dump())
         db.add(line)
     db.commit()
     db.refresh(invoice)

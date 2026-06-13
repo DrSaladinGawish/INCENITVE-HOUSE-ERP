@@ -81,9 +81,6 @@ class PurchaseVoucherBase(BaseModel):
     PNRNumber: Optional[str] = Field(None, max_length=50)
     EventName: Optional[str] = Field(None, max_length=500)
     InvoiceDate: Optional[date] = None
-    SubTotal: Optional[float] = None
-    VATRate: Optional[float] = None
-    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CurrencyCode: Optional[str] = Field(None, max_length=3)
 
@@ -98,9 +95,6 @@ class PurchaseVoucherUpdate(BaseModel):
     PNRNumber: Optional[str] = None
     EventName: Optional[str] = None
     InvoiceDate: Optional[date] = None
-    SubTotal: Optional[float] = None
-    VATRate: Optional[float] = None
-    VATAmount: Optional[float] = None
     TotalValue: Optional[float] = None
     CurrencyCode: Optional[str] = None
 
