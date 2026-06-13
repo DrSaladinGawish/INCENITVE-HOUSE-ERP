@@ -1,4 +1,4 @@
-from sqlalchemy import select, func
+from sqlalchemy import select, func, text
 from sqlalchemy.orm import Session, joinedload
 
 from app.models.ihe_models import Vendor, PurchaseVoucher, PurchaseVoucherLine
@@ -70,7 +70,16 @@ def create_purchase_voucher(db: Session, data: PurchaseVoucherCreate) -> Purchas
     db.add(voucher)
     db.flush()
     for line_data in lines_data:
-        line = PurchaseVoucherLine(VoucherID=voucher.VoucherID, **line_data.model_dump())
+        line_dict = line_data.model_dump()
+        # Validate ServiceTypeCode FK before inserting
+        if line_dict.get("ServiceTypeCode"):
+            exists = db.execute(
+                text("SELECT 1 FROM dbo.ServiceType WHERE ServiceTypeCode = :c"),
+                {"c": line_dict["ServiceTypeCode"]},
+            ).scalar()
+            if not exists:
+                line_dict["ServiceTypeCode"] = None
+        line = PurchaseVoucherLine(VoucherID=voucher.VoucherID, **line_dict)
         db.add(line)
     db.commit()
     db.refresh(voucher)

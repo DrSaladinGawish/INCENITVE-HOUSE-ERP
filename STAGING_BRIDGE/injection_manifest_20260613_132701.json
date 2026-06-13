@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-06-13T13:27:06.777807",
+  "dry_run": false,
+  "results": {
+    "ServiceMainCategory": {
+      "status": "INJECTED",
+      "rows": 2
+    },
+    "ServiceSubCategory": {
+      "status": "INJECTED",
+      "rows": 22
+    },
+    "PNRBudgetLineItem": {
+      "status": "INJECTED",
+      "rows": 26
+    }
+  },
+  "log_file": "D:\\IncentiveHouse_ERP\\logs\\data_injection_20260613_132701.log"
+}
