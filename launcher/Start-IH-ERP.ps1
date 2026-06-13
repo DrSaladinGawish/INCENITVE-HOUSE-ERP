@@ -29,4 +29,5 @@ if ($failed) {
 
 Write-Host "`n[LAUNCHER] Starting server..." -ForegroundColor Green
 Write-Host "============================================" -ForegroundColor Cyan
+Start-Process "http://localhost:9001/api/v1/launcher/dashboard-v2"
 uvicorn app.main:app --host 0.0.0.0 --port 9001 --reload
