@@ -1,0 +1,12 @@
+{
+  "timestamp": "2026-06-13T09:23:05.115151",
+  "base_url": "http://localhost:9005",
+  "flows": {
+    "event_to_invoice": false,
+    "purchase_to_inventory": false,
+    "report_generation": true,
+    "backup_and_archive": false
+  },
+  "passed": 2,
+  "failed": 3
+}
