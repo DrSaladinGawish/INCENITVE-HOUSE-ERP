@@ -25,3 +25,15 @@ Thumbs.db
 Data_Sources/
 USB Drive/
 
+# Data directories (keep .gitkeep)
+data/exports/*
+data/uploads/*
+reports/pdf/*
+logs/*
+backups/*.sql.gz
+!data/exports/.gitkeep
+!data/uploads/.gitkeep
+!reports/pdf/.gitkeep
+!logs/.gitkeep
+!backups/backup_manifest.json
+
