@@ -39,6 +39,7 @@ from app.routers.crm import router as crm_router
 from app.routers.budgeting import router as budgeting_router
 from app.routers.fixed_assets import router as fixed_assets_router
 from app.routers.backup_router import router as backup_router
+from app.routers.launcher_router import router as launcher_router
 
 log = setup_logging()
 
@@ -130,6 +131,7 @@ app.include_router(crm_router)
 app.include_router(budgeting_router)
 app.include_router(fixed_assets_router)
 app.include_router(backup_router)
+app.include_router(launcher_router)
 
 
 # ---------------------------------------------------------------------------
