@@ -7,8 +7,6 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from app.models.ihe_models import PNRMaster, SalesInvoice, PurchaseVoucher, BankTransaction, Client, Vendor
 from app.schemas.dashboard import DashboardSummary
-from app.services.redis_client import get_redis, set_cache, get_cache
-
 _cache = {"summary": None, "monthly": None, "summary_ts": 0.0, "monthly_ts": 0.0}
 CACHE_TTL = 30
 
@@ -20,51 +18,10 @@ def _safe_val(callback, default=0):
         return default
 
 
-def _try_redis_get(key: str):
-    import asyncio
-    try:
-        loop = asyncio.get_event_loop()
-        return loop.run_until_complete(get_cache(key))
-    except Exception:
-        return None
-
-
-def _try_redis_set(key: str, value, ttl: int = CACHE_TTL):
-    import asyncio
-    try:
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(set_cache(key, value, ttl=ttl))
-    except Exception:
-        pass
-
-
-def _summary_to_dict(s: DashboardSummary) -> dict:
-    return {
-        "total_pnrs": s.total_pnrs,
-        "active_pnrs": s.active_pnrs,
-        "total_sales": s.total_sales,
-        "total_purchases": s.total_purchases,
-        "bank_balance": s.bank_balance,
-        "outstanding_receivables": s.outstanding_receivables,
-        "total_clients": s.total_clients,
-        "total_vendors": s.total_vendors,
-    }
-
-
-def _dict_to_summary(d: dict) -> DashboardSummary:
-    return DashboardSummary(**d)
-
-
 def get_monthly_data(db: Session) -> list[dict]:
     now = time_module.time()
     if _cache["monthly"] is not None and (now - _cache["monthly_ts"]) < CACHE_TTL:
         return _cache["monthly"]
-    if get_redis() is not None:
-        cached = _try_redis_get("dash:monthly")
-        if cached is not None:
-            _cache["monthly"] = cached
-            _cache["monthly_ts"] = now
-            return cached
     months = []
     for m in range(1, 13):
         revenue = _safe_val(lambda m=m: float(db.execute(
@@ -83,7 +40,6 @@ def get_monthly_data(db: Session) -> list[dict]:
         })
     _cache["monthly"] = months
     _cache["monthly_ts"] = now
-    _try_redis_set("dash:monthly", months)
     return months
 
 
@@ -91,13 +47,6 @@ def get_dashboard_summary(db: Session) -> DashboardSummary:
     now = time_module.time()
     if _cache["summary"] is not None and (now - _cache["summary_ts"]) < CACHE_TTL:
         return _cache["summary"]
-    if get_redis() is not None:
-        cached = _try_redis_get("dash:summary")
-        if cached is not None:
-            obj = _dict_to_summary(cached)
-            _cache["summary"] = obj
-            _cache["summary_ts"] = now
-            return obj
     total_pnrs = _safe_val(lambda: db.execute(select(func.count(PNRMaster.PNRNumber))).scalar() or 0)
     active_pnrs = _safe_val(lambda: db.execute(select(func.count(PNRMaster.PNRNumber)).where(PNRMaster.Status == "Active")).scalar() or 0)
     total_sales = _safe_val(lambda: float(db.execute(select(func.coalesce(func.sum(SalesInvoice.TotalValue), 0))).scalar() or 0.0))
@@ -106,7 +55,6 @@ def get_dashboard_summary(db: Session) -> DashboardSummary:
     outstanding = _safe_val(lambda: float(db.execute(select(func.coalesce(func.sum(SalesInvoice.TotalValue - SalesInvoice.CollectedAmount), 0)).where(SalesInvoice.PaymentStatus != "Paid")).scalar() or 0.0))
     total_clients = _safe_val(lambda: db.execute(select(func.count(Client.ClientCode))).scalar() or 0)
     total_vendors = _safe_val(lambda: db.execute(select(func.count(Vendor.VendorCode))).scalar() or 0)
-
     result = DashboardSummary(
         total_pnrs=total_pnrs,
         active_pnrs=active_pnrs,
@@ -119,5 +67,4 @@ def get_dashboard_summary(db: Session) -> DashboardSummary:
     )
     _cache["summary"] = result
     _cache["summary_ts"] = now
-    _try_redis_set("dash:summary", _summary_to_dict(result))
     return result
