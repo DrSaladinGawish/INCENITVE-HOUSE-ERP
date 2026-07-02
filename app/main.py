@@ -40,6 +40,9 @@ from app.routers.budgeting import router as budgeting_router
 from app.routers.fixed_assets import router as fixed_assets_router
 from app.routers.backup_router import router as backup_router
 from app.routers.launcher_router import router as launcher_router
+from app.rate_limiter import setup_rate_limiter
+from app.monitoring import MetricsMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 
 log = setup_logging()
 
@@ -62,6 +65,12 @@ async def lifespan(app: FastAPI):
         log.info("All ORM tables verified/created")
     except Exception as e:
         log.warning("Database connection warning: %s", e)
+    try:
+        from app.monitoring import setup_multiprocess_metrics
+        setup_multiprocess_metrics()
+        log.info("Prometheus multiprocess metrics initialized")
+    except Exception as e:
+        log.warning("Prometheus init skipped: %s", e)
     yield
     log.info("%s shutting down ...", settings.APP_NAME)
 
@@ -84,6 +93,10 @@ app.add_middleware(
 )
 app.add_middleware(RequestIDMiddleware)
 app.add_middleware(MetaLayerInjectorMiddleware)
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
+setup_rate_limiter(app, requests_per_minute=100)
+app.add_middleware(MetricsMiddleware)
 
 
 # ---------------------------------------------------------------------------
@@ -153,6 +166,14 @@ def health():
     except Exception:
         db_status = "error"
     return {"status": "healthy", "app": settings.APP_NAME, "version": settings.VERSION, "database": db_status, "total_pnrs": pnr_count}
+
+
+@app.get("/metrics")
+async def metrics():
+    from app.monitoring import generate_metrics
+    from fastapi.responses import Response
+    from prometheus_client import CONTENT_TYPE_LATEST
+    return Response(content=generate_metrics(), media_type=CONTENT_TYPE_LATEST)
 
 
 # ---------------------------------------------------------------------------
