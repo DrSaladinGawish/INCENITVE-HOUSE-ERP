@@ -17,17 +17,6 @@ class Settings(BaseSettings):
     HOST: str = "0.0.0.0"
     PORT: int = 9001
 
-    # MySQL (fallback)
-    MYSQL_HOST: str = "127.0.0.1"
-    MYSQL_PORT: int = 3306
-    MYSQL_USER: str = "root"
-    MYSQL_PASSWORD: str = "RootPass123!"
-    MYSQL_DATABASE: str = "IncentiveHouse_ERP"
-
-    @property
-    def MYSQL_URL(self) -> str:
-        return f"mysql+pymysql://{self.MYSQL_USER}:{self.MYSQL_PASSWORD}@{self.MYSQL_HOST}:{self.MYSQL_PORT}/{self.MYSQL_DATABASE}"
-
     # SQL Server
     SQL_SERVER: str = "localhost"
     SQL_DATABASE: str = "IHE_ERP"
@@ -37,10 +26,7 @@ class Settings(BaseSettings):
 
     @property
     def DATABASE_URL(self) -> str:
-        return (
-            f"mssql+pyodbc://{self.SQL_USERNAME}:{self.SQL_PASSWORD}@{self.SQL_SERVER}/{self.SQL_DATABASE}"
-            f"?driver={self.SQL_DRIVER}&TrustServerCertificate=yes&timeout=5&loginTimeout=5"
-        )
+        return f"mssql+pyodbc://{self.SQL_USERNAME}:{self.SQL_PASSWORD}@{self.SQL_SERVER}/{self.SQL_DATABASE}?driver={self.SQL_DRIVER}&TrustServerCertificate=yes"
 
     @property
     def SYNC_DATABASE_URL(self) -> str:
@@ -68,16 +54,9 @@ class Settings(BaseSettings):
         return [o.strip() for o in raw.split(",") if o.strip()]
 
     # Paths
-    ARCHIVE_ROOT: str = "D:\\IncentiveHouse_Data\\Data_Sources\\docs"
+    ARCHIVE_ROOT: str = "D:\\Data_Sources\\docs"
     USB_ROOT: str = "D:\\"
     USB_BASE_PATH: str = "INCENTIVE HOUSE OF EGYPT\\Book Keeping\\Master Data"
-
-    # Redis (optional — required for multi-worker rate limiting & caching)
-    REDIS_URL: str = ""
-    PROMETHEUS_MULTIPROC_DIR: str = "data/metrics"
-
-    # Workers (used to adjust per-process rate limits when no Redis)
-    UVICORN_WORKERS: int = 4
 
     # SSL (optional — set in .env for production)
     SSL_CERTFILE: str = ""

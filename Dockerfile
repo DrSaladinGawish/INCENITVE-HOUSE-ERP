@@ -23,5 +23,4 @@ EXPOSE 9001
 HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:9001/health')" || exit 1
 
-ENV UVICORN_WORKERS=4
-CMD uvicorn app.main:app --host 0.0.0.0 --port 9001 --workers ${UVICORN_WORKERS} --limit-max-requests 10000
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "9001"]
