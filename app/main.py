@@ -71,8 +71,18 @@ async def lifespan(app: FastAPI):
         log.info("Prometheus multiprocess metrics initialized")
     except Exception as e:
         log.warning("Prometheus init skipped: %s", e)
+    try:
+        from app.services.redis_client import init_redis
+        await init_redis()
+    except Exception as e:
+        log.warning("Redis init skipped: %s", e)
     yield
     log.info("%s shutting down ...", settings.APP_NAME)
+    try:
+        from app.services.redis_client import close_redis
+        await close_redis()
+    except Exception as e:
+        log.warning("Redis shutdown skipped: %s", e)
 
 
 # ---------------------------------------------------------------------------
