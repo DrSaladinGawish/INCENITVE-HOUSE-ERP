@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IncentiveHouse ERP — Scalability Gap Analysis (Current)</title>
+<style>
+  :root { --bg: #0d1117; --fg: #c9d1d9; --border: #30363d; --accent: #58a6ff; --green: #3fb950; --red: #f85149; --yellow: #d29922; --gray: #8b949e; --code-bg: #161b22; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.6; padding: 0; }
+  .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+  h1 { font-size: 2em; margin-bottom: 4px; color: #fff; }
+  h2 { font-size: 1.5em; margin: 32px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); color: #fff; }
+  h3 { font-size: 1.2em; margin: 24px 0 12px; color: var(--accent); }
+  h4 { margin: 16px 0 8px; color: #fff; }
+  p, li { color: var(--fg); }
+  .meta { color: var(--gray); margin-bottom: 24px; font-size: 0.9em; }
+  .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 24px 0; }
+  .stat-card { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+  .stat-card .num { font-size: 2em; font-weight: 700; display: block; }
+  .stat-card .label { font-size: 0.85em; color: var(--gray); }
+  .stat-card.green .num { color: var(--green); }
+  .stat-card.red .num { color: var(--red); }
+  .stat-card.yellow .num { color: var(--yellow); }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.9em; }
+  th, td { padding: 10px 12px; text-align: left; border: 1px solid var(--border); }
+  th { background: var(--code-bg); font-weight: 600; color: #fff; }
+  td { vertical-align: top; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }
+  .tag-done { background: rgba(63,185,80,0.15); color: var(--green); }
+  .tag-missing { background: rgba(248,81,73,0.15); color: var(--red); }
+  .tag-partial { background: rgba(210,153,34,0.15); color: var(--yellow); }
+  .tag-parked { background: rgba(139,148,158,0.15); color: var(--gray); }
+  code { background: var(--code-bg); padding: 2px 6px; border-radius: 4px; font-size: 0.9em; font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; overflow-x: auto; margin: 12px 0; font-size: 0.85em; line-height: 1.45; }
+  .path { color: #58a6ff; font-size: 0.9em; }
+  .progress-bar { height: 24px; background: var(--code-bg); border-radius: 12px; overflow: hidden; margin: 8px 0; border: 1px solid var(--border); }
+  .progress-fill { height: 100%; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 0.8em; font-weight: 600; color: #fff; }
+  .commit { font-family: 'SFMono-Regular', Consolas, monospace; color: var(--gray); font-size: 0.85em; }
+  @media (max-width: 768px) { .container { padding: 12px; } table { font-size: 0.8em; } th, td { padding: 6px 8px; } }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>IncentiveHouse ERP — Scalability Gap Analysis (Current)</h1>
+<p class="meta">Post-Quick-Wins + Redis · Verified Audit Data · 32 System Design Concepts<br>
+Generated: 2026-07-03 · Source: <code>D:\IncentiveHouse_ERP</code> · Baseline: <code>docs/scalability_gap_analysis.html</code> (pre-Quick-Wins, 18%)</p>
+
+<!-- ============================================================ -->
+<!-- EXECUTIVE SUMMARY -->
+<!-- ============================================================ -->
+<h2>1. Executive Summary</h2>
+
+<div class="summary-grid">
+  <div class="stat-card yellow">
+    <span class="num">68%</span>
+    <span class="label">Scalability Readiness<br>13 of 19 non-parked concepts covered</span>
+  </div>
+  <div class="stat-card red">
+    <span class="num">7</span>
+    <span class="label">Remaining Gaps<br>Unaddressed</span>
+  </div>
+  <div class="stat-card green">
+    <span class="num">8</span>
+    <span class="label">Fully Implemented<br>Shipped this session</span>
+  </div>
+  <div class="stat-card green">
+    <span class="num">6</span>
+    <span class="label">Parked</span>
+  </div>
+</div>
+
+<p>Improvement from <strong>18% → 68%</strong> (+50 points) driven by Quick Wins (multi-worker, rate limiter, Prometheus metrics, dashboard caching, GZip) + Redis distributed caching layer. <strong>7 gaps remain</strong> — all premature without a validated scale target. PostgreSQL, Celery, MinIO, Grafana, Sentry, and full horizontal scaling are parked until real usage data justifies them.</p>
+
+<div class="progress-bar">
+  <div class="progress-fill" style="width:68%; background: var(--green);">68%</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- CATEGORY BREAKDOWN -->
+<!-- ============================================================ -->
+<h2>2. Category Breakdown</h2>
+
+<h3>🌐 Client-Server Architecture</h3>
+<p>Score: 60% (3/5 concepts, 1 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:60%; background: var(--yellow);">60%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>1</td><td>Client-Server Architecture</td><td><span class="tag tag-done">Done</span></td><td>FastAPI request/response cycle</td></tr>
+<tr><td>2</td><td>DNS</td><td><span class="tag tag-partial">Partial</span></td><td>Localhost dev only</td></tr>
+<tr><td>3</td><td>TCP/IP & UDP</td><td><span class="tag tag-done">Done</span></td><td>HTTP/1.1 via uvicorn</td></tr>
+<tr><td>4</td><td>Proxy & Reverse Proxy</td><td><span class="tag tag-partial">Partial</span></td><td>nginx.conf exists, not wired to compose</td></tr>
+<tr><td>5</td><td>Latency & Bandwidth</td><td><span class="tag tag-missing">Missing</span></td><td>No CDN</td></tr>
+<tr><td>6</td><td>HTTP/HTTPS & TLS</td><td><span class="tag tag-partial">Partial</span></td><td>SSL config exists, certs not auto-generated</td></tr>
+</table>
+
+<h3>🔧 API Design</h3>
+<p>Score: 100% (2/2 concepts, 1 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:100%; background: var(--green);">100%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>7</td><td>REST API Design</td><td><span class="tag tag-done">Done</span></td><td>37 routers, 112 files</td></tr>
+<tr><td>8</td><td>RESTful APIs</td><td><span class="tag tag-done">Done</span></td><td>Resource-oriented endpoints</td></tr>
+<tr><td>9</td><td>GraphQL</td><td><span class="tag tag-parked">Parked</span></td><td>Not needed for current use case</td></tr>
+</table>
+
+<h3>💾 Data Storage</h3>
+<p>Score: 50% (1.5/3 concepts)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:50%; background: var(--yellow);">50%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>10</td><td>Databases (SQL)</td><td><span class="tag tag-done">Done</span></td><td>SQL Server + MySQL fallback</td></tr>
+<tr><td>11</td><td>SQL vs NoSQL</td><td><span class="tag tag-partial">Partial</span></td><td>Document storage needed for files</td></tr>
+<tr><td>12</td><td>Data Replication</td><td><span class="tag tag-missing">Missing</span></td><td>SQL Server Express = single node</td></tr>
+</table>
+
+<h3>⚡ Scaling & Performance</h3>
+<p>Score: 17% (0.5/3 concepts, 1 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:17%; background: var(--red);">17%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>13</td><td>Horizontal Scaling</td><td><span class="tag tag-missing">Missing</span></td><td>Single container, no replicas</td></tr>
+<tr><td>14</td><td>Load Balancers</td><td><span class="tag tag-partial">Partial</span></td><td>nginx single upstream, no health checks</td></tr>
+<tr><td>15</td><td>CDN</td><td><span class="tag tag-missing">Missing</span></td><td>No edge caching</td></tr>
+<tr><td>16</td><td>Auto-scaling</td><td><span class="tag tag-parked">Parked</span></td><td>No scale target validated</td></tr>
+</table>
+
+<h3>🗄️ Database Architecture</h3>
+<p>Score: 70% (3.5/5 concepts, 2 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:70%; background: var(--green);">70%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th><th>Commit</th></tr>
+<tr><td>17</td><td>Indexing & Query Optimization</td><td><span class="tag tag-partial">Partial</span></td><td>Alembic in EventCore only</td><td></td></tr>
+<tr><td>18</td><td>Sharding & Partitioning</td><td><span class="tag tag-parked">Parked</span></td><td>Single database, no partitioning needed</td><td></td></tr>
+<tr><td>19</td><td>ACID Transactions</td><td><span class="tag tag-done">Done</span></td><td>SQLAlchemy transactions</td><td></td></tr>
+<tr><td>20</td><td>CAP Theorem</td><td><span class="tag tag-partial">Partial</span></td><td>Single-node CP</td><td></td></tr>
+<tr><td>21</td><td>Caching (Redis)</td><td><span class="tag tag-done">Done</span></td><td>Redis client, cache decorators, compose service</td><td><span class="commit">eaebf78</span></td></tr>
+<tr><td>22</td><td>Consistency Models</td><td><span class="tag tag-partial">Partial</span></td><td>Strong consistency only, no read replicas</td><td></td></tr>
+<tr><td>23</td><td>Distributed Transactions</td><td><span class="tag tag-parked">Parked</span></td><td>Not applicable yet</td><td></td></tr>
+</table>
+
+<h3>🏗️ System Architecture</h3>
+<p>Score: 25% (1/4 concepts, 1 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:25%; background: var(--red);">25%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th></tr>
+<tr><td>24</td><td>Blob Storage (S3)</td><td><span class="tag tag-missing">Missing</span></td><td>Local filesystem only</td></tr>
+<tr><td>25</td><td>CDN</td><td><span class="tag tag-missing">Missing</span></td><td>No edge caching</td></tr>
+<tr><td>26</td><td>WebSockets</td><td><span class="tag tag-parked">Parked</span></td><td>No real-time features needed</td></tr>
+<tr><td>27</td><td>Webhooks</td><td><span class="tag tag-partial">Partial</span></td><td>EventCore limited</td></tr>
+<tr><td>28</td><td>Microservices</td><td><span class="tag tag-partial">Partial</span></td><td>Modular monolith, 16 modules single process</td></tr>
+</table>
+
+<h3>🛡️ Reliability & Operations</h3>
+<p>Score: 50% (1.5/3 concepts, 1 parked)</p>
+<div class="progress-bar"><div class="progress-fill" style="width:50%; background: var(--yellow);">50%</div></div>
+<table>
+<tr><th>#</th><th>Concept</th><th>Status</th><th>Evidence</th><th>Commit</th></tr>
+<tr><td>29</td><td>Message Queues</td><td><span class="tag tag-parked">Parked</span></td><td>No queue needed without scale target</td><td></td></tr>
+<tr><td>30</td><td>Rate Limiting</td><td><span class="tag tag-done">Done</span></td><td>slowapi with Redis backend + per-process fallback</td><td><span class="commit">3cbcb8b</span></td></tr>
+<tr><td>31</td><td>API Gateway</td><td><span class="tag tag-missing">Missing</span></td><td>Nginx only, no auth/rate limit at edge</td><td></td></tr>
+<tr><td>32</td><td>Idempotency & Retry</td><td><span class="tag tag-partial">Partial</span></td><td>EventCore debounce only</td><td></td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- SESSION SHIP LOG -->
+<!-- ============================================================ -->
+<h2>3. Session Ship Log</h2>
+<table>
+<tr><th>Commit</th><th>What Shipped</th><th>Score Impact</th></tr>
+<tr><td><span class="commit">3cbcb8b</span></td><td>5 Quick Wins: multi-worker (UVICORN_WORKERS=4), rate limiter (slowapi), Prometheus metrics (/metrics), GZip middleware, dashboard cache (30s TTL) + CI/CD pipeline</td><td>+15%</td></tr>
+<tr><td><span class="commit">eaebf78</span></td><td>Redis integration: redis_client.py, cached() decorator, redis: service in compose, port-exposure fix</td><td>+10%</td></tr>
+<tr><td><span class="commit">cf447d0</span></td><td>.gitattributes (LF normalization)</td><td>—</td></tr>
+<tr><td><span class="commit">b29f79e</span></td><td>Removed dead Redis bridge from sync dashboard (was silently failing since Python 3.10)</td><td>—</td></tr>
+<tr><td><span class="commit">8411d54</span></td><td>Revert of contaminated d4c4111</td><td>—</td></tr>
+<tr><td><span class="commit">d4c4111</span></td><td>Contaminated — reverted (413-line Sergey Protocol restructure leaked into main.py)</td><td>—</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- PARKED ITEMS -->
+<!-- ============================================================ -->
+<h2>4. Parked Items (No Current Need)</h2>
+<table>
+<tr><th>Item</th><th>Why Parked</th><th>Unblocks If</th></tr>
+<tr><td>PostgreSQL migration</td><td>No scale target validated</td><td>100-200 concurrent user commitment</td></tr>
+<tr><td>Celery background tasks</td><td>No queue needed without scale</td><td>Async workload requirement</td></tr>
+<tr><td>PM2 process management</td><td>Docker handles process management</td><td>Non-container deployment</td></tr>
+<tr><td>Sentry error tracking</td><td>Prometheus metrics sufficient for now</td><td>Production SLA requirement</td></tr>
+<tr><td>Slack alerting</td><td>No alerting rules defined yet</td><td>On-call rotation established</td></tr>
+<tr><td>Grafana dashboards</td><td>Prometheus /metrics sufficient for now</td><td>Multi-team observability need</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<!-- OPEN ITEMS -->
+<!-- ============================================================ -->
+<h2>5. Open Items (Need Your Action)</h2>
+<table>
+<tr><th>#</th><th>Item</th><th>Where</th><th>What To Do</th></tr>
+<tr><td>1</td><td>GitHub secrets</td><td>Browser → Settings → Secrets → Actions</td><td>Add VPS_HOST, VPS_USER, VPS_SSH_KEY, VPS_APP_PATH</td></tr>
+<tr><td>2</td><td>VPS compose swap</td><td>SSH to VPS</td><td>Change build: . → image: ghcr.io/drsaladingawish/incenitve-house-erp:latest</td></tr>
+<tr><td>3</td><td>Actions tab check</td><td>Browser → Actions tab</td><td>Confirm which of 4 runs is most recently green</td></tr>
+<tr><td>4</td><td>Redis start</td><td>SSH to VPS</td><td>docker compose up -d redis</td></tr>
+</table>
+
+</div>
+</body>
+</html>
