@@ -1,6 +1,7 @@
 services:
   api:
     build: .
+    image: ghcr.io/drsaladingawish/incenitve-house-erp:latest
     container_name: incentivehouse-erp
     ports:
       - "9001:9001"
@@ -8,9 +9,23 @@ services:
       - .env
     environment:
       - SQL_SERVER=sqlserver
+      - REDIS_URL=${REDIS_URL:-redis://redis:6379/0}
     volumes:
       - ./data:/app/data
       - ./migrations:/app/migrations
+      - metrics-data:/app/data/metrics
+    depends_on:
+      redis:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - ihe-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: ihe-redis
+    volumes:
+      - redis-data:/data
     restart: unless-stopped
     networks:
       - ihe-net
@@ -40,6 +55,8 @@ services:
 
 volumes:
   sqlserver-data:
+  redis-data:
+  metrics-data:
 
 networks:
   ihe-net:
