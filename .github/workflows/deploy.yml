@@ -1,0 +1,190 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Docker image tag"
+        required: true
+        default: latest
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        env:
+          ACCEPT_EULA: Y
+          MSSQL_SA_PASSWORD: IHE_ERP_2024!
+          MSSQL_PID: Express
+        ports:
+          - 1433:1433
+        options: >-
+          --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q 'SELECT 1'"
+          --health-interval 10s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - name: Install ODBC Driver 18
+        run: |
+          curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /usr/share/keyrings/microsoft.gpg
+          echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/ubuntu/22.04/prod jammy main" | sudo tee /etc/apt/sources.list.d/mssql-release.list
+          sudo apt-get update
+          sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 mssql-tools18 unixodbc-dev
+          echo "/opt/mssql-tools18/bin" >> $GITHUB_PATH
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+      - name: Create .env
+        run: |
+          cp .env.template .env
+          sed -i 's/^SQL_SERVER=.*/SQL_SERVER=localhost/' .env
+          sed -i 's/^SQL_PASSWORD=.*/SQL_PASSWORD=IHE_ERP_2024!/' .env
+      - name: Verify SQL, create DB
+        run: |
+          for i in {1..30}; do
+            /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "SELECT 1" && break
+            sleep 2
+          done
+          /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -C -Q "
+          IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'IHE_ERP') CREATE DATABASE IHE_ERP
+          "
+      - name: Run DDL scripts
+        run: |
+          for f in 07_Neural_AI_Tables.sql 08_Document_System.sql; do
+            [ -f "$f" ] && /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'IHE_ERP_2024!' -d IHE_ERP -C -i "$f" || true
+          done
+      - name: Create ORM tables
+        run: python -c "from app.database import init_db; init_db(); print('Tables created.')"
+      - name: Run migrations
+        run: |
+          for f in migrations/0*.py migrations/99_rollback.py; do
+            [ -f "$f" ] && python "$f" || true
+          done
+      - name: Run tests
+        run: pytest tests/ -v --tb=short
+      - name: Lint
+        run: pip install ruff && ruff check . --output-format=github
+        continue-on-error: true
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    outputs:
+      image_ref: ${{ steps.meta.outputs.tags }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=sha,prefix=
+            type=ref,event=branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd ${{ secrets.VPS_APP_PATH }}
+            IMAGE_NAME="${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}"
+
+            # Capture current running image digest before pull (first deploy = no previous)
+            PREV_IMAGE_ID=""
+            CONTAINER_ID=$(docker compose ps -q api 2>/dev/null || true)
+            if [ -n "$CONTAINER_ID" ]; then
+              PREV_IMAGE_ID=$(docker inspect --format='{{.Image}}' "$CONTAINER_ID" 2>/dev/null || true)
+              echo "→ Previous image: ${PREV_IMAGE_ID:-none}"
+            else
+              echo "→ No previous container — first deploy"
+            fi
+
+            echo "→ Pulling ${IMAGE_NAME}:latest..."
+            docker compose pull api
+
+            echo "→ Starting new container..."
+            docker compose up -d --no-deps api
+
+            echo "→ Health check..."
+            HEALTHY=false
+            for i in $(seq 1 10); do
+              sleep 3
+              if curl -sf http://localhost:9001/health > /dev/null 2>&1; then
+                echo "✓ Healthy on attempt $i"
+                HEALTHY=true
+                break
+              fi
+              echo "  Attempt $i — not ready yet"
+            done
+
+            if [ "$HEALTHY" = "true" ]; then
+              exit 0
+            fi
+
+            echo "✗ Health check failed after 10 attempts"
+
+            if [ -z "$PREV_IMAGE_ID" ]; then
+              echo "→ No previous image to roll back to — manual investigation required"
+              exit 1
+            fi
+
+            echo "→ Rolling back to image digest ${PREV_IMAGE_ID}..."
+            docker tag "$PREV_IMAGE_ID" "${IMAGE_NAME}:latest"
+            docker compose up -d --no-deps --force-recreate api
+
+            echo "→ Verifying rollback health..."
+            for i in $(seq 1 10); do
+              sleep 3
+              if curl -sf http://localhost:9001/health > /dev/null 2>&1; then
+                echo "✓ Rollback healthy on attempt $i"
+                echo "✗ Deploy failed — rolled back to previous version. Investigate."
+                exit 1
+              fi
+              echo "  Rollback attempt $i — not ready yet"
+            done
+
+            echo "✗ Rollback also failed — manual intervention required immediately"
+            exit 1
